@@ -2,11 +2,11 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import "./styles.css";
 
-function CustomApp({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Welcome to client!</title>
+        <title>Meal planner</title>
       </Head>
       <main className="app">
         <Component {...pageProps} />
@@ -14,5 +14,3 @@ function CustomApp({ Component, pageProps }: AppProps) {
     </>
   );
 }
-
-export default CustomApp;
