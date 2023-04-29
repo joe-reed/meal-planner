@@ -14,5 +14,6 @@ func main() {
 
 	handler := meals.Handler{MealRepository: mealRepository}
 	e.GET("/", handler.GetMeals)
+	e.POST("/", handler.AddMeal)
 	e.Logger.Fatal(e.Start(":1323"))
 }
