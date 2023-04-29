@@ -2,7 +2,10 @@
   "name": "meal-planner",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "serve": "nx run-many -t serve",
+    "test": "nx run-many -t test"
+  },
   "private": true,
   "devDependencies": {
     "@nx-go/nx-go": "^2.7.0",
