@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/joe-reed/meal-planner/server/meals"
+	"github.com/joe-reed/meal-planner/apps/api/meals"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
