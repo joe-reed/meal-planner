@@ -4,21 +4,13 @@ import (
 	"database/sql"
 	"sort"
 
-	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type (
-	MealRepository interface {
-		Get() []*Meal
-		Add(*Meal)
-	}
-
-	Meal struct {
-		Id   string `json:"id"`
-		Name string `json:"name"`
-	}
-)
+type MealRepository interface {
+	Get() []*Meal
+	Add(*Meal)
+}
 
 type SqliteMealRepository struct {
 	db *sql.DB
@@ -77,31 +69,4 @@ func (r FakeMealRepository) Get() []*Meal {
 
 func (r FakeMealRepository) Add(m *Meal) {
 	r.meals[m.Name] = m
-}
-
-type MealBuilder struct {
-	id   string
-	name string
-}
-
-func (b *MealBuilder) WithName(name string) *MealBuilder {
-	b.name = name
-	return b
-}
-
-func (b *MealBuilder) Build() *Meal {
-	id := uuid.New().String()
-
-	if b.id != "" {
-		id = b.id
-	}
-
-	return &Meal{
-		Id:   id,
-		Name: b.name,
-	}
-}
-
-func NewMealBuilder() *MealBuilder {
-	return &MealBuilder{}
 }
