@@ -8,12 +8,18 @@ import (
 
 func main() {
 	e := echo.New()
-	mealRepository := meals.NewFakeMealRepository()
-	mealRepository.Add(meals.NewMealBuilder().WithName("foo").Build())
-	mealRepository.Add(meals.NewMealBuilder().WithName("bar").Build())
+
+	mealRepository, err := meals.NewSqliteMealRepository("meals.db")
+
+	if err != nil {
+		e.Logger.Fatal(e)
+	}
 
 	handler := meals.Handler{MealRepository: mealRepository}
 	e.GET("/", handler.GetMeals)
 	e.POST("/", handler.AddMeal)
+
+	e.Debug = true
+
 	e.Logger.Fatal(e.Start(":1323"))
 }

@@ -6,14 +6,18 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type (
-	Handler struct {
-		MealRepository MealRepository
-	}
-)
+type Handler struct {
+	MealRepository MealRepository
+}
 
 func (h *Handler) GetMeals(c echo.Context) error {
-	return c.JSON(http.StatusOK, h.MealRepository.Get())
+	meals, err := h.MealRepository.Get()
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, meals)
 }
 
 func (h *Handler) AddMeal(c echo.Context) error {
@@ -21,6 +25,11 @@ func (h *Handler) AddMeal(c echo.Context) error {
 	if err := c.Bind(m); err != nil {
 		return err
 	}
-	h.MealRepository.Add(m)
+	c.Logger().Debugf("Adding meal: %v", m)
+
+	if err := h.MealRepository.Add(m); err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusAccepted, "Meal added")
 }

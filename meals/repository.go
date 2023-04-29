@@ -8,8 +8,8 @@ import (
 )
 
 type MealRepository interface {
-	Get() []*Meal
-	Add(*Meal)
+	Get() ([]*Meal, error)
+	Add(*Meal) error
 }
 
 type SqliteMealRepository struct {
@@ -28,21 +28,30 @@ func NewSqliteMealRepository(dbFile string) (*SqliteMealRepository, error) {
 	return &SqliteMealRepository{db: db}, nil
 }
 
-func (r SqliteMealRepository) Get() []*Meal {
-	rows, _ := r.db.Query("SELECT * FROM meals ORDER BY name")
+func (r SqliteMealRepository) Get() ([]*Meal, error) {
+	rows, err := r.db.Query("SELECT * FROM meals ORDER BY name")
+
+	if err != nil {
+		return nil, err
+	}
 
 	meals := []*Meal{}
 	for rows.Next() {
 		var m Meal
-		_ = rows.Scan(&m.Id, &m.Name)
+		err = rows.Scan(&m.Id, &m.Name)
+		if err != nil {
+			return nil, err
+		}
 		meals = append(meals, &m)
 	}
 
-	return meals
+	return meals, nil
 }
 
-func (r SqliteMealRepository) Add(m *Meal) {
-	r.db.Exec("INSERT INTO meals VALUES(?,?);", m.Id, m.Name)
+func (r SqliteMealRepository) Add(m *Meal) error {
+	_, err := r.db.Exec("INSERT INTO meals VALUES(?,?);", m.Id, m.Name)
+
+	return err
 }
 
 type FakeMealRepository struct {
@@ -53,7 +62,7 @@ func NewFakeMealRepository() FakeMealRepository {
 	return FakeMealRepository{meals: map[string]*Meal{}}
 }
 
-func (r FakeMealRepository) Get() []*Meal {
+func (r FakeMealRepository) Get() ([]*Meal, error) {
 	keys := make([]string, 0, len(r.meals))
 	for k := range r.meals {
 		keys = append(keys, k)
@@ -64,9 +73,11 @@ func (r FakeMealRepository) Get() []*Meal {
 	for _, k := range keys {
 		v = append(v, r.meals[k])
 	}
-	return v
+	return v, nil
 }
 
-func (r FakeMealRepository) Add(m *Meal) {
+func (r FakeMealRepository) Add(m *Meal) error {
 	r.meals[m.Name] = m
+
+	return nil
 }

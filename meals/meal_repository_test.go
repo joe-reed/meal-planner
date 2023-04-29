@@ -17,11 +17,7 @@ func TestFakeMealRepository(t *testing.T) {
 func TestSqliteMealRepository(t *testing.T) {
 	runSuite(t, func() meals.MealRepository {
 		r, err := meals.NewSqliteMealRepository("test.db")
-
-		if err != nil {
-			t.Fatalf("Error: %v", err)
-		}
-
+		assert.NoError(t, err)
 		return r
 	}, func() {
 		os.Remove("test.db")
@@ -48,7 +44,11 @@ func runSuite(t *testing.T, factory func() meals.MealRepository, teardown func()
 func testAddingMeal(t *testing.T, r meals.MealRepository) {
 	m := meals.NewMealBuilder().Build()
 	r.Add(m)
-	assert.Contains(t, r.Get(), m)
+
+	meals, err := r.Get()
+
+	assert.NoError(t, err)
+	assert.Contains(t, meals, m)
 }
 
 func testGettingMeals(t *testing.T, r meals.MealRepository) {
@@ -60,5 +60,7 @@ func testGettingMeals(t *testing.T, r meals.MealRepository) {
 	r.Add(m2)
 	r.Add(m3)
 
-	assert.Equal(t, []*meals.Meal{m3, m2, m1}, r.Get())
+	m, err := r.Get()
+	assert.NoError(t, err)
+	assert.Equal(t, []*meals.Meal{m3, m2, m1}, m)
 }
