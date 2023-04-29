@@ -1,5 +1,5 @@
 test:
-	go test ./...
+	go test ./server/...
 
 serve:
-	go run server.go
+	go run ./server/server.go

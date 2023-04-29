@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/joe-reed/meal-planner/meals"
+	"github.com/joe-reed/meal-planner/server/meals"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
