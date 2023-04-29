@@ -1,6 +1,7 @@
 package meals_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/joe-reed/meal-planner/meals"
@@ -10,10 +11,24 @@ import (
 func TestFakeMealRepository(t *testing.T) {
 	runSuite(t, func() meals.MealRepository {
 		return meals.NewFakeMealRepository()
+	}, func() {})
+}
+
+func TestSqliteMealRepository(t *testing.T) {
+	runSuite(t, func() meals.MealRepository {
+		r, err := meals.NewSqliteMealRepository("test.db")
+
+		if err != nil {
+			t.Fatalf("Error: %v", err)
+		}
+
+		return r
+	}, func() {
+		os.Remove("test.db")
 	})
 }
 
-func runSuite(t *testing.T, factory func() meals.MealRepository) {
+func runSuite(t *testing.T, factory func() meals.MealRepository, teardown func()) {
 	tests := []struct {
 		title string
 		run   func(t *testing.T, r meals.MealRepository)
@@ -25,6 +40,7 @@ func runSuite(t *testing.T, factory func() meals.MealRepository) {
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
 			test.run(t, factory())
+			teardown()
 		})
 	}
 }
