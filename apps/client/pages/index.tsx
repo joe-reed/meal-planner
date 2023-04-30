@@ -1,4 +1,4 @@
-import useMeals from '../queries/useMeals';
+import useMeals from "../queries/useMeals";
 
 export default function Index() {
   const { isLoading, isError, data: meals, error } = useMeals();

@@ -1,14 +1,14 @@
-import { useQuery } from 'react-query';
-import { Meal } from '../types/meal';
+import { useQuery } from "react-query";
+import { Meal } from "../types/meal";
 
 export async function fetchMeals() {
-  const response = await fetch('/api/meals');
+  const response = await fetch("/api/meals");
   if (!response.ok) {
-    throw new Error('Error fetching meals');
+    throw new Error("Error fetching meals");
   }
   return response.json();
 }
 
 export default function useMeals() {
-  return useQuery<Meal[], Error>('meals', fetchMeals);
+  return useQuery<Meal[], Error>("meals", fetchMeals);
 }
