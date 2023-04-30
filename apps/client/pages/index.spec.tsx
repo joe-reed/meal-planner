@@ -11,12 +11,6 @@ jest.mock("../queries/useMeals", () => () => ({
   ],
 }));
 
-it("renders a heading", async () => {
-  render(<Index />);
-
-  expect(screen.getByRole("heading")).toHaveTextContent("Meal planner");
-});
-
 it("renders meals", async () => {
   render(<Index />);
 

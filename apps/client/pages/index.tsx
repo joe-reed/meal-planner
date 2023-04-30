@@ -14,11 +14,18 @@ export default function Index() {
 
   return (
     <>
-      <h1>Meal planner</h1>
-      {meals?.map((meal) => (
-        <p key={meal.id}>{meal.name}</p>
-      ))}
-      <Link href="/meals/create">Create meal</Link>
+      <nav className="flex justify-end mb-2">
+        <Link href="/meals/create" className="button">
+          Create meal
+        </Link>
+      </nav>
+      <ul className="flex space-x-2">
+        {meals?.map((meal) => (
+          <li key={meal.id} className="border px-3 py-1 rounded-lg">
+            {meal.name}
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
