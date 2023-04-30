@@ -1,3 +1,4 @@
+import Link from "next/link";
 import useMeals from "../queries/useMeals";
 
 export default function Index() {
@@ -17,6 +18,7 @@ export default function Index() {
       {meals?.map((meal) => (
         <p key={meal.id}>{meal.name}</p>
       ))}
+      <Link href="/meals/create">Create meal</Link>
     </>
   );
 }
