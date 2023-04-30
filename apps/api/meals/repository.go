@@ -2,6 +2,7 @@ package meals
 
 import (
 	"database/sql"
+	"fmt"
 	"sort"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -9,6 +10,7 @@ import (
 
 type MealRepository interface {
 	Get() ([]*Meal, error)
+	Find(id string) (*Meal, error)
 	Add(*Meal) error
 }
 
@@ -48,6 +50,18 @@ func (r SqliteMealRepository) Get() ([]*Meal, error) {
 	return meals, nil
 }
 
+func (r SqliteMealRepository) Find(id string) (*Meal, error) {
+	row := r.db.QueryRow("SELECT * FROM meals WHERE id = ?", id)
+
+	var m Meal
+	err := row.Scan(&m.Id, &m.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &m, nil
+}
+
 func (r SqliteMealRepository) Add(m *Meal) error {
 	_, err := r.db.Exec("INSERT INTO meals VALUES(?,?);", m.Id, m.Name)
 
@@ -74,6 +88,16 @@ func (r FakeMealRepository) Get() ([]*Meal, error) {
 		v = append(v, r.meals[k])
 	}
 	return v, nil
+}
+
+func (r FakeMealRepository) Find(id string) (*Meal, error) {
+	for _, m := range r.meals {
+		if m.Id == id {
+			return m, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Meal not found")
 }
 
 func (r FakeMealRepository) Add(m *Meal) error {

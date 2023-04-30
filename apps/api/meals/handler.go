@@ -20,6 +20,16 @@ func (h *Handler) GetMeals(c echo.Context) error {
 	return c.JSON(http.StatusOK, meals)
 }
 
+func (h *Handler) GetMeal(c echo.Context) error {
+	meal, err := h.MealRepository.Find(c.Param("id"))
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, meal)
+}
+
 func (h *Handler) AddMeal(c echo.Context) error {
 	m := new(Meal)
 	if err := c.Bind(m); err != nil {
