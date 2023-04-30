@@ -1,21 +1,4 @@
-import { useQuery } from 'react-query';
-
-type Meal = {
-  id: string;
-  name: string;
-};
-
-async function fetchMeals() {
-  const response = await fetch('/api/meals');
-  if (!response.ok) {
-    throw new Error('Error fetching meals');
-  }
-  return response.json();
-}
-
-function useMeals() {
-  return useQuery<Meal[], Error>('meals', fetchMeals);
-}
+import useMeals from '../queries/useMeals';
 
 export default function Index() {
   const { isLoading, isError, data: meals, error } = useMeals();
