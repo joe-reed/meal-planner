@@ -37,7 +37,7 @@ function Meals() {
       <ul className="flex space-x-2">
         {meals?.map((meal) => (
           <li key={meal.id} className="border px-3 py-1 rounded-lg">
-            {meal.name}
+            <Link href={`/meals/${meal.id}`}>{meal.name}</Link>
           </li>
         ))}
       </ul>
