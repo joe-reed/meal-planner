@@ -19,6 +19,8 @@ func main() {
 	e.GET("/meals/:id", handler.GetMeal)
 	e.POST("/", handler.AddMeal)
 
+	e.GET("/weeks/this", handler.GetMeals)
+
 	e.Debug = true
 
 	e.Logger.Fatal(e.Start(":1323"))
