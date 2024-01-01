@@ -1,6 +1,6 @@
 import Link from "next/link";
 import useMeals from "../queries/useMeals";
-import useWeek from "../queries/useWeek";
+import useCurrentShop from "../queries/useCurrentShop";
 
 export default function Index() {
   return (
@@ -14,7 +14,7 @@ export default function Index() {
         <Meals />
       </section>
       <section>
-        <ThisWeek />
+        <CurrentShop />
       </section>
     </>
   );
@@ -45,8 +45,8 @@ function Meals() {
   );
 }
 
-function ThisWeek() {
-  const { isLoading, isError, data: meals, error } = useWeek();
+function CurrentShop() {
+  const { isLoading, isError, data: meals, error } = useCurrentShop();
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -59,7 +59,7 @@ function ThisWeek() {
   return (
     <>
       <section>
-        <h2>This week</h2>
+        <h2>Current shop</h2>
         <ul>
           {meals?.map((meal) => (
             <li key={meal.id}>{meal.name}</li>

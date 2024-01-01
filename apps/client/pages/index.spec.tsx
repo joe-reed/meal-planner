@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import Index from "./index";
@@ -12,7 +14,7 @@ jest.mock("../queries/useMeals", () => () => ({
   ],
 }));
 
-jest.mock("../queries/useWeek", () => () => ({
+jest.mock("../queries/useCurrentShop", () => () => ({
   isLoading: false,
   isError: false,
   data: [
@@ -32,11 +34,11 @@ it("renders meals", async () => {
   expect(within(meals).getByText("baz")).toBeInTheDocument();
 });
 
-it("renders selected meals", async () => {
+it("renders current shop", async () => {
   render(<Index />);
 
-  const week = screen.getByText("This week").parentElement!;
-  expect(week).not.toBeNull();
-  expect(within(week).getByText("foo")).toBeInTheDocument();
-  expect(within(week).getByText("bar")).toBeInTheDocument();
+  const shop = screen.getByText("Current shop").parentElement!;
+  expect(shop).not.toBeNull();
+  expect(within(shop).getByText("foo")).toBeInTheDocument();
+  expect(within(shop).getByText("bar")).toBeInTheDocument();
 });

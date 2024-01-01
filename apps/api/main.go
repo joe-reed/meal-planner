@@ -19,7 +19,7 @@ func main() {
 	e.GET("/meals/:id", handler.GetMeal)
 	e.POST("/", handler.AddMeal)
 
-	e.GET("/weeks/this", handler.GetMeals)
+	e.GET("/shops/current", handler.GetMeals)
 
 	e.Debug = true
 
