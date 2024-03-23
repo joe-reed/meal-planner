@@ -30,6 +30,7 @@ func runSuite(t *testing.T, factory func() shops.ShopRepository, teardown func()
 		run   func(t *testing.T, r shops.ShopRepository)
 	}{
 		{"getting current shop", testGettingCurrentShop},
+		{"getting current shop when no shops exist", testGettingCurrentShopIfNoShopsExist},
 	}
 
 	for _, test := range tests {
@@ -52,4 +53,10 @@ func testGettingCurrentShop(t *testing.T, r shops.ShopRepository) {
 	s, err := r.Current()
 	assert.NoError(t, err)
 	assert.Equal(t, &shops.Shop{Id: 3}, s)
+}
+
+func testGettingCurrentShopIfNoShopsExist(t *testing.T, r shops.ShopRepository) {
+	s, err := r.Current()
+	assert.NoError(t, err)
+	assert.Nil(t, s)
 }

@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { Meal } from "../types/meal";
+import { Shop } from "../types/shop";
 
 export async function fetchCurrentShop() {
   const response = await fetch("/api/shops/current");
@@ -10,5 +10,5 @@ export async function fetchCurrentShop() {
 }
 
 export default function useCurrentShop() {
-  return useQuery<Meal[], Error>("shops/current", fetchCurrentShop);
+  return useQuery<Shop, Error>("shops/current", fetchCurrentShop);
 }

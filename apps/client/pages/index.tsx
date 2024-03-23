@@ -46,7 +46,7 @@ function Meals() {
 }
 
 function CurrentShop() {
-  const { isLoading, isError, data: meals, error } = useCurrentShop();
+  const { isLoading, isError, data: currentShop, error } = useCurrentShop();
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -59,12 +59,12 @@ function CurrentShop() {
   return (
     <>
       <section>
-        <h2>Current shop</h2>
-        <ul>
-          {meals?.map((meal) => (
-            <li key={meal.id}>{meal.name}</li>
-          ))}
-        </ul>
+        {currentShop ? (
+          <>
+            <h2>Current shop</h2>
+            <span>id: {currentShop.id}</span>
+          </>
+        ) : null}
       </section>
     </>
   );

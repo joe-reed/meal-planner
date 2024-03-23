@@ -2,7 +2,6 @@ package shops
 
 import (
 	"database/sql"
-	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -33,6 +32,10 @@ func (r SqliteShopRepository) Current() (*Shop, error) {
 
 	var s Shop
 	err := row.Scan(&s.Id)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +62,7 @@ func (r *FakeShopRepository) Current() (*Shop, error) {
 		return r.shops[0], nil
 	}
 
-	return nil, fmt.Errorf("Shop not found")
+	return nil, nil
 }
 
 func (r *FakeShopRepository) Add(s *Shop) error {

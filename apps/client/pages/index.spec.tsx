@@ -17,10 +17,7 @@ jest.mock("../queries/useMeals", () => () => ({
 jest.mock("../queries/useCurrentShop", () => () => ({
   isLoading: false,
   isError: false,
-  data: [
-    { id: "1", name: "foo" },
-    { id: "2", name: "bar" },
-  ],
+  data: {id: 1},
 }));
 
 it("renders meals", async () => {
@@ -39,6 +36,5 @@ it("renders current shop", async () => {
 
   const shop = screen.getByText("Current shop").parentElement!;
   expect(shop).not.toBeNull();
-  expect(within(shop).getByText("foo")).toBeInTheDocument();
-  expect(within(shop).getByText("bar")).toBeInTheDocument();
+  expect(within(shop).getByText("id: 1")).toBeInTheDocument();
 });
