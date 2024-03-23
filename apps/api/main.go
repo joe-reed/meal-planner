@@ -41,4 +41,5 @@ func addShopRoutes(e *echo.Echo, dbFile string) {
 
 	handler := shops.Handler{ShopRepository: m}
 	e.GET("/shops/current", handler.CurrentShop)
+	e.POST("/shops", handler.StartShop)
 }

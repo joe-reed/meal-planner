@@ -3,6 +3,7 @@
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import Index from "./index";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../queries/useMeals", () => () => ({
   isLoading: false,
@@ -17,7 +18,12 @@ jest.mock("../queries/useMeals", () => () => ({
 jest.mock("../queries/useCurrentShop", () => () => ({
   isLoading: false,
   isError: false,
-  data: {id: 1},
+  data: { id: 1 },
+}));
+
+const mockMutate = jest.fn();
+jest.mock("../queries/useStartShop", () => () => ({
+  mutate: mockMutate,
 }));
 
 it("renders meals", async () => {
@@ -37,4 +43,12 @@ it("renders current shop", async () => {
   const shop = screen.getByText("Current shop").parentElement!;
   expect(shop).not.toBeNull();
   expect(within(shop).getByText("id: 1")).toBeInTheDocument();
+});
+
+it("starts a shop", async () => {
+  render(<Index />);
+
+  await userEvent.click(screen.getByText("Start Shop"));
+
+  expect(mockMutate).toHaveBeenCalled();
 });

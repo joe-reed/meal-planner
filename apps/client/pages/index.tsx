@@ -1,6 +1,7 @@
 import Link from "next/link";
 import useMeals from "../queries/useMeals";
 import useCurrentShop from "../queries/useCurrentShop";
+import useStartShop from "../queries/useStartShop";
 
 export default function Index() {
   return (
@@ -9,6 +10,7 @@ export default function Index() {
         <Link href="/meals/create" className="button">
           Create meal
         </Link>
+        <StartShopButton />
       </nav>
       <section>
         <Meals />
@@ -67,5 +69,25 @@ function CurrentShop() {
         ) : null}
       </section>
     </>
+  );
+}
+
+function StartShopButton() {
+  const { mutate } = useStartShop();
+
+  return (
+    <div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          mutate();
+        }}
+      >
+        <button type="submit" className="button">
+          Start Shop
+        </button>
+      </form>
+    </div>
   );
 }

@@ -14,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <main className="p-5 flex justify-center">
           <div className="w-full md:w-1/3">
-          <Component {...pageProps} />
+            <Component {...pageProps} />
           </div>
         </main>
       </QueryClientProvider>
