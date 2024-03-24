@@ -28,6 +28,6 @@ func TestViewingMeal(t *testing.T) {
 
 	if assert.NoError(t, h.GetMeal(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos"}`+"\n", meal.Id), rec.Body.String())
+		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[]}`+"\n", meal.Id), rec.Body.String())
 	}
 }

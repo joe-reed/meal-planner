@@ -23,7 +23,10 @@ func NewSqliteMealRepository(dbFile string) (*SqliteMealRepository, error) {
 	if err != nil {
 		return nil, err
 	}
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS meals (id VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255) NOT NULL);"); err != nil {
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS meals (id VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255) NOT NULL)"); err != nil {
+		return nil, err
+	}
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS meal_ingredients (meal_id VARCHAR(255) NOT NULL, ingredient_id VARCHAR(255) NOT NULL, PRIMARY KEY (meal_id, ingredient_id))"); err != nil {
 		return nil, err
 	}
 
@@ -31,41 +34,90 @@ func NewSqliteMealRepository(dbFile string) (*SqliteMealRepository, error) {
 }
 
 func (r SqliteMealRepository) Get() ([]*Meal, error) {
-	rows, err := r.db.Query("SELECT * FROM meals ORDER BY name")
+	rows, err := r.db.Query("SELECT id, name, ingredient_id FROM meals LEFT JOIN meal_ingredients ON meals.id = meal_ingredients.meal_id ORDER BY name")
 
 	if err != nil {
 		return nil, err
 	}
 
-	meals := []*Meal{}
+	meals := map[string]*Meal{}
+
 	for rows.Next() {
 		var m Meal
-		err = rows.Scan(&m.Id, &m.Name)
+		var i sql.NullString
+
+		err = rows.Scan(&m.Id, &m.Name, &i)
+
 		if err != nil {
 			return nil, err
 		}
-		meals = append(meals, &m)
+
+		_, exists := meals[m.Id]
+		if exists {
+			m = *meals[m.Id]
+		} else {
+			m.MealIngredients = []MealIngredient{}
+		}
+
+		if i.Valid {
+			m.MealIngredients = append(m.MealIngredients, MealIngredient{IngredientId: i.String})
+		}
+
+		meals[m.Id] = &m
 	}
 
-	return meals, nil
+	result := make([]*Meal, 0, len(meals))
+
+	for _, m := range meals {
+		result = append(result, m)
+	}
+
+	return result, nil
 }
 
 func (r SqliteMealRepository) Find(id string) (*Meal, error) {
-	row := r.db.QueryRow("SELECT * FROM meals WHERE id = ?", id)
+	rows, err := r.db.Query("SELECT id, name, ingredient_id FROM meals LEFT JOIN meal_ingredients ON meals.id = meal_ingredients.meal_id WHERE id = ?", id)
 
-	var m Meal
-	err := row.Scan(&m.Id, &m.Name)
 	if err != nil {
 		return nil, err
+	}
+
+	var m Meal
+	m.MealIngredients = []MealIngredient{}
+
+	for rows.Next() {
+		var i sql.NullString
+
+		err = rows.Scan(&m.Id, &m.Name, &i)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if i.Valid {
+			m.MealIngredients = append(m.MealIngredients, MealIngredient{IngredientId: i.String})
+		}
 	}
 
 	return &m, nil
 }
 
 func (r SqliteMealRepository) Add(m *Meal) error {
-	_, err := r.db.Exec("INSERT INTO meals VALUES(?,?);", m.Id, m.Name)
+	_, err := r.db.Exec("INSERT INTO meals (id, name) VALUES (?, ?)", m.Id, m.Name)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	for _, i := range m.MealIngredients {
+		_, err := r.db.Exec("INSERT INTO meal_ingredients (meal_id, ingredient_id) VALUES (?, ?)", m.Id, i.IngredientId)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type FakeMealRepository struct {

@@ -31,6 +31,7 @@ func runSuite(t *testing.T, factory func() meals.MealRepository, teardown func()
 	}{
 		{"adding a meal", testAddingMeal},
 		{"getting all meals", testGettingMeals},
+		{"finding a meal", testFindingMeal},
 	}
 
 	for _, test := range tests {
@@ -52,15 +53,28 @@ func testAddingMeal(t *testing.T, r meals.MealRepository) {
 }
 
 func testGettingMeals(t *testing.T, r meals.MealRepository) {
-	m1 := meals.NewMealBuilder().WithName("c").Build()
-	m2 := meals.NewMealBuilder().WithName("b").Build()
-	m3 := meals.NewMealBuilder().WithName("a").Build()
+	m1 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"c"}).WithName("c").Build()
+	m2 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"b"}).WithName("b").Build()
+	m3 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"a"}).WithName("a").Build()
 
-	r.Add(m1)
-	r.Add(m2)
-	r.Add(m3)
+	err := r.Add(m1)
+	assert.NoError(t, err)
+	err = r.Add(m2)
+	assert.NoError(t, err)
+	err = r.Add(m3)
+	assert.NoError(t, err)
 
 	m, err := r.Get()
 	assert.NoError(t, err)
 	assert.Equal(t, []*meals.Meal{m3, m2, m1}, m)
+}
+
+func testFindingMeal(t *testing.T, r meals.MealRepository) {
+	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"a"}).WithName("a").Build()
+	r.Add(m)
+
+	found, err := r.Find(m.Id)
+
+	assert.NoError(t, err)
+	assert.Equal(t, m, found)
 }
