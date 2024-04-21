@@ -13,6 +13,8 @@ import (
 func TestGettingCurrentShop(t *testing.T) {
 	shop1 := shops.NewShop(1)
 	shop2 := shops.NewShop(2)
+	shop2.AddMeal(&shops.ShopMeal{"123"})
+	shop2.AddMeal(&shops.ShopMeal{"456"})
 
 	r := shops.NewFakeShopRepository()
 	r.Add(shop1)
@@ -27,6 +29,6 @@ func TestGettingCurrentShop(t *testing.T) {
 
 	if assert.NoError(t, h.CurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, `{"id":2,"meals":[]}`+"\n", rec.Body.String())
+		assert.Equal(t, `{"id":2,"meals":[{"id":"123"},{"id":"456"}]}`+"\n", rec.Body.String())
 	}
 }
