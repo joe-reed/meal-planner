@@ -31,6 +31,8 @@ func runSuite(t *testing.T, factory func() shops.ShopRepository, teardown func()
 	}{
 		{"getting current shop", testGettingCurrentShop},
 		{"getting current shop when no shops exist", testGettingCurrentShopIfNoShopsExist},
+		{"finding shop", testFindingShop},
+		{"saving shop", testSavingShop},
 	}
 
 	for _, test := range tests {
@@ -59,4 +61,31 @@ func testGettingCurrentShopIfNoShopsExist(t *testing.T, r shops.ShopRepository) 
 	s, err := r.Current()
 	assert.NoError(t, err)
 	assert.Nil(t, s)
+}
+
+func testFindingShop(t *testing.T, r shops.ShopRepository) {
+	s := shops.NewShop(1).AddMeal(&shops.ShopMeal{"abc"})
+
+	err := r.Add(s)
+	assert.NoError(t, err)
+
+	found, err := r.Find(1)
+	assert.NoError(t, err)
+	assert.Equal(t, s, found)
+}
+
+func testSavingShop(t *testing.T, r shops.ShopRepository) {
+	s := shops.NewShop(1)
+
+	err := r.Add(s)
+	assert.NoError(t, err)
+
+	s = s.AddMeal(&shops.ShopMeal{"abc"})
+
+	err = r.Save(s)
+	assert.NoError(t, err)
+
+	found, err := r.Find(1)
+	assert.NoError(t, err)
+	assert.Equal(t, s, found)
 }

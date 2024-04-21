@@ -19,13 +19,13 @@ func main() {
 }
 
 func addMealRoutes(e *echo.Echo, dbFile string) {
-	m, err := meals.NewSqliteMealRepository(dbFile)
+	r, err := meals.NewSqliteMealRepository(dbFile)
 
 	if err != nil {
 		e.Logger.Fatal(e)
 	}
 
-	handler := meals.Handler{MealRepository: m}
+	handler := meals.Handler{MealRepository: r}
 
 	e.GET("/", handler.GetMeals)
 	e.GET("/meals/:id", handler.GetMeal)
@@ -33,13 +33,15 @@ func addMealRoutes(e *echo.Echo, dbFile string) {
 }
 
 func addShopRoutes(e *echo.Echo, dbFile string) {
-	m, err := shops.NewSqliteShopRepository(dbFile)
+	r, err := shops.NewSqliteShopRepository(dbFile)
 
 	if err != nil {
 		e.Logger.Fatal(e)
 	}
 
-	handler := shops.Handler{ShopRepository: m}
+	handler := shops.Handler{ShopRepository: r}
+
 	e.GET("/shops/current", handler.CurrentShop)
 	e.POST("/shops", handler.StartShop)
+	e.POST("/shops/:shopId/meals", handler.AddMealToShop)
 }
