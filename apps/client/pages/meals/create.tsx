@@ -8,12 +8,12 @@ export default function CreateMeal() {
   return (
     <div>
       <form
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
 
           const formData = new FormData(e.target as HTMLFormElement);
           mutate({ name: formData.get("name") as string });
-          push("/");
+          await push("/");
         }}
       >
         <label className="mr-2">

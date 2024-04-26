@@ -25,7 +25,7 @@ it("creates a meal", async () => {
 it("redirects home", async () => {
   render(<CreateMeal />);
 
-  submitForm();
+  await submitForm();
 
   expect(mockPush).toHaveBeenCalledWith("/");
 });

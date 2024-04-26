@@ -9,8 +9,8 @@ export default function useCreateMeal() {
         method: "POST",
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["shops/current"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["shops/current"] });
     },
   });
 }
