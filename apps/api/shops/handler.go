@@ -56,7 +56,7 @@ func (h *Handler) AddMealToShop(c echo.Context) error {
 	if err := c.Bind(shopMeal); err != nil {
 		return err
 	}
-	c.Logger().Debugf("Adding meal to shop: shopId: %s mealId: %s", shop.Id, shopMeal.MealId)
+	c.Logger().Debugf("Adding meal to shop: shopId: %d mealId: %s", shop.Id, shopMeal.MealId)
 
 	shop.AddMeal(shopMeal)
 

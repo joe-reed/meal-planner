@@ -68,7 +68,7 @@ func testGettingCurrentShopIfNoShopsExist(t *testing.T, r shops.ShopRepository) 
 }
 
 func testFindingShop(t *testing.T, r shops.ShopRepository) {
-	s := shops.NewShop(1).AddMeal(&shops.ShopMeal{"abc"})
+	s := shops.NewShop(1).AddMeal(&shops.ShopMeal{MealId: "abc"})
 
 	err := r.Add(s)
 	assert.NoError(t, err)
@@ -84,7 +84,7 @@ func testSavingShop(t *testing.T, r shops.ShopRepository) {
 	err := r.Add(s)
 	assert.NoError(t, err)
 
-	s = s.AddMeal(&shops.ShopMeal{"abc"})
+	s = s.AddMeal(&shops.ShopMeal{MealId: "abc"})
 
 	err = r.Save(s)
 	assert.NoError(t, err)

@@ -13,8 +13,8 @@ import (
 func TestGettingCurrentShop(t *testing.T) {
 	shop1 := shops.NewShop(1)
 	shop2 := shops.NewShop(2)
-	shop2.AddMeal(&shops.ShopMeal{"123"})
-	shop2.AddMeal(&shops.ShopMeal{"456"})
+	shop2.AddMeal(&shops.ShopMeal{MealId: "123"})
+	shop2.AddMeal(&shops.ShopMeal{MealId: "456"})
 
 	r := shops.NewFakeShopRepository()
 	err := r.Add(shop1)

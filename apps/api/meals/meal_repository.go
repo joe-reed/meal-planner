@@ -149,7 +149,7 @@ func (r FakeMealRepository) Find(id string) (*Meal, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("Meal not found")
+	return nil, fmt.Errorf("meal not found")
 }
 
 func (r FakeMealRepository) Add(m *Meal) error {

@@ -44,20 +44,20 @@ func runSuite(t *testing.T, factory func() meals.MealRepository, teardown func()
 }
 
 func testAddingMeal(t *testing.T, r meals.MealRepository) {
-	m := meals.NewMealBuilder().Build()
-	err := r.Add(m)
+	expected := meals.NewMealBuilder().Build()
+	err := r.Add(expected)
 	assert.NoError(t, err)
 
-	meals, err := r.Get()
+	actual, err := r.Get()
 
 	assert.NoError(t, err)
-	assert.Contains(t, meals, m)
+	assert.Contains(t, actual, expected)
 }
 
 func testGettingMeals(t *testing.T, r meals.MealRepository) {
-	m1 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"c"}).WithName("c").Build()
-	m2 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"b"}).WithName("b").Build()
-	m3 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"a"}).WithName("a").Build()
+	m1 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "c"}).WithName("c").Build()
+	m2 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "b"}).WithName("b").Build()
+	m3 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
 
 	err := r.Add(m1)
 	assert.NoError(t, err)
@@ -72,7 +72,7 @@ func testGettingMeals(t *testing.T, r meals.MealRepository) {
 }
 
 func testFindingMeal(t *testing.T, r meals.MealRepository) {
-	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"a"}).WithName("a").Build()
+	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
 	err := r.Add(m)
 	assert.NoError(t, err)
 
