@@ -14,7 +14,8 @@ func TestStartingShop(t *testing.T) {
 	shop1 := shops.Shop{Id: 1}
 
 	r := shops.NewFakeShopRepository()
-	r.Add(&shop1)
+	err := r.Add(&shop1)
+	assert.NoError(t, err)
 
 	e := echo.New()
 	req := httptest.NewRequest("POST", "/shops", nil)

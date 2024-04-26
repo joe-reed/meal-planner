@@ -15,7 +15,8 @@ func TestAddingMealToShop(t *testing.T) {
 	shop := shops.NewShop(1)
 
 	r := shops.NewFakeShopRepository()
-	r.Add(shop)
+	err := r.Add(shop)
+	assert.NoError(t, err)
 
 	e := echo.New()
 	req := httptest.NewRequest("POST", "/shops/1/meals", strings.NewReader(`{"id":"abc"}`))

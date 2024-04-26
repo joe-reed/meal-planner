@@ -17,8 +17,10 @@ func TestGettingCurrentShop(t *testing.T) {
 	shop2.AddMeal(&shops.ShopMeal{"456"})
 
 	r := shops.NewFakeShopRepository()
-	r.Add(shop1)
-	r.Add(shop2)
+	err := r.Add(shop1)
+	assert.NoError(t, err)
+	err = r.Add(shop2)
+	assert.NoError(t, err)
 
 	e := echo.New()
 	req := httptest.NewRequest("GET", "/shops/current", nil)

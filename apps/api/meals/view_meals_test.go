@@ -17,9 +17,12 @@ func TestViewingMeals(t *testing.T) {
 	meal3 := meals.NewMealBuilder().WithName("Tacos").Build()
 
 	repo := meals.NewFakeMealRepository()
-	repo.Add(meal1)
-	repo.Add(meal2)
-	repo.Add(meal3)
+	err := repo.Add(meal1)
+	assert.NoError(t, err)
+	err = repo.Add(meal2)
+	assert.NoError(t, err)
+	err = repo.Add(meal3)
+	assert.NoError(t, err)
 
 	e := echo.New()
 	req := httptest.NewRequest("", "/", nil)

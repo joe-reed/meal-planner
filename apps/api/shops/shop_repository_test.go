@@ -20,7 +20,8 @@ func TestSqliteMealRepository(t *testing.T) {
 		assert.NoError(t, err)
 		return r
 	}, func() {
-		os.Remove("test.db")
+		err := os.Remove("test.db")
+		assert.NoError(t, err)
 	})
 }
 
@@ -48,9 +49,12 @@ func testGettingCurrentShop(t *testing.T, r shops.ShopRepository) {
 	s2 := shops.Shop{Id: 2}
 	s3 := shops.Shop{Id: 3}
 
-	r.Add(&s1)
-	r.Add(&s2)
-	r.Add(&s3)
+	err := r.Add(&s1)
+	assert.NoError(t, err)
+	err = r.Add(&s2)
+	assert.NoError(t, err)
+	err = r.Add(&s3)
+	assert.NoError(t, err)
 
 	s, err := r.Current()
 	assert.NoError(t, err)

@@ -20,7 +20,8 @@ func TestSqliteMealRepository(t *testing.T) {
 		assert.NoError(t, err)
 		return r
 	}, func() {
-		os.Remove("test.db")
+		err := os.Remove("test.db")
+		assert.NoError(t, err)
 	})
 }
 
@@ -44,7 +45,8 @@ func runSuite(t *testing.T, factory func() meals.MealRepository, teardown func()
 
 func testAddingMeal(t *testing.T, r meals.MealRepository) {
 	m := meals.NewMealBuilder().Build()
-	r.Add(m)
+	err := r.Add(m)
+	assert.NoError(t, err)
 
 	meals, err := r.Get()
 
@@ -71,7 +73,8 @@ func testGettingMeals(t *testing.T, r meals.MealRepository) {
 
 func testFindingMeal(t *testing.T, r meals.MealRepository) {
 	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{"a"}).WithName("a").Build()
-	r.Add(m)
+	err := r.Add(m)
+	assert.NoError(t, err)
 
 	found, err := r.Find(m.Id)
 
