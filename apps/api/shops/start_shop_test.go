@@ -11,10 +11,10 @@ import (
 )
 
 func TestStartingShop(t *testing.T) {
-	shop1 := shops.Shop{Id: 1}
+	shop1 := shops.NewShop(1)
 
 	r := shops.NewFakeShopRepository()
-	err := r.Add(&shop1)
+	err := r.Add(shop1)
 	assert.NoError(t, err)
 
 	e := echo.New()

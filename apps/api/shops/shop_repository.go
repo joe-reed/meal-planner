@@ -2,8 +2,6 @@ package shops
 
 import (
 	"database/sql"
-	"errors"
-
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -34,45 +32,43 @@ func NewSqliteShopRepository(dbFile string) (*SqliteShopRepository, error) {
 }
 
 func (r SqliteShopRepository) Current() (*Shop, error) {
-	row := r.db.QueryRow("SELECT * FROM shops ORDER BY id DESC LIMIT 1")
-
-	var s Shop
-	err := row.Scan(&s.Id)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
+	rows, err := r.db.Query("SELECT id, meal_id FROM shops LEFT JOIN shop_meals ON shops.id = shop_meals.shop_id WHERE id = (SELECT id from shops ORDER BY id DESC LIMIT 1)")
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &s, nil
+	return MapRowsToShop(rows)
 }
 
 func (r SqliteShopRepository) Find(id int) (*Shop, error) {
-	rows, err := r.db.Query("SELECT meal_id FROM shops LEFT JOIN shop_meals ON shops.id = shop_meals.shop_id WHERE id = ?", id)
+	rows, err := r.db.Query("SELECT id, meal_id FROM shops LEFT JOIN shop_meals ON shops.id = shop_meals.shop_id WHERE id = ?", id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	shop := NewShop(id)
+	return MapRowsToShop(rows)
+}
+
+func MapRowsToShop(rows *sql.Rows) (*Shop, error) {
+	var shop *Shop
 
 	for rows.Next() {
-		var m sql.NullString
+		var id int
+		var mealId sql.NullString
 
-		err = rows.Scan(&m)
-
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-
+		err := rows.Scan(&id, &mealId)
 		if err != nil {
 			return nil, err
 		}
 
-		if m.Valid {
-			shop.Meals = append(shop.Meals, &ShopMeal{MealId: m.String})
+		if shop == nil {
+			shop = NewShop(id)
+		}
+
+		if mealId.Valid {
+			shop.AddMeal(&ShopMeal{MealId: mealId.String})
 		}
 	}
 

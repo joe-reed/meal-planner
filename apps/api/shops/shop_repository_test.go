@@ -31,8 +31,10 @@ func runSuite(t *testing.T, factory func() shops.ShopRepository, teardown func()
 		run   func(t *testing.T, r shops.ShopRepository)
 	}{
 		{"getting current shop", testGettingCurrentShop},
+		{"getting current shop with no meals", testGettingCurrentShopWithNoMeals},
 		{"getting current shop when no shops exist", testGettingCurrentShopIfNoShopsExist},
 		{"finding shop", testFindingShop},
+		{"finding shop with no meals", testFindingShopWithNoMeals},
 		{"saving shop", testSavingShop},
 	}
 
@@ -45,26 +47,38 @@ func runSuite(t *testing.T, factory func() shops.ShopRepository, teardown func()
 }
 
 func testGettingCurrentShop(t *testing.T, r shops.ShopRepository) {
-	s1 := shops.Shop{Id: 1}
-	s2 := shops.Shop{Id: 2}
-	s3 := shops.Shop{Id: 3}
+	s1 := shops.NewShop(1)
+	s2 := shops.NewShop(2)
+	s3 := shops.NewShop(3).AddMeal(&shops.ShopMeal{MealId: "123"}).AddMeal(&shops.ShopMeal{MealId: "456"})
 
-	err := r.Add(&s1)
+	err := r.Add(s1)
 	assert.NoError(t, err)
-	err = r.Add(&s2)
+	err = r.Add(s2)
 	assert.NoError(t, err)
-	err = r.Add(&s3)
+	err = r.Add(s3)
 	assert.NoError(t, err)
 
 	s, err := r.Current()
 	assert.NoError(t, err)
-	assert.Equal(t, &shops.Shop{Id: 3}, s)
+
+	assert.Equal(t, s3, s)
 }
 
 func testGettingCurrentShopIfNoShopsExist(t *testing.T, r shops.ShopRepository) {
 	s, err := r.Current()
 	assert.NoError(t, err)
 	assert.Nil(t, s)
+}
+
+func testGettingCurrentShopWithNoMeals(t *testing.T, r shops.ShopRepository) {
+	s1 := shops.NewShop(1)
+
+	err := r.Add(s1)
+	assert.NoError(t, err)
+
+	s, err := r.Current()
+	assert.NoError(t, err)
+	assert.Equal(t, []*shops.ShopMeal{}, s.Meals)
 }
 
 func testFindingShop(t *testing.T, r shops.ShopRepository) {
@@ -76,6 +90,18 @@ func testFindingShop(t *testing.T, r shops.ShopRepository) {
 	found, err := r.Find(1)
 	assert.NoError(t, err)
 	assert.Equal(t, s, found)
+}
+
+func testFindingShopWithNoMeals(t *testing.T, r shops.ShopRepository) {
+	s := shops.NewShop(1)
+
+	err := r.Add(s)
+	assert.NoError(t, err)
+
+	found, err := r.Find(1)
+	assert.NoError(t, err)
+	assert.Equal(t, s, found)
+	assert.Equal(t, []*shops.ShopMeal{}, found.Meals)
 }
 
 func testSavingShop(t *testing.T, r shops.ShopRepository) {

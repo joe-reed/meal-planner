@@ -1,10 +1,10 @@
 package shops
 
 import (
-	"net/http"
-	"strconv"
+  "net/http"
+  "strconv"
 
-	"github.com/labstack/echo/v4"
+  "github.com/labstack/echo/v4"
 )
 
 type Handler struct {

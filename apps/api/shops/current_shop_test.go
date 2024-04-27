@@ -34,3 +34,23 @@ func TestGettingCurrentShop(t *testing.T) {
 		assert.Equal(t, `{"id":2,"meals":[{"id":"123"},{"id":"456"}]}`+"\n", rec.Body.String())
 	}
 }
+
+func TestGettingCurrentShopWithNoMeals(t *testing.T) {
+	shop1 := shops.NewShop(1)
+
+	r := shops.NewFakeShopRepository()
+	err := r.Add(shop1)
+	assert.NoError(t, err)
+
+	e := echo.New()
+	req := httptest.NewRequest("GET", "/shops/current", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	h := &shops.Handler{ShopRepository: r}
+
+	if assert.NoError(t, h.CurrentShop(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, `{"id":1,"meals":[]}`+"\n", rec.Body.String())
+	}
+}
