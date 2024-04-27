@@ -42,6 +42,6 @@ func addShopRoutes(e *echo.Echo, dbFile string) {
 	handler := shops.Handler{ShopRepository: r}
 
 	e.GET("/shops/current", handler.CurrentShop)
+	e.POST("/shops/current/meals", handler.AddMealToCurrentShop)
 	e.POST("/shops", handler.StartShop)
-	e.POST("/shops/:shopId/meals", handler.AddMealToShop)
 }

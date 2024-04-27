@@ -3,6 +3,7 @@ import useMeals from "../queries/useMeals";
 import useCurrentShop from "../queries/useCurrentShop";
 import useStartShop from "../queries/useStartShop";
 import { Meal } from "../types/meal";
+import useAddMealToCurrentShop from "../queries/useAddMealToCurrentShop";
 
 export default function Index() {
   const { isLoading, isError, data: meals, error } = useMeals();
@@ -41,6 +42,7 @@ function Meals({ meals }: { meals: Meal[] }) {
         {meals?.map((meal) => (
           <li key={meal.id} className="border px-3 py-1 rounded-lg">
             <Link href={`/meals/${meal.id}`}>{meal.name}</Link>
+            <AddMealToShopButton mealId={meal.id} />
           </li>
         ))}
       </ul>
@@ -94,6 +96,26 @@ function StartShopButton() {
       >
         <button type="submit" className="button">
           Start Shop
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function AddMealToShopButton({ mealId }: { mealId: string }) {
+  const { mutate } = useAddMealToCurrentShop(mealId);
+
+  return (
+    <div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          mutate();
+        }}
+      >
+        <button type="submit" className="button">
+          +
         </button>
       </form>
     </div>

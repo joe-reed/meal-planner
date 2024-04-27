@@ -1,10 +1,8 @@
 package shops
 
 import (
-  "net/http"
-  "strconv"
-
-  "github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 type Handler struct {
@@ -40,13 +38,8 @@ func (h *Handler) StartShop(c echo.Context) error {
 	return c.JSON(http.StatusOK, shop)
 }
 
-func (h *Handler) AddMealToShop(c echo.Context) error {
-	i, err := strconv.Atoi(c.Param("shopId"))
-	if err != nil {
-		return err
-	}
-
-	shop, err := h.ShopRepository.Find(i)
+func (h *Handler) AddMealToCurrentShop(c echo.Context) error {
+	shop, err := h.ShopRepository.Current()
 
 	if err != nil {
 		return err
