@@ -1,9 +1,11 @@
 import { useRouter } from "next/router";
 import { useMeal } from "../../queries";
+import BackButton from "../../components/BackButton";
 
 export default function Meal() {
   const {
     query: { id },
+    back,
   } = useRouter();
 
   const {
@@ -21,5 +23,10 @@ export default function Meal() {
     return <p>Error: {error.message}</p>;
   }
 
-  return <h1>{meal?.name}</h1>;
+  return (
+    <div className="flex">
+      <BackButton className="mr-3" />
+      <h1>{meal?.name}</h1>
+    </div>
+  );
 }

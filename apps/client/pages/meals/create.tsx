@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useCreateMeal } from "../../queries";
+import BackButton from "../../components/BackButton";
 
 export default function CreateMeal() {
   const { mutate } = useCreateMeal();
@@ -7,6 +8,7 @@ export default function CreateMeal() {
 
   return (
     <div>
+      <BackButton />
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -22,7 +24,7 @@ export default function CreateMeal() {
             type="text"
             name="name"
             required
-            className="border rounded-md py-1 leading-none px-2"
+            className="rounded-md border py-1 px-2 leading-none"
             autoFocus
           />
         </label>
