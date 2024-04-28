@@ -59,3 +59,22 @@ func (h *Handler) AddMealToCurrentShop(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, shop)
 }
+
+func (h *Handler) RemoveMealFromCurrentShop(c echo.Context) error {
+	shop, err := h.ShopRepository.Current()
+
+	if err != nil {
+		return err
+	}
+
+	mealId := c.Param("mealId")
+	c.Logger().Debugf("Removing meal from shop: shopId: %d mealId: %s", shop.Id, mealId)
+
+	shop.RemoveMeal(mealId)
+
+	if err := h.ShopRepository.Save(shop); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, shop)
+}

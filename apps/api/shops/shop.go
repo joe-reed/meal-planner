@@ -25,3 +25,13 @@ func (s *Shop) SetMeals(m []*ShopMeal) *Shop {
 	s.Meals = m
 	return s
 }
+
+func (s *Shop) RemoveMeal(id string) {
+	var meals []*ShopMeal
+	for _, m := range s.Meals {
+		if m.MealId != id {
+			meals = append(meals, m)
+		}
+	}
+	s.Meals = meals
+}

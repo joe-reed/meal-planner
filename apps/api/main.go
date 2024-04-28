@@ -43,5 +43,6 @@ func addShopRoutes(e *echo.Echo, dbFile string) {
 
 	e.GET("/shops/current", handler.CurrentShop)
 	e.POST("/shops/current/meals", handler.AddMealToCurrentShop)
+	e.DELETE("/shops/current/meals/:mealId", handler.RemoveMealFromCurrentShop)
 	e.POST("/shops", handler.StartShop)
 }
