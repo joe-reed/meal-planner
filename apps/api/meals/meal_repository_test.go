@@ -33,6 +33,7 @@ func runSuite(t *testing.T, factory func() meals.MealRepository, teardown func()
 		{"adding a meal", testAddingMeal},
 		{"getting all meals", testGettingMeals},
 		{"finding a meal", testFindingMeal},
+		{"saving a meal", testSavingMeal},
 	}
 
 	for _, test := range tests {
@@ -80,4 +81,19 @@ func testFindingMeal(t *testing.T, r meals.MealRepository) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, m, found)
+}
+
+func testSavingMeal(t *testing.T, r meals.MealRepository) {
+	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
+	err := r.Add(m)
+	assert.NoError(t, err)
+
+	m.AddIngredient(&meals.MealIngredient{IngredientId: "b"})
+	err = r.Save(m)
+	assert.NoError(t, err)
+
+	found, err := r.Find(m.Id)
+	assert.NoError(t, err)
+	assert.Equal(t, m, found)
+	assert.Equal(t, []meals.MealIngredient{{"a"}, {"b"}}, found.MealIngredients)
 }

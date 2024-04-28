@@ -12,6 +12,7 @@ type MealRepository interface {
 	Get() ([]*Meal, error)
 	Find(id string) (*Meal, error)
 	Add(*Meal) error
+	Save(meal *Meal) error
 }
 
 type SqliteMealRepository struct {
@@ -120,6 +121,24 @@ func (r SqliteMealRepository) Add(m *Meal) error {
 	return nil
 }
 
+func (r SqliteMealRepository) Save(meal *Meal) error {
+	_, err := r.db.Exec("DELETE FROM meal_ingredients WHERE meal_id = ?", meal.Id)
+
+	if err != nil {
+		return err
+	}
+
+	for _, i := range meal.MealIngredients {
+		_, err := r.db.Exec("INSERT INTO meal_ingredients (meal_id, ingredient_id) VALUES (?, ?)", meal.Id, i.IngredientId)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 type FakeMealRepository struct {
 	meals map[string]*Meal
 }
@@ -153,6 +172,12 @@ func (r FakeMealRepository) Find(id string) (*Meal, error) {
 }
 
 func (r FakeMealRepository) Add(m *Meal) error {
+	r.meals[m.Name] = m
+
+	return nil
+}
+
+func (r FakeMealRepository) Save(m *Meal) error {
 	r.meals[m.Name] = m
 
 	return nil

@@ -10,6 +10,10 @@ type Meal struct {
 	MealIngredients []MealIngredient `json:"ingredients"`
 }
 
+func (m *Meal) AddIngredient(ingredient *MealIngredient) {
+	m.MealIngredients = append(m.MealIngredients, *ingredient)
+}
+
 type MealIngredient struct {
 	IngredientId string `json:"id"`
 }
@@ -42,6 +46,12 @@ func (b *MealBuilder) Build() *Meal {
 		Name:            b.name,
 		MealIngredients: b.mealIngredients,
 	}
+}
+
+func (b *MealBuilder) WithId(i string) *MealBuilder {
+	b.id = i
+
+	return b
 }
 
 func NewMealBuilder() *MealBuilder {

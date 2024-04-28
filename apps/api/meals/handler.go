@@ -43,3 +43,25 @@ func (h *Handler) AddMeal(c echo.Context) error {
 
 	return c.JSON(http.StatusAccepted, "Meal added")
 }
+
+func (h *Handler) AddIngredientToMeal(c echo.Context) error {
+	mealId := c.Param("mealId")
+
+	ingredient := new(MealIngredient)
+	if err := c.Bind(ingredient); err != nil {
+		return err
+	}
+
+	meal, err := h.MealRepository.Find(mealId)
+	if err != nil {
+		return err
+	}
+
+	meal.AddIngredient(ingredient)
+
+	if err := h.MealRepository.Save(meal); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, meal)
+}
