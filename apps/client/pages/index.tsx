@@ -61,7 +61,9 @@ function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
               key={meal.id}
               className="border px-3 py-1 rounded-lg flex items-center mb-2 mr-2"
             >
-              <Link href={`/meals/${meal.id}`}>{meal.name}</Link>
+              <Link href={`/meals/${meal.id}`} className="hover:underline">
+                {meal.name}
+              </Link>
               <span className="ml-2">
                 {currentShop.meals.some((m) => m.id == meal.id) ? (
                   <RemoveMealFromShopButton mealId={meal.id}>
