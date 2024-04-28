@@ -19,7 +19,7 @@ export default function Index() {
   }
 
   const queryWithError = [mealsQuery, currentShopQuery].find(
-    (query) => query.isError
+    (query) => query.isError,
   );
 
   if (queryWithError && queryWithError.error) {
@@ -31,7 +31,7 @@ export default function Index() {
 
   return (
     <>
-      <nav className="flex justify-end mb-2 space-x-2">
+      <nav className="mb-2 flex justify-end space-x-2">
         <Link href="/meals/create" className="button">
           🍲 Create meal
         </Link>
@@ -40,7 +40,7 @@ export default function Index() {
       <section className="mb-4">
         <Meals meals={meals} currentShop={currentShop} />
       </section>
-      <section className="w-1/2 mx-auto">
+      <section className="mx-auto w-1/2">
         <CurrentShop meals={meals} currentShop={currentShop} />
       </section>
     </>
@@ -50,7 +50,7 @@ export default function Index() {
 function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
   return (
     <>
-      <h2 className="font-bold mb-2">Meals</h2>
+      <h2 className="mb-2 font-bold">Meals</h2>
       <ul className="flex flex-wrap">
         {meals
           ?.sort((a, b) => {
@@ -59,7 +59,7 @@ function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
           .map((meal) => (
             <li
               key={meal.id}
-              className="border px-3 py-1 rounded-lg flex items-center mb-2 mr-2"
+              className="mb-2 mr-2 flex items-center rounded-lg border px-3 py-1"
             >
               <Link href={`/meals/${meal.id}`} className="hover:underline">
                 {meal.name}
@@ -91,7 +91,7 @@ function CurrentShop({
     <>
       {currentShop ? (
         <>
-          <h2 className="font-bold mb-2">Shop #{currentShop.id}</h2>
+          <h2 className="mb-2 font-bold">Shop #{currentShop.id}</h2>
           <ul className="flex flex-col space-y-1">
             {currentShop.meals.map((meal) => (
               <li key={meal.id} className="flex w-full justify-between">
