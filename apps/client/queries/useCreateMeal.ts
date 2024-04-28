@@ -1,4 +1,4 @@
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { uuid } from "uuidv4";
 
 export default function useCreateMeal() {

@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Shop } from "../types/shop";
 
 export async function fetchCurrentShop() {
@@ -10,5 +10,5 @@ export async function fetchCurrentShop() {
 }
 
 export default function useCurrentShop() {
-  return useQuery<Shop, Error>("shops/current", fetchCurrentShop);
+  return useQuery<Shop, Error>(["shops/current"], fetchCurrentShop);
 }

@@ -1,12 +1,29 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import React from "react";
-import { render, screen, within } from "@testing-library/react";
+import React, { ReactElement } from "react";
+import {
+  render as baseRender,
+  RenderOptions,
+  screen,
+  within,
+} from "@testing-library/react";
 import Index from "./index";
 import userEvent from "@testing-library/user-event";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+function wrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={new QueryClient()}>
+      {children}
+    </QueryClientProvider>
+  );
+}
+
+const render = (ui: ReactElement, options?: Omit<RenderOptions, "wrapper">) =>
+  baseRender(ui, { wrapper, ...options });
 
 jest.mock("../queries/useMeals", () => () => ({
-  isLoading: false,
+  isInitialLoading: false,
   isError: false,
   data: [
     { id: "1", name: "foo" },
@@ -16,7 +33,7 @@ jest.mock("../queries/useMeals", () => () => ({
 }));
 
 jest.mock("../queries/useCurrentShop", () => () => ({
-  isLoading: false,
+  isInitialLoading: false,
   isError: false,
   data: { id: 5, meals: [{ id: 3 }, { id: 2 }] },
 }));

@@ -6,9 +6,9 @@ import { Meal } from "../types/meal";
 import useAddMealToCurrentShop from "../queries/useAddMealToCurrentShop";
 
 export default function Index() {
-  const { isLoading, isError, data: meals, error } = useMeals();
+  const { isInitialLoading, isError, data: meals, error } = useMeals();
 
-  if (isLoading) {
+  if (isInitialLoading) {
     return <p>Loading...</p>;
   }
 
@@ -51,9 +51,14 @@ function Meals({ meals }: { meals: Meal[] }) {
 }
 
 function CurrentShop({ meals }: { meals: Meal[] }) {
-  const { isLoading, isError, data: currentShop, error } = useCurrentShop();
+  const {
+    isInitialLoading,
+    isError,
+    data: currentShop,
+    error,
+  } = useCurrentShop();
 
-  if (isLoading) {
+  if (isInitialLoading) {
     return <p>Loading...</p>;
   }
 

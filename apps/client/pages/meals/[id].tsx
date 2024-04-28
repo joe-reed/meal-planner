@@ -6,9 +6,14 @@ export default function Meal() {
     query: { id },
   } = useRouter();
 
-  const { isLoading, isError, data: meal, error } = useMeal(id as string);
+  const {
+    isInitialLoading,
+    isError,
+    data: meal,
+    error,
+  } = useMeal(id as string);
 
-  if (isLoading) {
+  if (isInitialLoading) {
     return <p>Loading...</p>;
   }
 

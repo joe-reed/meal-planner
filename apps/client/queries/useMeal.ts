@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Meal } from "../types/meal";
 
 export async function fetchMeal(id: string) {
@@ -10,5 +10,5 @@ export async function fetchMeal(id: string) {
 }
 
 export default function useMeal(id: string) {
-  return useQuery<Meal, Error>(`meal/${id}`, () => fetchMeal(id));
+  return useQuery<Meal, Error>([`meal/${id}`], () => fetchMeal(id));
 }
