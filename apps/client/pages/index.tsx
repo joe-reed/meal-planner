@@ -95,7 +95,7 @@ function CurrentShop({
               <li key={meal.id} className="flex w-full justify-between">
                 <p>{meals.find((m) => m.id == meal.id)?.name}</p>
                 <RemoveMealFromShopButton mealId={meal.id}>
-                  ➖
+                  <span className="text-xs">❌</span>
                 </RemoveMealFromShopButton>
               </li>
             ))}
