@@ -8,6 +8,7 @@ import {
   useStartShop,
 } from "../queries";
 import { Shop } from "../types/shop";
+import React, { PropsWithChildren } from "react";
 
 export default function Index() {
   const mealsQuery = useMeals();
@@ -63,7 +64,9 @@ function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
               <Link href={`/meals/${meal.id}`}>{meal.name}</Link>
               <span className="ml-2">
                 {currentShop.meals.some((m) => m.id == meal.id) ? (
-                  <div>✅</div>
+                  <RemoveMealFromShopButton mealId={meal.id}>
+                    ✅
+                  </RemoveMealFromShopButton>
                 ) : (
                   <AddMealToShopButton mealId={meal.id} />
                 )}
@@ -91,7 +94,9 @@ function CurrentShop({
             {currentShop.meals.map((meal) => (
               <li key={meal.id} className="flex w-full justify-between">
                 <p>{meals.find((m) => m.id == meal.id)?.name}</p>
-                <RemoveMealFromShopButton mealId={meal.id} />
+                <RemoveMealFromShopButton mealId={meal.id}>
+                  ➖
+                </RemoveMealFromShopButton>
               </li>
             ))}
           </ul>
@@ -137,7 +142,10 @@ function AddMealToShopButton({ mealId }: { mealId: string }) {
   );
 }
 
-function RemoveMealFromShopButton({ mealId }: { mealId: string }) {
+function RemoveMealFromShopButton({
+  mealId,
+  children,
+}: PropsWithChildren<{ mealId: string }>) {
   const { mutate } = useRemoveMealFromCurrentShop(mealId);
 
   return (
@@ -148,7 +156,7 @@ function RemoveMealFromShopButton({ mealId }: { mealId: string }) {
         mutate();
       }}
     >
-      <button type="submit">➖</button>
+      <button type="submit">{children}</button>
     </form>
   );
 }
