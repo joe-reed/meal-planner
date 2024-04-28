@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function useRemoveMealFromCurrentShop(mealId: string) {
+export function useRemoveMealFromCurrentShop(mealId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({

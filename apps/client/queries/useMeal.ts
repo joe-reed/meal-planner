@@ -9,6 +9,6 @@ export async function fetchMeal(id: string) {
   return response.json();
 }
 
-export default function useMeal(id: string) {
+export function useMeal(id: string) {
   return useQuery<Meal, Error>([`meal/${id}`], () => fetchMeal(id));
 }

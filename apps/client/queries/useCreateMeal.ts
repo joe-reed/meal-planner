@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { uuid } from "uuidv4";
 
-export default function useCreateMeal() {
+export function useCreateMeal() {
   return useMutation({
     mutationFn: (meal: { name: string }) => {
       return fetch("/api/meals", {

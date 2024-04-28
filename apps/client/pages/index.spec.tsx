@@ -22,25 +22,31 @@ function wrapper({ children }: { children: React.ReactNode }) {
 const render = (ui: ReactElement, options?: Omit<RenderOptions, "wrapper">) =>
   baseRender(ui, { wrapper, ...options });
 
-jest.mock("../queries/useMeals", () => () => ({
-  isInitialLoading: false,
-  isError: false,
-  data: [
-    { id: "1", name: "foo" },
-    { id: "2", name: "bar" },
-    { id: "3", name: "baz" },
-  ],
-}));
-
-jest.mock("../queries/useCurrentShop", () => () => ({
-  isInitialLoading: false,
-  isError: false,
-  data: { id: 5, meals: [{ id: 3 }, { id: 2 }] },
-}));
-
-const mockMutate = jest.fn();
-jest.mock("../queries/useStartShop", () => () => ({
-  mutate: mockMutate,
+const mockUseStartShopMutate = jest.fn();
+jest.mock("../queries", () => ({
+  useMeals: () => ({
+    isInitialLoading: false,
+    isError: false,
+    data: [
+      { id: "1", name: "foo" },
+      { id: "2", name: "bar" },
+      { id: "3", name: "baz" },
+    ],
+  }),
+  useCurrentShop: () => ({
+    isInitialLoading: false,
+    isError: false,
+    data: { id: 5, meals: [{ id: 3 }, { id: 2 }] },
+  }),
+  useStartShop: () => ({
+    mutate: mockUseStartShopMutate,
+  }),
+  useAddMealToCurrentShop: () => ({
+    mutate: jest.fn(),
+  }),
+  useRemoveMealFromCurrentShop: () => ({
+    mutate: jest.fn(),
+  }),
 }));
 
 it("renders meals", async () => {
@@ -69,5 +75,5 @@ it("starts a shop", async () => {
 
   await userEvent.click(screen.getByText("Start Shop"));
 
-  expect(mockMutate).toHaveBeenCalled();
+  expect(mockUseStartShopMutate).toHaveBeenCalled();
 });

@@ -1,10 +1,12 @@
 import Link from "next/link";
-import useMeals from "../queries/useMeals";
-import useCurrentShop from "../queries/useCurrentShop";
-import useStartShop from "../queries/useStartShop";
 import { Meal } from "../types/meal";
-import useAddMealToCurrentShop from "../queries/useAddMealToCurrentShop";
-import useRemoveMealFromCurrentShop from "../queries/useRemoveMealFromCurrentShop";
+import {
+  useAddMealToCurrentShop,
+  useCurrentShop,
+  useMeals,
+  useRemoveMealFromCurrentShop,
+  useStartShop,
+} from "../queries";
 
 export default function Index() {
   const { isInitialLoading, isError, data: meals, error } = useMeals();

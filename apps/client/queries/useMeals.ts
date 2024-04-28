@@ -9,6 +9,6 @@ export async function fetchMeals() {
   return response.json();
 }
 
-export default function useMeals() {
+export function useMeals() {
   return useQuery<Meal[], Error>(["meals"], fetchMeals);
 }

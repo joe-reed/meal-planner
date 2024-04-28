@@ -3,8 +3,10 @@ import userEvent from "@testing-library/user-event";
 import CreateMeal from "./create";
 
 const mockMutate = jest.fn();
-jest.mock("../../queries/useCreateMeal", () => () => ({
-  mutate: mockMutate,
+jest.mock("../../queries", () => ({
+  useCreateMeal: () => ({
+    mutate: mockMutate,
+  }),
 }));
 
 const mockPush = jest.fn();

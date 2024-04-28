@@ -9,6 +9,6 @@ export async function fetchCurrentShop() {
   return response.json();
 }
 
-export default function useCurrentShop() {
+export function useCurrentShop() {
   return useQuery<Shop, Error>(["shops/current"], fetchCurrentShop);
 }

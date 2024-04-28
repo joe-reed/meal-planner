@@ -1,5 +1,5 @@
-import useCreateMeal from "../../queries/useCreateMeal";
 import { useRouter } from "next/router";
+import { useCreateMeal } from "../../queries";
 
 export default function CreateMeal() {
   const { mutate } = useCreateMeal();
