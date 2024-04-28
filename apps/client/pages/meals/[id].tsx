@@ -24,9 +24,9 @@ export default function Meal() {
   }
 
   return (
-    <div className="flex">
+    <div className="flex items-center">
       <BackButton className="mr-3" />
-      <h1>{meal?.name}</h1>
+      <h1 className="font-bold">{meal?.name}</h1>
     </div>
   );
 }
