@@ -13,7 +13,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <QueryClientProvider client={queryClient}>
         <main className="p-5 flex justify-center">
-          <div className="w-full md:w-1/3">
+          <div className="w-full md:w-1/2">
             <Component {...pageProps} />
           </div>
         </main>

@@ -23,6 +23,7 @@ export default function CreateMeal() {
             name="name"
             required
             className="border rounded-md py-1 leading-none px-2"
+            autoFocus
           />
         </label>
 

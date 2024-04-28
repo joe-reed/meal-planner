@@ -30,16 +30,16 @@ export default function Index() {
 
   return (
     <>
-      <nav className="flex justify-end mb-2">
+      <nav className="flex justify-end mb-2 space-x-2">
         <Link href="/meals/create" className="button">
-          Create meal
+          🍲 Create meal
         </Link>
         <StartShopButton />
       </nav>
       <section className="mb-4">
         <Meals meals={meals} currentShop={currentShop} />
       </section>
-      <section>
+      <section className="w-1/2 mx-auto">
         <CurrentShop meals={meals} currentShop={currentShop} />
       </section>
     </>
@@ -50,22 +50,26 @@ function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
   return (
     <>
       <h2 className="font-bold mb-2">Meals</h2>
-      <ul className="flex space-x-2">
-        {meals?.map((meal) => (
-          <li
-            key={meal.id}
-            className="border px-3 py-1 rounded-lg flex items-center"
-          >
-            <Link href={`/meals/${meal.id}`}>{meal.name}</Link>
-            <span className="ml-2">
-              {currentShop.meals.some((m) => m.id == meal.id) ? (
-                <div>✅</div>
-              ) : (
-                <AddMealToShopButton mealId={meal.id} />
-              )}
-            </span>
-          </li>
-        ))}
+      <ul className="flex flex-wrap">
+        {meals
+          ?.sort((a, b) => {
+            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+          })
+          .map((meal) => (
+            <li
+              key={meal.id}
+              className="border px-3 py-1 rounded-lg flex items-center mb-2 mr-2"
+            >
+              <Link href={`/meals/${meal.id}`}>{meal.name}</Link>
+              <span className="ml-2">
+                {currentShop.meals.some((m) => m.id == meal.id) ? (
+                  <div>✅</div>
+                ) : (
+                  <AddMealToShopButton mealId={meal.id} />
+                )}
+              </span>
+            </li>
+          ))}
       </ul>
     </>
   );
@@ -110,7 +114,7 @@ function StartShopButton() {
         }}
       >
         <button type="submit" className="button">
-          Start Shop
+          🛒 Start Shop
         </button>
       </form>
     </div>
