@@ -63,9 +63,8 @@ it("renders meals", async () => {
 it("renders current shop", async () => {
   render(<Index />);
 
-  const shop = screen.getByText("Current shop").parentElement!;
+  const shop = screen.getByText("Shop #5").parentElement!;
   expect(shop).not.toBeNull();
-  expect(within(shop).getByText("Shop number 5")).toBeInTheDocument();
   expect(within(shop).getByText("baz")).toBeInTheDocument();
   expect(within(shop).getByText("bar")).toBeInTheDocument();
 });

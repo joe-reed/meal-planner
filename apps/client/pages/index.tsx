@@ -7,17 +7,26 @@ import {
   useRemoveMealFromCurrentShop,
   useStartShop,
 } from "../queries";
+import { Shop } from "../types/shop";
 
 export default function Index() {
-  const { isInitialLoading, isError, data: meals, error } = useMeals();
+  const mealsQuery = useMeals();
+  const currentShopQuery = useCurrentShop();
 
-  if (isInitialLoading) {
+  if ([mealsQuery, currentShopQuery].some((query) => query.isInitialLoading)) {
     return <p>Loading...</p>;
   }
 
-  if (isError) {
-    return <p>Error: {error.message}</p>;
+  const queryWithError = [mealsQuery, currentShopQuery].find(
+    (query) => query.isError
+  );
+
+  if (queryWithError && queryWithError.error) {
+    return <p>Error: {queryWithError.error.message}</p>;
   }
+
+  const meals = mealsQuery.data as Meal[];
+  const currentShop = currentShopQuery.data as Shop;
 
   return (
     <>
@@ -27,25 +36,34 @@ export default function Index() {
         </Link>
         <StartShopButton />
       </nav>
-      <section>
-        <Meals meals={meals || []} />
+      <section className="mb-4">
+        <Meals meals={meals} currentShop={currentShop} />
       </section>
       <section>
-        <CurrentShop meals={meals || []} />
+        <CurrentShop meals={meals} currentShop={currentShop} />
       </section>
     </>
   );
 }
 
-function Meals({ meals }: { meals: Meal[] }) {
+function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
   return (
     <>
-      <h2>Meals</h2>
+      <h2 className="font-bold mb-2">Meals</h2>
       <ul className="flex space-x-2">
         {meals?.map((meal) => (
-          <li key={meal.id} className="border px-3 py-1 rounded-lg">
+          <li
+            key={meal.id}
+            className="border px-3 py-1 rounded-lg flex items-center"
+          >
             <Link href={`/meals/${meal.id}`}>{meal.name}</Link>
-            <AddMealToShopButton mealId={meal.id} />
+            <span className="ml-2">
+              {currentShop.meals.some((m) => m.id == meal.id) ? (
+                <div>✅</div>
+              ) : (
+                <AddMealToShopButton mealId={meal.id} />
+              )}
+            </span>
           </li>
         ))}
       </ul>
@@ -53,40 +71,28 @@ function Meals({ meals }: { meals: Meal[] }) {
   );
 }
 
-function CurrentShop({ meals }: { meals: Meal[] }) {
-  const {
-    isInitialLoading,
-    isError,
-    data: currentShop,
-    error,
-  } = useCurrentShop();
-
-  if (isInitialLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (isError) {
-    return <p>Error: {error.message}</p>;
-  }
-
+function CurrentShop({
+  meals,
+  currentShop,
+}: {
+  meals: Meal[];
+  currentShop: Shop;
+}) {
   return (
     <>
-      <section>
-        {currentShop ? (
-          <>
-            <h2>Current shop</h2>
-            <span>Shop number {currentShop.id}</span>
-            <ul>
-              {currentShop.meals.map((meal) => (
-                <li key={meal.id}>
-                  {meals.find((m) => m.id == meal.id)?.name}
-                  <RemoveMealFromShopButton mealId={meal.id} />
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : null}
-      </section>
+      {currentShop ? (
+        <>
+          <h2 className="font-bold mb-2">Shop #{currentShop.id}</h2>
+          <ul className="flex flex-col space-y-1">
+            {currentShop.meals.map((meal) => (
+              <li key={meal.id} className="flex w-full justify-between">
+                <p>{meals.find((m) => m.id == meal.id)?.name}</p>
+                <RemoveMealFromShopButton mealId={meal.id} />
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
     </>
   );
 }
@@ -115,19 +121,15 @@ function AddMealToShopButton({ mealId }: { mealId: string }) {
   const { mutate } = useAddMealToCurrentShop(mealId);
 
   return (
-    <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
 
-          mutate();
-        }}
-      >
-        <button type="submit" className="button">
-          +
-        </button>
-      </form>
-    </div>
+        mutate();
+      }}
+    >
+      <button type="submit">➕</button>
+    </form>
   );
 }
 
@@ -135,18 +137,14 @@ function RemoveMealFromShopButton({ mealId }: { mealId: string }) {
   const { mutate } = useRemoveMealFromCurrentShop(mealId);
 
   return (
-    <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
 
-          mutate();
-        }}
-      >
-        <button type="submit" className="button">
-          -
-        </button>
-      </form>
-    </div>
+        mutate();
+      }}
+    >
+      <button type="submit">➖</button>
+    </form>
   );
 }
