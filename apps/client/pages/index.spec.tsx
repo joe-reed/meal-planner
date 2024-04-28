@@ -11,6 +11,19 @@ import Index from "./index";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+// Mock ResizeObserver to allow testing with headlessui
+global.ResizeObserver = class FakeResizeObserver {
+  observe() {
+    //
+  }
+  disconnect() {
+    //
+  }
+  unobserve() {
+    //
+  }
+};
+
 function wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={new QueryClient()}>
@@ -72,7 +85,8 @@ it("renders current shop", async () => {
 it("starts a shop", async () => {
   render(<Index />);
 
-  await userEvent.click(screen.getByText("Start Shop"));
+  await userEvent.click(screen.getByText(/Start Shop/));
+  await userEvent.click(screen.getByText("Start"));
 
   expect(mockUseStartShopMutate).toHaveBeenCalled();
 });

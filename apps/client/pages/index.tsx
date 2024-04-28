@@ -8,7 +8,8 @@ import {
   useStartShop,
 } from "../queries";
 import { Shop } from "../types/shop";
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useState } from "react";
+import { Dialog } from "@headlessui/react";
 
 export default function Index() {
   const mealsQuery = useMeals();
@@ -110,21 +111,52 @@ function CurrentShop({
 
 function StartShopButton() {
   const { mutate } = useStartShop();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          mutate();
-        }}
+    <>
+      <button className="button" onClick={() => setIsOpen(true)}>
+        🛒 Start Shop
+      </button>
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        className="relative z-50"
       >
-        <button type="submit" className="button">
-          🛒 Start Shop
-        </button>
-      </form>
-    </div>
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+          <Dialog.Panel className="mx-auto max-w-sm rounded bg-white px-4 py-3">
+            <Dialog.Title className="mb-2 font-bold">
+              Start new shop
+            </Dialog.Title>
+            <p className="mb-2">Are you sure you want to start a new shop?</p>
+            <p className="mb-5">
+              The previous shop will be finished and a new empty shop will be
+              started.
+            </p>
+            <div className="flex justify-between px-20">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+
+                  mutate();
+
+                  setIsOpen(false);
+                }}
+              >
+                <button type="submit" className="button">
+                  Start
+                </button>
+              </form>
+
+              <button onClick={() => setIsOpen(false)} className="underline">
+                Cancel
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+    </>
   );
 }
 
