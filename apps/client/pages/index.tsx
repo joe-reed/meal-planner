@@ -4,6 +4,7 @@ import useCurrentShop from "../queries/useCurrentShop";
 import useStartShop from "../queries/useStartShop";
 import { Meal } from "../types/meal";
 import useAddMealToCurrentShop from "../queries/useAddMealToCurrentShop";
+import useRemoveMealFromCurrentShop from "../queries/useRemoveMealFromCurrentShop";
 
 export default function Index() {
   const { isInitialLoading, isError, data: meals, error } = useMeals();
@@ -77,6 +78,7 @@ function CurrentShop({ meals }: { meals: Meal[] }) {
               {currentShop.meals.map((meal) => (
                 <li key={meal.id}>
                   {meals.find((m) => m.id == meal.id)?.name}
+                  <RemoveMealFromShopButton mealId={meal.id} />
                 </li>
               ))}
             </ul>
@@ -121,6 +123,26 @@ function AddMealToShopButton({ mealId }: { mealId: string }) {
       >
         <button type="submit" className="button">
           +
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function RemoveMealFromShopButton({ mealId }: { mealId: string }) {
+  const { mutate } = useRemoveMealFromCurrentShop(mealId);
+
+  return (
+    <div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          mutate();
+        }}
+      >
+        <button type="submit" className="button">
+          -
         </button>
       </form>
     </div>
