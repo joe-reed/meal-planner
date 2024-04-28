@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAddingMealToShop(t *testing.T) {
+func TestAddingMealToCurrentShop(t *testing.T) {
 	shop := shops.NewShop(1)
 
 	r := shops.NewFakeShopRepository()
