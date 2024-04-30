@@ -10,5 +10,5 @@ export async function fetchMeal(id: string) {
 }
 
 export function useMeal(id: string) {
-  return useQuery<Meal, Error>([`meal/${id}`], () => fetchMeal(id));
+  return useQuery<Meal, Error>([`meals/${id}`], () => fetchMeal(id));
 }
