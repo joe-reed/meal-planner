@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/ingredients"
 	"github.com/joe-reed/meal-planner/apps/api/meals"
 	"github.com/joe-reed/meal-planner/apps/api/shops"
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,7 @@ func main() {
 	dbFile := "meal-planner.db"
 	addMealRoutes(e, dbFile)
 	addShopRoutes(e, dbFile)
+	addIngredientRoutes(e, dbFile)
 
 	e.Debug = true
 
@@ -46,4 +48,16 @@ func addShopRoutes(e *echo.Echo, dbFile string) {
 	e.POST("/shops/current/meals", handler.AddMealToCurrentShop)
 	e.DELETE("/shops/current/meals/:mealId", handler.RemoveMealFromCurrentShop)
 	e.POST("/shops", handler.StartShop)
+}
+
+func addIngredientRoutes(e *echo.Echo, dbFile string) {
+	r, err := ingredients.NewSqliteIngredientRepository(dbFile)
+
+	if err != nil {
+		e.Logger.Fatal(e)
+	}
+
+	handler := ingredients.Handler{IngredientRepository: r}
+
+	e.GET("/ingredients", handler.GetIngredients)
 }
