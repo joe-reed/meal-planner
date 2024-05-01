@@ -34,9 +34,9 @@ export default function MealPage() {
     <div className="flex flex-col">
       <div className="mb-2 flex items-center">
         <BackButton className="mr-3" />
-        <h1 className="font-bold">{meal.name}</h1>
+        <h1 className="text-lg font-bold">{meal.name}</h1>
       </div>
-      <h2 className="text-lg font-bold">Ingredients</h2>
+      <h2>Ingredients</h2>
       <ul>
         {meal.ingredients.map((ingredient) => (
           <li key={ingredient.id}>
@@ -44,12 +44,16 @@ export default function MealPage() {
           </li>
         ))}
       </ul>
-      <SearchableSelect
-        options={ingredients.filter(
-          (ingredient) => !meal.ingredients.some((i) => i.id === ingredient.id),
-        )}
-        onChange={(ingredient) => addIngredientToMeal(ingredient.id)}
-      />
+
+      <div className="w-full md:w-1/2">
+        <SearchableSelect
+          options={ingredients.filter(
+            (ingredient) =>
+              !meal.ingredients.some((i) => i.id === ingredient.id),
+          )}
+          onChange={(ingredient) => addIngredientToMeal(ingredient.id)}
+        />
+      </div>
     </div>
   );
 }
@@ -74,7 +78,7 @@ function SearchableSelect({
 
   return (
     <Combobox onChange={onChange}>
-      <div className="relative mt-1">
+      <div className="relative w-full">
         <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
           <Combobox.Input
             className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
