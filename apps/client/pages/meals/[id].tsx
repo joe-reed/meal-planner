@@ -83,7 +83,6 @@ function SearchableSelect({
           <Combobox.Input
             className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
             onChange={(event) => setQuery(event.target.value)}
-            displayValue={(option: Option) => option.name}
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
             <span className="h-5 w-5 text-gray-400" aria-hidden="true">
