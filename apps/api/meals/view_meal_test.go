@@ -12,7 +12,7 @@ import (
 )
 
 func TestViewingMeal(t *testing.T) {
-	meal := meals.NewMealBuilder().WithName("Burritos").Build()
+	meal := meals.NewMealBuilder().WithName("Burritos").AddIngredient(meals.MealIngredient{IngredientId: "ing-123"}).Build()
 
 	repo := meals.NewFakeMealRepository()
 	err := repo.Add(meal)
@@ -29,6 +29,6 @@ func TestViewingMeal(t *testing.T) {
 
 	if assert.NoError(t, h.GetMeal(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[]}`+"\n", meal.Id), rec.Body.String())
+		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[{"id":"ing-123"}]}`+"\n", meal.Id), rec.Body.String())
 	}
 }
