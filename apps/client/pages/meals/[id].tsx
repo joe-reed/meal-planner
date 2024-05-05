@@ -1,5 +1,9 @@
 import { useRouter } from "next/router";
-import { useIngredients, useMeal } from "../../queries";
+import {
+  useIngredients,
+  useMeal,
+  useRemoveIngredientFromMeal,
+} from "../../queries";
 import BackButton from "../../components/BackButton";
 import { Combobox, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
@@ -14,6 +18,9 @@ export default function MealPage() {
   const mealQuery = useMeal(id as string);
   const ingredientsQuery = useIngredients();
   const { mutate: addIngredientToMeal } = useAddIngredientToMeal(id as string);
+  const { mutate: removeIngredientFromMeal } = useRemoveIngredientFromMeal(
+    id as string,
+  );
 
   if ([mealQuery, ingredientsQuery].some((query) => query.isInitialLoading)) {
     return <p>Loading...</p>;
@@ -39,8 +46,14 @@ export default function MealPage() {
       <h2>Ingredients</h2>
       <ul>
         {meal.ingredients.map((ingredient) => (
-          <li key={ingredient.id}>
-            {ingredients.find((i) => i.id === ingredient.id)?.name}
+          <li key={ingredient.id} className="flex w-1/2 justify-between">
+            <span>{ingredients.find((i) => i.id === ingredient.id)?.name}</span>
+            <button
+              onClick={() => removeIngredientFromMeal(ingredient.id)}
+              className="ml-2 text-red-500"
+            >
+              ❌
+            </button>
           </li>
         ))}
       </ul>
