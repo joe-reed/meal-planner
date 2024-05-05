@@ -1,6 +1,7 @@
 package meals
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -58,6 +59,25 @@ func (h *Handler) AddIngredientToMeal(c echo.Context) error {
 	}
 
 	meal.AddIngredient(ingredient)
+
+	if err := h.MealRepository.Save(meal); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, meal)
+}
+
+func (h *Handler) RemoveIngredientFromMeal(c echo.Context) error {
+	mealId := c.Param("mealId")
+	ingredientId := c.Param("ingredientId")
+
+	fmt.Println("mealId: ", mealId)
+	meal, err := h.MealRepository.Find(mealId)
+	if err != nil {
+		return err
+	}
+
+	meal.RemoveIngredient(ingredientId)
 
 	if err := h.MealRepository.Save(meal); err != nil {
 		return err

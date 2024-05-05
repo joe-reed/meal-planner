@@ -1,59 +1,71 @@
 package meals
 
 import (
-	"github.com/google/uuid"
+  "github.com/google/uuid"
 )
 
 type Meal struct {
-	Id              string           `json:"id"`
-	Name            string           `json:"name"`
-	MealIngredients []MealIngredient `json:"ingredients"`
+  Id              string           `json:"id"`
+  Name            string           `json:"name"`
+  MealIngredients []MealIngredient `json:"ingredients"`
 }
 
 func (m *Meal) AddIngredient(ingredient *MealIngredient) {
-	m.MealIngredients = append(m.MealIngredients, *ingredient)
+  m.MealIngredients = append(m.MealIngredients, *ingredient)
+}
+
+func (m *Meal) RemoveIngredient(id string) {
+  var newIngredients []MealIngredient
+
+  for _, i := range m.MealIngredients {
+    if i.IngredientId != id {
+      newIngredients = append(newIngredients, i)
+    }
+  }
+
+  m.MealIngredients = newIngredients
 }
 
 type MealIngredient struct {
-	IngredientId string `json:"id"`
+  IngredientId string `json:"id"`
 }
 
 type MealBuilder struct {
-	id              string
-	name            string
-	mealIngredients []MealIngredient
+  id              string
+  name            string
+  mealIngredients []MealIngredient
 }
 
 func (b *MealBuilder) WithName(name string) *MealBuilder {
-	b.name = name
-	return b
+  b.name = name
+  return b
 }
 
 func (b *MealBuilder) AddIngredient(i MealIngredient) *MealBuilder {
-	b.mealIngredients = append(b.mealIngredients, i)
-	return b
+  b.mealIngredients = append(b.mealIngredients, i)
+  return b
 }
 
 func (b *MealBuilder) Build() *Meal {
-	id := uuid.New().String()
+  id := uuid.New().String()
 
-	if b.id != "" {
-		id = b.id
-	}
+  if b.id != "" {
+    id = b.id
+  }
 
-	return &Meal{
-		Id:              id,
-		Name:            b.name,
-		MealIngredients: b.mealIngredients,
-	}
+  return &Meal{
+    Id:              id,
+    Name:            b.name,
+    MealIngredients: b.mealIngredients,
+  }
 }
 
 func (b *MealBuilder) WithId(i string) *MealBuilder {
-	b.id = i
+  b.id = i
 
-	return b
+  return b
 }
 
 func NewMealBuilder() *MealBuilder {
-	return &MealBuilder{"", "", []MealIngredient{}}
+  return &MealBuilder{"", "", []MealIngredient{}}
 }

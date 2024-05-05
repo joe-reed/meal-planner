@@ -33,6 +33,7 @@ func addMealRoutes(e *echo.Echo, dbFile string) {
 	e.GET("/meals/:id", handler.GetMeal)
 	e.POST("/", handler.AddMeal)
 	e.POST("/meals/:mealId/ingredients", handler.AddIngredientToMeal)
+	e.DELETE("/meals/:mealId/ingredients/:ingredientId", handler.RemoveIngredientFromMeal)
 }
 
 func addShopRoutes(e *echo.Echo, dbFile string) {
