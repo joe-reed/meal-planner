@@ -39,11 +39,16 @@ export default function MealPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="mb-2 flex items-center">
+      <div className="mb-4 flex items-center">
         <BackButton className="mr-3" />
         <h1 className="text-lg font-bold">{meal.name}</h1>
       </div>
-      <h2>Ingredients</h2>
+      <h2 className="mb-2 font-bold">Ingredients</h2>
+      {meal.ingredients.length === 0 && (
+        <p className="mb-2">
+          No ingredients yet: Add one using the search box below.
+        </p>
+      )}
       <ul>
         {meal.ingredients.map((ingredient) => (
           <li key={ingredient.id} className="flex w-1/2 justify-between">
