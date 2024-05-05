@@ -62,9 +62,7 @@ function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
               key={meal.id}
               className="mb-2 mr-2 flex items-center rounded-lg border px-3 py-1"
             >
-              <Link href={`/meals/${meal.id}`} className="hover:underline">
-                {meal.name}
-              </Link>
+              <MealLink meal={meal} />
               <span className="ml-2">
                 {currentShop.meals.some((m) => m.id == meal.id) ? (
                   <RemoveMealFromShopButton mealId={meal.id}>
@@ -96,7 +94,7 @@ function CurrentShop({
           <ul className="flex flex-col space-y-1">
             {currentShop.meals.map((meal) => (
               <li key={meal.id} className="flex w-full justify-between">
-                <p>{meals.find((m) => m.id == meal.id)?.name}</p>
+                <MealLink meal={meals.find((m) => m.id == meal.id) as Meal} />
                 <RemoveMealFromShopButton mealId={meal.id}>
                   <span className="text-xs">❌</span>
                 </RemoveMealFromShopButton>
@@ -192,5 +190,13 @@ function RemoveMealFromShopButton({
     >
       <button type="submit">{children}</button>
     </form>
+  );
+}
+
+function MealLink({ meal }: { meal: Meal }) {
+  return (
+    <Link href={`/meals/${meal.id}`} className="hover:underline">
+      {meal.name}
+    </Link>
   );
 }
