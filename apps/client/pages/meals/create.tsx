@@ -3,7 +3,7 @@ import { useCreateMeal } from "../../queries";
 import BackButton from "../../components/BackButton";
 
 export default function CreateMeal() {
-  const { mutate } = useCreateMeal();
+  const { mutateAsync } = useCreateMeal();
   const { push } = useRouter();
 
   return (
@@ -14,8 +14,12 @@ export default function CreateMeal() {
           e.preventDefault();
 
           const formData = new FormData(e.target as HTMLFormElement);
-          mutate({ name: formData.get("name") as string });
-          await push("/");
+          const response = await mutateAsync({
+            name: formData.get("name") as string,
+          });
+          const meal = await response.json();
+
+          await push(`/meals/${meal.id}`);
         }}
       >
         <label className="mr-2">
