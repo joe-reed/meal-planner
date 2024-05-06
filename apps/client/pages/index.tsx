@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Meal } from "../types/meal";
 import {
   useAddMealToCurrentShop,
   useCurrentShop,
@@ -8,10 +7,9 @@ import {
   useRemoveMealFromCurrentShop,
   useStartShop,
 } from "../queries";
-import { Shop } from "../types/shop";
+import { Meal, Ingredient, Shop } from "../types";
 import React, { PropsWithChildren, useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { Ingredient } from "../types";
 
 export default function Index() {
   const mealsQuery = useMeals();
