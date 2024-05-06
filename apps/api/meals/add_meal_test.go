@@ -24,8 +24,9 @@ func TestAddingMeal(t *testing.T) {
 	if assert.NoError(t, h.AddMeal(c)) {
 		m, err := repo.Get()
 		assert.NoError(t, err)
+		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusAccepted, rec.Code)
-		assert.Equal(t, "\"Meal added\"\n", rec.Body.String())
+		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"ingredients\":null}\n", rec.Body.String())
 		assert.Equal(t, []*meals.Meal{{Id: "123", Name: "foo"}}, m)
 	}
 }

@@ -42,7 +42,7 @@ func (h *Handler) AddMeal(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusAccepted, "Meal added")
+	return c.JSON(http.StatusAccepted, m)
 }
 
 func (h *Handler) AddIngredientToMeal(c echo.Context) error {
