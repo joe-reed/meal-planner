@@ -3,6 +3,7 @@ import { Meal } from "../types/meal";
 import {
   useAddMealToCurrentShop,
   useCurrentShop,
+  useIngredients,
   useMeals,
   useRemoveMealFromCurrentShop,
   useStartShop,
@@ -10,16 +11,22 @@ import {
 import { Shop } from "../types/shop";
 import React, { PropsWithChildren, useState } from "react";
 import { Dialog } from "@headlessui/react";
+import { Ingredient } from "../types";
 
 export default function Index() {
   const mealsQuery = useMeals();
   const currentShopQuery = useCurrentShop();
+  const ingredientsQuery = useIngredients();
 
-  if ([mealsQuery, currentShopQuery].some((query) => query.isInitialLoading)) {
+  if (
+    [mealsQuery, currentShopQuery, ingredientsQuery].some(
+      (query) => query.isInitialLoading,
+    )
+  ) {
     return <p>Loading...</p>;
   }
 
-  const queryWithError = [mealsQuery, currentShopQuery].find(
+  const queryWithError = [mealsQuery, currentShopQuery, ingredientsQuery].find(
     (query) => query.isError,
   );
 
@@ -29,6 +36,7 @@ export default function Index() {
 
   const meals = mealsQuery.data as Meal[];
   const currentShop = currentShopQuery.data as Shop;
+  const ingredients = ingredientsQuery.data as Ingredient[];
 
   return (
     <>
@@ -41,8 +49,17 @@ export default function Index() {
       <section className="mb-4">
         <Meals meals={meals} currentShop={currentShop} />
       </section>
-      <section className="mx-auto w-1/2">
-        <CurrentShop meals={meals} currentShop={currentShop} />
+      <section className="flex justify-between">
+        <div className="mr-4 w-1/2 md:mr-0">
+          <CurrentShop meals={meals} currentShop={currentShop} />
+        </div>
+        <div className="w-1/2 md:w-1/4">
+          <ShoppingList
+            meals={meals}
+            currentShop={currentShop}
+            ingredients={ingredients}
+          />
+        </div>
       </section>
     </>
   );
@@ -198,5 +215,55 @@ function MealLink({ meal }: { meal: Meal }) {
     <Link href={`/meals/${meal.id}`} className="hover:underline">
       {meal.name}
     </Link>
+  );
+}
+
+function ShoppingList({
+  currentShop,
+  meals,
+  ingredients,
+}: {
+  currentShop: Shop;
+  meals: Meal[];
+  ingredients: Ingredient[];
+}) {
+  const shopIngredients = Object.values(
+    currentShop.meals
+      .flatMap((shopMeal) => {
+        const meal = meals.find((m) => m.id === shopMeal.id) as Meal;
+
+        return meal.ingredients.map((ingredient) => {
+          return ingredients.find((i) => i.id === ingredient.id) as Ingredient;
+        });
+      })
+      .reduce(
+        (acc, ingredient) => {
+          if (!acc[ingredient.id]) {
+            acc[ingredient.id] = {
+              ...ingredient,
+              amount: 0,
+            };
+          }
+
+          acc[ingredient.id].amount += 1;
+
+          return acc;
+        },
+        {} as Record<string, Ingredient & { amount: number }>,
+      ),
+  );
+
+  return (
+    <div className="flex w-full flex-col">
+      <h2 className="mb-2 font-bold">Shopping List</h2>
+      <ul className="w-full">
+        {shopIngredients.map((ingredient) => (
+          <li key={ingredient.id} className="flex justify-between">
+            <span>{ingredient.name}</span>
+            <span>{ingredient.amount}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
