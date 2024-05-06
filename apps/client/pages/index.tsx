@@ -105,7 +105,10 @@ function CurrentShop({
     <>
       {currentShop ? (
         <>
-          <h2 className="mb-2 font-bold">Shop #{currentShop.id}</h2>
+          <div className="mb-2 flex justify-between">
+            <h2 className="font-bold">Shop #{currentShop.id}</h2>
+            <h3 className="text-xs font-bold">{meals.length} meals</h3>
+          </div>
           <ul className="flex flex-col space-y-1">
             {currentShop.meals.map((meal) => (
               <li key={meal.id} className="flex w-full justify-between">
