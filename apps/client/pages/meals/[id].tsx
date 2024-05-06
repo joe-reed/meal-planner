@@ -40,7 +40,7 @@ export default function MealPage() {
   return (
     <div className="flex flex-col">
       <div className="mb-4 flex items-center">
-        <BackButton className="mr-3" />
+        <BackButton className="mr-3" destination="/" />
         <h1 className="text-lg font-bold">{meal.name}</h1>
       </div>
       <h2 className="mb-2 font-bold">Ingredients</h2>

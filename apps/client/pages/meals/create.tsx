@@ -8,7 +8,7 @@ export default function CreateMeal() {
 
   return (
     <div>
-      <BackButton />
+      <BackButton destination="/" />
       <form
         onSubmit={async (e) => {
           e.preventDefault();
