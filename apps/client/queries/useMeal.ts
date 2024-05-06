@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Meal } from "../types/meal";
+import { Meal } from "../types";
 
 export async function fetchMeal(id: string) {
   const response = await fetch(`/api/meals/${id}`);

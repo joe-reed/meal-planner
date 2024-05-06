@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Ingredient } from "../types/ingredient";
+import { Ingredient } from "../types";
 
 export async function fetchIngredients() {
   const response = await fetch("/api/ingredients");

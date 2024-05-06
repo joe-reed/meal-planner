@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Shop } from "../types/shop";
+import { Shop } from "../types";
 
 export async function fetchCurrentShop() {
   const response = await fetch("/api/shops/current");
