@@ -4,6 +4,9 @@ go 1.20
 
 require (
 	github.com/google/uuid v1.6.0
+	github.com/hallgren/eventsourcing v0.5.0
+	github.com/hallgren/eventsourcing/core v0.4.0
+	github.com/hallgren/eventsourcing/eventstore/sql v0.4.0
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/stretchr/testify v1.9.0

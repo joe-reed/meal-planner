@@ -13,7 +13,7 @@ import (
 func TestRemovingIngredientFromMeal(t *testing.T) {
 	repo := meals.NewFakeMealRepository()
 
-	err := repo.Add(meals.NewMealBuilder().
+	err := repo.Save(meals.NewMealBuilder().
 		WithId("123").
 		AddIngredient(meals.MealIngredient{IngredientId: "ing-1"}).
 		AddIngredient(meals.MealIngredient{IngredientId: "ing-2"}).
@@ -34,6 +34,7 @@ func TestRemovingIngredientFromMeal(t *testing.T) {
 		m, err := repo.Find("123")
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Len(t, m.MealIngredients, 1)
 		assert.Equal(t, []meals.MealIngredient{{IngredientId: "ing-2"}}, m.MealIngredients)
 	}
 }

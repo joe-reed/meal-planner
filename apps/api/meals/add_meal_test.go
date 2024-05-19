@@ -26,7 +26,7 @@ func TestAddingMeal(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusAccepted, rec.Code)
-		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"ingredients\":null}\n", rec.Body.String())
-		assert.Equal(t, []*meals.Meal{{Id: "123", Name: "foo"}}, m)
+		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"ingredients\":[]}\n", rec.Body.String())
+		assert.EqualExportedValues(t, &meals.Meal{Id: "123", Name: "foo", MealIngredients: make([]meals.MealIngredient, 0)}, m[0])
 	}
 }

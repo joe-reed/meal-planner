@@ -8,7 +8,7 @@ import (
 )
 
 type Handler struct {
-	MealRepository MealRepository
+	MealRepository *MealRepository
 }
 
 func (h *Handler) GetMeals(c echo.Context) error {
@@ -32,13 +32,19 @@ func (h *Handler) GetMeal(c echo.Context) error {
 }
 
 func (h *Handler) AddMeal(c echo.Context) error {
-	m := new(Meal)
-	if err := c.Bind(m); err != nil {
+	body := new(Meal)
+	if err := c.Bind(body); err != nil {
 		return err
 	}
+
+	m, err := NewMeal(body.Id, body.Name, body.MealIngredients)
+	if err != nil {
+		return err
+	}
+
 	c.Logger().Debugf("Adding meal: %v", m)
 
-	if err := h.MealRepository.Add(m); err != nil {
+	if err := h.MealRepository.Save(m); err != nil {
 		return err
 	}
 
@@ -58,7 +64,7 @@ func (h *Handler) AddIngredientToMeal(c echo.Context) error {
 		return err
 	}
 
-	meal.AddIngredient(ingredient)
+	meal.AddIngredient(*ingredient)
 
 	if err := h.MealRepository.Save(meal); err != nil {
 		return err

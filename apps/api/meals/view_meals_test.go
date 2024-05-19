@@ -17,11 +17,11 @@ func TestViewingMeals(t *testing.T) {
 	meal3 := meals.NewMealBuilder().WithName("Tacos").Build()
 
 	repo := meals.NewFakeMealRepository()
-	err := repo.Add(meal1)
+	err := repo.Save(meal1)
 	assert.NoError(t, err)
-	err = repo.Add(meal2)
+	err = repo.Save(meal2)
 	assert.NoError(t, err)
-	err = repo.Add(meal3)
+	err = repo.Save(meal3)
 	assert.NoError(t, err)
 
 	e := echo.New()

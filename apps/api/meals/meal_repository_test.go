@@ -9,13 +9,13 @@ import (
 )
 
 func TestFakeMealRepository(t *testing.T) {
-	runSuite(t, func() meals.MealRepository {
+	runSuite(t, func() *meals.MealRepository {
 		return meals.NewFakeMealRepository()
 	}, func() {})
 }
 
 func TestSqliteMealRepository(t *testing.T) {
-	runSuite(t, func() meals.MealRepository {
+	runSuite(t, func() *meals.MealRepository {
 		r, err := meals.NewSqliteMealRepository("test.db")
 		assert.NoError(t, err)
 		return r
@@ -25,10 +25,10 @@ func TestSqliteMealRepository(t *testing.T) {
 	})
 }
 
-func runSuite(t *testing.T, factory func() meals.MealRepository, teardown func()) {
+func runSuite(t *testing.T, factory func() *meals.MealRepository, teardown func()) {
 	tests := []struct {
 		title string
-		run   func(t *testing.T, r meals.MealRepository)
+		run   func(t *testing.T, r *meals.MealRepository)
 	}{
 		{"adding a meal", testAddingMeal},
 		{"getting all meals", testGettingMeals},
@@ -44,56 +44,60 @@ func runSuite(t *testing.T, factory func() meals.MealRepository, teardown func()
 	}
 }
 
-func testAddingMeal(t *testing.T, r meals.MealRepository) {
-	expected := meals.NewMealBuilder().Build()
-	err := r.Add(expected)
+func testAddingMeal(t *testing.T, r *meals.MealRepository) {
+	m := meals.NewMealBuilder().Build()
+	err := r.Save(m)
 	assert.NoError(t, err)
 
-	actual, err := r.Get()
+	retrieved, err := r.Get()
 
 	assert.NoError(t, err)
-	assert.Contains(t, actual, expected)
+	assert.Len(t, retrieved, 1)
+	assert.EqualExportedValues(t, m, retrieved[0])
 }
 
-func testGettingMeals(t *testing.T, r meals.MealRepository) {
+func testGettingMeals(t *testing.T, r *meals.MealRepository) {
 	m1 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "c"}).WithName("c").Build()
 	m2 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "b"}).WithName("b").Build()
 	m3 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
 
-	err := r.Add(m1)
+	err := r.Save(m1)
 	assert.NoError(t, err)
-	err = r.Add(m2)
+	err = r.Save(m2)
 	assert.NoError(t, err)
-	err = r.Add(m3)
+	err = r.Save(m3)
 	assert.NoError(t, err)
 
 	m, err := r.Get()
 	assert.NoError(t, err)
-	assert.Equal(t, []*meals.Meal{m3, m2, m1}, m)
+	assert.Len(t, m, 3)
+	assert.EqualExportedValues(t, m3, m[0])
+	assert.EqualExportedValues(t, m2, m[1])
+	assert.EqualExportedValues(t, m1, m[2])
 }
 
-func testFindingMeal(t *testing.T, r meals.MealRepository) {
+func testFindingMeal(t *testing.T, r *meals.MealRepository) {
 	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
-	err := r.Add(m)
+	err := r.Save(m)
 	assert.NoError(t, err)
 
 	found, err := r.Find(m.Id)
 
 	assert.NoError(t, err)
-	assert.Equal(t, m, found)
+	assert.EqualExportedValues(t, m, found)
 }
 
-func testSavingMeal(t *testing.T, r meals.MealRepository) {
+func testSavingMeal(t *testing.T, r *meals.MealRepository) {
 	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
-	err := r.Add(m)
+	err := r.Save(m)
 	assert.NoError(t, err)
 
-	m.AddIngredient(&meals.MealIngredient{IngredientId: "b"})
+	m.AddIngredient(meals.MealIngredient{IngredientId: "b"})
 	err = r.Save(m)
 	assert.NoError(t, err)
 
 	found, err := r.Find(m.Id)
 	assert.NoError(t, err)
-	assert.Equal(t, m, found)
+	assert.EqualExportedValues(t, m, found)
 	assert.Equal(t, []meals.MealIngredient{{"a"}, {"b"}}, found.MealIngredients)
 }

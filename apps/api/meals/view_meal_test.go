@@ -15,7 +15,7 @@ func TestViewingMeal(t *testing.T) {
 	meal := meals.NewMealBuilder().WithName("Burritos").AddIngredient(meals.MealIngredient{IngredientId: "ing-123"}).Build()
 
 	repo := meals.NewFakeMealRepository()
-	err := repo.Add(meal)
+	err := repo.Save(meal)
 	assert.NoError(t, err)
 
 	e := echo.New()

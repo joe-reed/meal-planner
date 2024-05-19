@@ -14,7 +14,7 @@ import (
 func TestAddingIngredientToMeal(t *testing.T) {
 	repo := meals.NewFakeMealRepository()
 
-	err := repo.Add(meals.NewMealBuilder().WithId("123").Build())
+	err := repo.Save(meals.NewMealBuilder().WithId("123").Build())
 	assert.NoError(t, err)
 
 	e := echo.New()
