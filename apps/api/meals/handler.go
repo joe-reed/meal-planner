@@ -1,10 +1,9 @@
 package meals
 
 import (
-	"fmt"
-	"net/http"
+  "net/http"
 
-	"github.com/labstack/echo/v4"
+  "github.com/labstack/echo/v4"
 )
 
 type Handler struct {
@@ -77,7 +76,6 @@ func (h *Handler) RemoveIngredientFromMeal(c echo.Context) error {
 	mealId := c.Param("mealId")
 	ingredientId := c.Param("ingredientId")
 
-	fmt.Println("mealId: ", mealId)
 	meal, err := h.MealRepository.Find(mealId)
 	if err != nil {
 		return err
