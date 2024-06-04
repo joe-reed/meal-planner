@@ -16,15 +16,7 @@ type SqliteIngredientRepository struct {
 	db *sql.DB
 }
 
-func NewSqliteIngredientRepository(dbFile string) (*SqliteIngredientRepository, error) {
-	db, err := sql.Open("sqlite3", dbFile)
-	if err != nil {
-		return nil, err
-	}
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS ingredients (id VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255) NOT NULL)"); err != nil {
-		return nil, err
-	}
-
+func NewSqliteIngredientRepository(db *sql.DB) (*SqliteIngredientRepository, error) {
 	return &SqliteIngredientRepository{db: db}, nil
 }
 

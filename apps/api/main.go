@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"github.com/joe-reed/meal-planner/apps/api/database"
 	"github.com/joe-reed/meal-planner/apps/api/ingredients"
 	"github.com/joe-reed/meal-planner/apps/api/meals"
 	"github.com/joe-reed/meal-planner/apps/api/shops"
@@ -11,17 +13,22 @@ func main() {
 	e := echo.New()
 
 	dbFile := "meal-planner.db"
-	addMealRoutes(e, dbFile)
-	addShopRoutes(e, dbFile)
-	addIngredientRoutes(e, dbFile)
+	db, err := database.CreateDatabase(dbFile)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+
+	addMealRoutes(e, db)
+	addShopRoutes(e, db)
+	addIngredientRoutes(e, db)
 
 	e.Debug = true
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
 
-func addMealRoutes(e *echo.Echo, dbFile string) {
-	r, err := meals.NewSqliteMealRepository(dbFile)
+func addMealRoutes(e *echo.Echo, db *sql.DB) {
+	r, err := meals.NewSqliteMealRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
@@ -36,8 +43,8 @@ func addMealRoutes(e *echo.Echo, dbFile string) {
 	e.DELETE("/meals/:mealId/ingredients/:ingredientId", handler.RemoveIngredientFromMeal)
 }
 
-func addShopRoutes(e *echo.Echo, dbFile string) {
-	r, err := shops.NewSqliteShopRepository(dbFile)
+func addShopRoutes(e *echo.Echo, db *sql.DB) {
+	r, err := shops.NewSqliteShopRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
@@ -51,8 +58,8 @@ func addShopRoutes(e *echo.Echo, dbFile string) {
 	e.POST("/shops", handler.StartShop)
 }
 
-func addIngredientRoutes(e *echo.Echo, dbFile string) {
-	r, err := ingredients.NewSqliteIngredientRepository(dbFile)
+func addIngredientRoutes(e *echo.Echo, db *sql.DB) {
+	r, err := ingredients.NewSqliteIngredientRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)

@@ -1,6 +1,7 @@
 package shops_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/database"
 	"os"
 	"testing"
 
@@ -16,7 +17,9 @@ func TestFakeShopRepository(t *testing.T) {
 
 func TestSqliteMealRepository(t *testing.T) {
 	runSuite(t, func() *shops.ShopRepository {
-		r, err := shops.NewSqliteShopRepository("test.db")
+		db, err := database.CreateDatabase("test.db")
+		assert.NoError(t, err)
+		r, err := shops.NewSqliteShopRepository(db)
 		assert.NoError(t, err)
 		return r
 	}, func() {

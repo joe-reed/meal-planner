@@ -1,11 +1,12 @@
 package meals_test
 
 import (
-	"os"
-	"testing"
+  "github.com/joe-reed/meal-planner/apps/api/database"
+  "os"
+  "testing"
 
-	"github.com/joe-reed/meal-planner/apps/api/meals"
-	"github.com/stretchr/testify/assert"
+  "github.com/joe-reed/meal-planner/apps/api/meals"
+  "github.com/stretchr/testify/assert"
 )
 
 func TestFakeMealRepository(t *testing.T) {
@@ -16,7 +17,9 @@ func TestFakeMealRepository(t *testing.T) {
 
 func TestSqliteMealRepository(t *testing.T) {
 	runSuite(t, func() *meals.MealRepository {
-		r, err := meals.NewSqliteMealRepository("test.db")
+		db, err := database.CreateDatabase("test.db")
+		assert.NoError(t, err)
+		r, err := meals.NewSqliteMealRepository(db)
 		assert.NoError(t, err)
 		return r
 	}, func() {

@@ -22,25 +22,8 @@ func NewMealRepository(es core.EventStore, all func() (core.Iterator, error)) *M
 	return r
 }
 
-func NewSqliteMealRepository(dbFile string) (*MealRepository, error) {
-	db, err := sql.Open("sqlite3", dbFile)
-	if err != nil {
-		return nil, err
-	}
-
+func NewSqliteMealRepository(db *sql.DB) (*MealRepository, error) {
 	es := sqlStore.Open(db)
-
-	rows, err := db.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='events'")
-	if err != nil {
-		return nil, err
-	}
-
-	if !rows.Next() {
-		err = es.Migrate()
-		if err != nil {
-			return nil, err
-		}
-	}
 
 	return NewMealRepository(es, func() (core.Iterator, error) {
 		return es.All(0, 100)

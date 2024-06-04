@@ -1,6 +1,7 @@
 package ingredients_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/database"
 	"github.com/joe-reed/meal-planner/apps/api/ingredients"
 	"os"
 	"testing"
@@ -16,7 +17,9 @@ func TestFakeIngredientRepository(t *testing.T) {
 
 func TestSqliteIngredientRepository(t *testing.T) {
 	runSuite(t, func() ingredients.IngredientRepository {
-		r, err := ingredients.NewSqliteIngredientRepository("test.db")
+		db, err := database.CreateDatabase("test.db")
+		assert.NoError(t, err)
+		r, err := ingredients.NewSqliteIngredientRepository(db)
 		assert.NoError(t, err)
 		return r
 	}, func() {

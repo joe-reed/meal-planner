@@ -1,13 +1,13 @@
 package shops
 
 import (
-  "database/sql"
-  "github.com/hallgren/eventsourcing"
-  "github.com/hallgren/eventsourcing/core"
-  "github.com/hallgren/eventsourcing/eventstore/memory"
-  sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
-  _ "github.com/mattn/go-sqlite3"
-  "strconv"
+	"database/sql"
+	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/core"
+	"github.com/hallgren/eventsourcing/eventstore/memory"
+	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
+	_ "github.com/mattn/go-sqlite3"
+	"strconv"
 )
 
 type ShopRepository struct {
@@ -22,25 +22,8 @@ func NewShopRepository(es core.EventStore, all func() (core.Iterator, error)) *S
 	return r
 }
 
-func NewSqliteShopRepository(dbFile string) (*ShopRepository, error) {
-	db, err := sql.Open("sqlite3", dbFile)
-	if err != nil {
-		return nil, err
-	}
-
+func NewSqliteShopRepository(db *sql.DB) (*ShopRepository, error) {
 	es := sqlStore.Open(db)
-
-	rows, err := db.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='events'")
-	if err != nil {
-		return nil, err
-	}
-
-	if !rows.Next() {
-		err = es.Migrate()
-		if err != nil {
-			return nil, err
-		}
-	}
 
 	return NewShopRepository(es, func() (core.Iterator, error) {
 		return es.All(0, 100000)
