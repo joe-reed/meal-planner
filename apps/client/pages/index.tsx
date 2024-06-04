@@ -33,7 +33,7 @@ export default function Index() {
   }
 
   const meals = mealsQuery.data as Meal[];
-  const currentShop = currentShopQuery.data as Shop;
+  const currentShop = currentShopQuery.data as Shop | null;
   const ingredients = ingredientsQuery.data as Ingredient[];
 
   return (
@@ -63,7 +63,13 @@ export default function Index() {
   );
 }
 
-function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
+function Meals({
+  meals,
+  currentShop,
+}: {
+  meals: Meal[];
+  currentShop: Shop | null;
+}) {
   return (
     <>
       <h2 className="mb-2 font-bold">Meals</h2>
@@ -79,7 +85,7 @@ function Meals({ meals, currentShop }: { meals: Meal[]; currentShop: Shop }) {
             >
               <MealLink meal={meal} />
               <span className="ml-2">
-                {currentShop.meals.some((m) => m.id == meal.id) ? (
+                {currentShop?.meals.some((m) => m.id == meal.id) ? (
                   <RemoveMealFromShopButton mealId={meal.id}>
                     ✅
                   </RemoveMealFromShopButton>
@@ -99,7 +105,7 @@ function CurrentShop({
   currentShop,
 }: {
   meals: Meal[];
-  currentShop: Shop;
+  currentShop: Shop | null;
 }) {
   return (
     <>
@@ -120,7 +126,9 @@ function CurrentShop({
             ))}
           </ul>
         </>
-      ) : null}
+      ) : (
+        <p>Click Start Shop to get started!</p>
+      )}
     </>
   );
 }
@@ -224,12 +232,12 @@ function ShoppingList({
   meals,
   ingredients,
 }: {
-  currentShop: Shop;
+  currentShop: Shop | null;
   meals: Meal[];
   ingredients: Ingredient[];
 }) {
   const shopIngredients = Object.values(
-    currentShop.meals
+    (currentShop?.meals ?? [])
       .flatMap((shopMeal) => {
         const meal = meals.find((m) => m.id === shopMeal.id) as Meal;
 
