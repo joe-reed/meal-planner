@@ -1,168 +1,108 @@
 package shops
 
 import (
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+  "database/sql"
+  "github.com/hallgren/eventsourcing"
+  "github.com/hallgren/eventsourcing/core"
+  "github.com/hallgren/eventsourcing/eventstore/memory"
+  sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
+  _ "github.com/mattn/go-sqlite3"
+  "strconv"
 )
 
-type ShopRepository interface {
-	Current() (*Shop, error)
-	Find(id int) (*Shop, error)
-	Add(*Shop) error
-	Save(*Shop) error
+type ShopRepository struct {
+	er  *eventsourcing.EventRepository
+	all func() (core.Iterator, error)
 }
 
-type SqliteShopRepository struct {
-	db *sql.DB
+func NewShopRepository(es core.EventStore, all func() (core.Iterator, error)) *ShopRepository {
+	er := eventsourcing.NewEventRepository(es)
+	er.Register(&Shop{})
+	r := &ShopRepository{er, all}
+	return r
 }
 
-func NewSqliteShopRepository(dbFile string) (*SqliteShopRepository, error) {
+func NewSqliteShopRepository(dbFile string) (*ShopRepository, error) {
 	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS shops (id BIGINT NOT NULL PRIMARY KEY)"); err != nil {
-		return nil, err
-	}
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS shop_meals (shop_id BIGINT NOT NULL, meal_id VARCHAR(255) NOT NULL, PRIMARY KEY (shop_id, meal_id))"); err != nil {
-		return nil, err
-	}
 
-	return &SqliteShopRepository{db: db}, nil
-}
+	es := sqlStore.Open(db)
 
-func (r SqliteShopRepository) Current() (*Shop, error) {
-	rows, err := r.db.Query("SELECT id, meal_id FROM shops LEFT JOIN shop_meals ON shops.id = shop_meals.shop_id WHERE id = (SELECT id from shops ORDER BY id DESC LIMIT 1)")
-
+	rows, err := db.Query("SELECT name FROM sqlite_master WHERE type='table' AND name='events'")
 	if err != nil {
 		return nil, err
 	}
 
-	return MapRowsToShop(rows)
-}
-
-func (r SqliteShopRepository) Find(id int) (*Shop, error) {
-	rows, err := r.db.Query("SELECT id, meal_id FROM shops LEFT JOIN shop_meals ON shops.id = shop_meals.shop_id WHERE id = ?", id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return MapRowsToShop(rows)
-}
-
-func MapRowsToShop(rows *sql.Rows) (*Shop, error) {
-	var shop *Shop
-
-	for rows.Next() {
-		var id int
-		var mealId sql.NullString
-
-		err := rows.Scan(&id, &mealId)
+	if !rows.Next() {
+		err = es.Migrate()
 		if err != nil {
 			return nil, err
 		}
-
-		if shop == nil {
-			shop = NewShop(id)
-		}
-
-		if mealId.Valid {
-			shop.AddMeal(&ShopMeal{MealId: mealId.String})
-		}
 	}
 
-	return shop, nil
+	return NewShopRepository(es, func() (core.Iterator, error) {
+		return es.All(0, 100000)
+	}), nil
 }
 
-func (r SqliteShopRepository) Add(s *Shop) error {
-	_, err := r.db.Exec("INSERT INTO shops (id) VALUES (?)", s.Id)
+func NewFakeShopRepository() *ShopRepository {
+	es := memory.Create()
 
-	if err != nil {
-		return err
-	}
-
-	for _, m := range s.Meals {
-		_, err := r.db.Exec("INSERT INTO shop_meals (shop_id, meal_id) VALUES (?, ?)", s.Id, m.MealId)
-
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return NewShopRepository(es, es.All(0, 100000))
 }
 
-func (r SqliteShopRepository) Save(s *Shop) error {
-	_, err := r.db.Exec("DELETE FROM shop_meals WHERE shop_id = ?", s.Id)
+func (r ShopRepository) Current() (*Shop, error) {
+	currentId := 0
 
-	if err != nil {
-		return err
-	}
-
-	for _, m := range s.Meals {
-		_, err := r.db.Exec("INSERT INTO shop_meals (shop_id, meal_id) VALUES (?, ?)", s.Id, m.MealId)
-
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-type FakeShopRepository struct {
-	shops []*Shop
-}
-
-func NewFakeShopRepository() *FakeShopRepository {
-	return &FakeShopRepository{shops: []*Shop{}}
-}
-
-func (r *FakeShopRepository) Current() (*Shop, error) {
-	if len(r.shops) > 0 {
-		s := r.shops[0]
-
-		return NewShop(s.Id).SetMeals(s.Meals), nil
-	}
-
-	return nil, nil
-}
-
-func (r *FakeShopRepository) Find(id int) (*Shop, error) {
-	if len(r.shops) > 0 {
-		for _, s := range r.shops {
-			if s.Id == id {
-				return NewShop(s.Id).SetMeals(s.Meals), nil
+	p := r.er.Projections.Projection(
+		r.all,
+		func(e eventsourcing.Event) error {
+			aId, err := strconv.Atoi(e.AggregateID())
+			if err != nil {
+				return err
 			}
-		}
+
+			if aId > currentId {
+				currentId = aId
+			}
+
+			return nil
+		})
+
+	p.RunOnce()
+
+	if currentId == 0 {
+		return nil, nil
 	}
 
-	return nil, nil
+	return r.Find(currentId)
 }
 
-func (r *FakeShopRepository) Add(s *Shop) error {
-	r.shops = append([]*Shop{cloneShop(s)}, r.shops...)
-
-	return nil
-}
-
-func (r *FakeShopRepository) Save(s *Shop) error {
-	var shops []*Shop
-
-	for _, t := range r.shops {
-		if t.Id == s.Id {
-			shops = append(shops, cloneShop(s))
-		} else {
-			shops = append(shops, t)
-		}
+func (r ShopRepository) Find(id int) (*Shop, error) {
+	s := &Shop{}
+	err := r.er.Get(strconv.Itoa(id), s)
+	if err != nil {
+		return nil, err
 	}
 
-	r.shops = shops
-
-	return nil
+	return s, nil
 }
 
-func cloneShop(s *Shop) *Shop {
-	return &Shop{s.Id, s.Meals}
+func (r ShopRepository) Save(s *Shop) error {
+	return r.er.Save(s)
+}
+
+func cloneShop(s *Shop) (*Shop, error) {
+	result, err := NewShop(s.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, m := range s.Meals {
+		result.AddMeal(m)
+	}
+
+	return result, nil
 }

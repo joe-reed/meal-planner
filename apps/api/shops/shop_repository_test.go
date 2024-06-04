@@ -9,13 +9,13 @@ import (
 )
 
 func TestFakeShopRepository(t *testing.T) {
-	runSuite(t, func() shops.ShopRepository {
+	runSuite(t, func() *shops.ShopRepository {
 		return shops.NewFakeShopRepository()
 	}, func() {})
 }
 
 func TestSqliteMealRepository(t *testing.T) {
-	runSuite(t, func() shops.ShopRepository {
+	runSuite(t, func() *shops.ShopRepository {
 		r, err := shops.NewSqliteShopRepository("test.db")
 		assert.NoError(t, err)
 		return r
@@ -25,10 +25,10 @@ func TestSqliteMealRepository(t *testing.T) {
 	})
 }
 
-func runSuite(t *testing.T, factory func() shops.ShopRepository, teardown func()) {
+func runSuite(t *testing.T, factory func() *shops.ShopRepository, teardown func()) {
 	tests := []struct {
 		title string
-		run   func(t *testing.T, r shops.ShopRepository)
+		run   func(t *testing.T, r *shops.ShopRepository)
 	}{
 		{"getting current shop", testGettingCurrentShop},
 		{"getting current shop with no meals", testGettingCurrentShopWithNoMeals},
@@ -46,68 +46,78 @@ func runSuite(t *testing.T, factory func() shops.ShopRepository, teardown func()
 	}
 }
 
-func testGettingCurrentShop(t *testing.T, r shops.ShopRepository) {
-	s1 := shops.NewShop(1)
-	s2 := shops.NewShop(2)
-	s3 := shops.NewShop(3).AddMeal(&shops.ShopMeal{MealId: "123"}).AddMeal(&shops.ShopMeal{MealId: "456"})
+func testGettingCurrentShop(t *testing.T, r *shops.ShopRepository) {
+	s1, err := shops.NewShop(1)
+	assert.NoError(t, err)
+	s2, err := shops.NewShop(2)
+	assert.NoError(t, err)
+	s3, err := shops.NewShop(3)
+	assert.NoError(t, err)
 
-	err := r.Add(s1)
+	s3.AddMeal(&shops.ShopMeal{MealId: "123"}).AddMeal(&shops.ShopMeal{MealId: "456"})
+
+	err = r.Save(s1)
 	assert.NoError(t, err)
-	err = r.Add(s2)
+	err = r.Save(s2)
 	assert.NoError(t, err)
-	err = r.Add(s3)
+	err = r.Save(s3)
 	assert.NoError(t, err)
 
 	s, err := r.Current()
 	assert.NoError(t, err)
 
-	assert.Equal(t, s3, s)
+	assert.EqualExportedValues(t, s3, s)
 }
 
-func testGettingCurrentShopIfNoShopsExist(t *testing.T, r shops.ShopRepository) {
+func testGettingCurrentShopIfNoShopsExist(t *testing.T, r *shops.ShopRepository) {
 	s, err := r.Current()
 	assert.NoError(t, err)
 	assert.Nil(t, s)
 }
 
-func testGettingCurrentShopWithNoMeals(t *testing.T, r shops.ShopRepository) {
-	s1 := shops.NewShop(1)
+func testGettingCurrentShopWithNoMeals(t *testing.T, r *shops.ShopRepository) {
+	s1, err := shops.NewShop(1)
+	assert.NoError(t, err)
 
-	err := r.Add(s1)
+	err = r.Save(s1)
 	assert.NoError(t, err)
 
 	s, err := r.Current()
 	assert.NoError(t, err)
-	assert.Equal(t, []*shops.ShopMeal{}, s.Meals)
+	assert.Len(t, s.Meals, 0)
 }
 
-func testFindingShop(t *testing.T, r shops.ShopRepository) {
-	s := shops.NewShop(1).AddMeal(&shops.ShopMeal{MealId: "abc"})
+func testFindingShop(t *testing.T, r *shops.ShopRepository) {
+	s, err := shops.NewShop(1)
+	assert.NoError(t, err)
+	s.AddMeal(&shops.ShopMeal{MealId: "abc"})
 
-	err := r.Add(s)
+	err = r.Save(s)
 	assert.NoError(t, err)
 
 	found, err := r.Find(1)
 	assert.NoError(t, err)
-	assert.Equal(t, s, found)
+	assert.EqualExportedValues(t, s, found)
 }
 
-func testFindingShopWithNoMeals(t *testing.T, r shops.ShopRepository) {
-	s := shops.NewShop(1)
+func testFindingShopWithNoMeals(t *testing.T, r *shops.ShopRepository) {
+	s, err := shops.NewShop(1)
+	assert.NoError(t, err)
 
-	err := r.Add(s)
+	err = r.Save(s)
 	assert.NoError(t, err)
 
 	found, err := r.Find(1)
 	assert.NoError(t, err)
-	assert.Equal(t, s, found)
-	assert.Equal(t, []*shops.ShopMeal{}, found.Meals)
+	assert.EqualExportedValues(t, s, found)
+	assert.Len(t, found.Meals, 0)
 }
 
-func testSavingShop(t *testing.T, r shops.ShopRepository) {
-	s := shops.NewShop(1)
+func testSavingShop(t *testing.T, r *shops.ShopRepository) {
+	s, err := shops.NewShop(1)
+	assert.NoError(t, err)
 
-	err := r.Add(s)
+	err = r.Save(s)
 	assert.NoError(t, err)
 
 	s = s.AddMeal(&shops.ShopMeal{MealId: "abc"})
@@ -117,5 +127,5 @@ func testSavingShop(t *testing.T, r shops.ShopRepository) {
 
 	found, err := r.Find(1)
 	assert.NoError(t, err)
-	assert.Equal(t, s, found)
+	assert.EqualExportedValues(t, s, found)
 }

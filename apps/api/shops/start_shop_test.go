@@ -11,10 +11,11 @@ import (
 )
 
 func TestStartingShop(t *testing.T) {
-	shop1 := shops.NewShop(1)
+	shop1, err := shops.NewShop(1)
+	assert.NoError(t, err)
 
 	r := shops.NewFakeShopRepository()
-	err := r.Add(shop1)
+	err = r.Save(shop1)
 	assert.NoError(t, err)
 
 	e := echo.New()
@@ -26,7 +27,8 @@ func TestStartingShop(t *testing.T) {
 
 	if assert.NoError(t, h.StartShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		c, _ := r.Current()
+		c, err := r.Current()
+		assert.NoError(t, err)
 		assert.Equal(t, c.Id, 2)
 	}
 }

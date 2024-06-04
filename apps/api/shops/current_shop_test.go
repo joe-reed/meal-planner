@@ -11,15 +11,18 @@ import (
 )
 
 func TestGettingCurrentShop(t *testing.T) {
-	shop1 := shops.NewShop(1)
-	shop2 := shops.NewShop(2)
+	shop1, err := shops.NewShop(1)
+	assert.NoError(t, err)
+	shop2, err := shops.NewShop(2)
+	assert.NoError(t, err)
+
 	shop2.AddMeal(&shops.ShopMeal{MealId: "123"})
 	shop2.AddMeal(&shops.ShopMeal{MealId: "456"})
 
 	r := shops.NewFakeShopRepository()
-	err := r.Add(shop1)
+	err = r.Save(shop1)
 	assert.NoError(t, err)
-	err = r.Add(shop2)
+	err = r.Save(shop2)
 	assert.NoError(t, err)
 
 	e := echo.New()
@@ -36,10 +39,11 @@ func TestGettingCurrentShop(t *testing.T) {
 }
 
 func TestGettingCurrentShopWithNoMeals(t *testing.T) {
-	shop1 := shops.NewShop(1)
+	shop1, err := shops.NewShop(1)
+	assert.NoError(t, err)
 
 	r := shops.NewFakeShopRepository()
-	err := r.Add(shop1)
+	err = r.Save(shop1)
 	assert.NoError(t, err)
 
 	e := echo.New()

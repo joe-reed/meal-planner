@@ -12,10 +12,11 @@ import (
 )
 
 func TestAddingMealToCurrentShop(t *testing.T) {
-	shop := shops.NewShop(1)
+	shop, err := shops.NewShop(1)
+	assert.NoError(t, err)
 
 	r := shops.NewFakeShopRepository()
-	err := r.Add(shop)
+	err = r.Save(shop)
 	assert.NoError(t, err)
 
 	e := echo.New()

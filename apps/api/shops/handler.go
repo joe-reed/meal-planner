@@ -6,7 +6,7 @@ import (
 )
 
 type Handler struct {
-	ShopRepository ShopRepository
+	ShopRepository *ShopRepository
 }
 
 func (h *Handler) CurrentShop(c echo.Context) error {
@@ -25,15 +25,19 @@ func (h *Handler) StartShop(c echo.Context) error {
 		return err
 	}
 
+	var newShop *Shop
+
 	if shop == nil {
-		err = h.ShopRepository.Add(&Shop{Id: 1})
+		newShop, err = NewShop(1)
 	} else {
-		err = h.ShopRepository.Add(&Shop{Id: shop.Id + 1})
+		newShop, err = NewShop(shop.Id + 1)
 	}
 
 	if err != nil {
 		return err
 	}
+
+	err = h.ShopRepository.Save(newShop)
 
 	return c.JSON(http.StatusOK, shop)
 }
