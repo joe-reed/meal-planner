@@ -26,14 +26,14 @@ func NewSqliteMealRepository(db *sql.DB) (*MealRepository, error) {
 	es := sqlStore.Open(db)
 
 	return NewMealRepository(es, func() (core.Iterator, error) {
-		return es.All(0, 100)
+		return es.All(0, 10000)
 	}), nil
 }
 
 func NewFakeMealRepository() *MealRepository {
 	es := memory.Create()
 
-	return NewMealRepository(es, es.All(0, 100))
+	return NewMealRepository(es, es.All(0, 10000))
 }
 
 func (r MealRepository) Get() ([]*Meal, error) {
