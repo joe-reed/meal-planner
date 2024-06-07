@@ -1,12 +1,12 @@
 package meals_test
 
 import (
-  "github.com/joe-reed/meal-planner/apps/api/database"
-  "os"
-  "testing"
+	"github.com/joe-reed/meal-planner/apps/api/database"
+	"os"
+	"testing"
 
-  "github.com/joe-reed/meal-planner/apps/api/meals"
-  "github.com/stretchr/testify/assert"
+	"github.com/joe-reed/meal-planner/apps/api/meals"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFakeMealRepository(t *testing.T) {
@@ -35,6 +35,7 @@ func runSuite(t *testing.T, factory func() *meals.MealRepository, teardown func(
 	}{
 		{"adding a meal", testAddingMeal},
 		{"getting all meals", testGettingMeals},
+		{"getting all meals without ingredients", testGettingMealsWithoutIngredients},
 		{"finding a meal", testFindingMeal},
 		{"saving a meal", testSavingMeal},
 	}
@@ -63,6 +64,26 @@ func testGettingMeals(t *testing.T, r *meals.MealRepository) {
 	m1 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "c"}).WithName("c").Build()
 	m2 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "b"}).WithName("b").Build()
 	m3 := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
+
+	err := r.Save(m1)
+	assert.NoError(t, err)
+	err = r.Save(m2)
+	assert.NoError(t, err)
+	err = r.Save(m3)
+	assert.NoError(t, err)
+
+	m, err := r.Get()
+	assert.NoError(t, err)
+	assert.Len(t, m, 3)
+	assert.EqualExportedValues(t, m3, m[0])
+	assert.EqualExportedValues(t, m2, m[1])
+	assert.EqualExportedValues(t, m1, m[2])
+}
+
+func testGettingMealsWithoutIngredients(t *testing.T, r *meals.MealRepository) {
+	m1 := meals.NewMealBuilder().WithName("c").Build()
+	m2 := meals.NewMealBuilder().WithName("b").Build()
+	m3 := meals.NewMealBuilder().WithName("a").Build()
 
 	err := r.Save(m1)
 	assert.NoError(t, err)
