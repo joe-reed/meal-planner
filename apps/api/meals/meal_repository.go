@@ -37,34 +37,40 @@ func NewFakeMealRepository() *MealRepository {
 }
 
 func (r MealRepository) Get() ([]*Meal, error) {
-	meals := map[string]*Meal{}
+	mealMap := map[string]*Meal{}
 
 	p := r.er.Projections.Projection(
 		r.all,
 		func(e eventsourcing.Event) error {
-			meal, ok := meals[e.AggregateID()]
+			meal, ok := mealMap[e.AggregateID()]
 			if !ok {
 				meal = &Meal{}
 				meal.MealIngredients = []MealIngredient{}
-				meals[e.AggregateID()] = meal
+				mealMap[e.AggregateID()] = meal
 			}
+
 			meal.Transition(e)
 
 			return nil
 		})
 
-	p.RunOnce()
+	(*p).Strict = false
+	_, result := p.RunOnce()
 
-	result := make([]*Meal, 0, len(meals))
-	for _, m := range meals {
-		result = append(result, m)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
-	sort.Slice(result, func(i, j int) bool {
-		return result[i].Name < result[j].Name
+	meals := make([]*Meal, 0, len(mealMap))
+	for _, m := range mealMap {
+		meals = append(meals, m)
+	}
+
+	sort.Slice(meals, func(i, j int) bool {
+		return meals[i].Name < meals[j].Name
 	})
 
-	return result, nil
+	return meals, nil
 }
 
 func (r MealRepository) Find(id string) (*Meal, error) {

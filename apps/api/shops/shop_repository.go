@@ -54,7 +54,12 @@ func (r ShopRepository) Current() (*Shop, error) {
 			return nil
 		})
 
-	p.RunOnce()
+	(*p).Strict = false
+	_, result := p.RunOnce()
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
 	if currentId == 0 {
 		return nil, nil
