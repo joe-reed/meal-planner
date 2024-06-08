@@ -5,7 +5,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (req.method === "POST") {
-    const response = await fetch("http://localhost:1323/ingredients", {
+    const response = await fetch("http://127.0.0.1:1323/ingredients", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export default async function handler(
     });
     res.status(201).json(await response.json());
   } else {
-    const response = await fetch("http://localhost:1323/ingredients");
+    const response = await fetch("http://127.0.0.1:1323/ingredients");
     res.status(200).json(await response.json());
   }
 }

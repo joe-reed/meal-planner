@@ -5,7 +5,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const response = await fetch(
-    `http://localhost:1323/meals/${req.query.id}/ingredients`,
+    `http://127.0.0.1:1323/meals/${req.query.id}/ingredients`,
     {
       method: "POST",
       headers: {
