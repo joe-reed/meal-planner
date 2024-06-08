@@ -1,13 +1,13 @@
 package ingredients
 
 import (
-	"net/http"
+  "net/http"
 
-	"github.com/labstack/echo/v4"
+  "github.com/labstack/echo/v4"
 )
 
 type Handler struct {
-	IngredientRepository IngredientRepository
+	IngredientRepository *IngredientRepository
 }
 
 func (h *Handler) GetIngredients(c echo.Context) error {

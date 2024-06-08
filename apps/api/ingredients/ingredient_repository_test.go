@@ -10,13 +10,13 @@ import (
 )
 
 func TestFakeIngredientRepository(t *testing.T) {
-	runSuite(t, func() ingredients.IngredientRepository {
+	runSuite(t, func() *ingredients.IngredientRepository {
 		return ingredients.NewFakeIngredientRepository()
 	}, func() {})
 }
 
 func TestSqliteIngredientRepository(t *testing.T) {
-	runSuite(t, func() ingredients.IngredientRepository {
+	runSuite(t, func() *ingredients.IngredientRepository {
 		db, err := database.CreateDatabase("test.db")
 		assert.NoError(t, err)
 		r, err := ingredients.NewSqliteIngredientRepository(db)
@@ -28,10 +28,10 @@ func TestSqliteIngredientRepository(t *testing.T) {
 	})
 }
 
-func runSuite(t *testing.T, factory func() ingredients.IngredientRepository, teardown func()) {
+func runSuite(t *testing.T, factory func() *ingredients.IngredientRepository, teardown func()) {
 	tests := []struct {
 		title string
-		run   func(t *testing.T, r ingredients.IngredientRepository)
+		run   func(t *testing.T, r *ingredients.IngredientRepository)
 	}{
 		{"adding an ingredient", testAddingIngredient},
 		{"getting all ingredients", testGettingIngredients},
@@ -46,7 +46,7 @@ func runSuite(t *testing.T, factory func() ingredients.IngredientRepository, tea
 	}
 }
 
-func testAddingIngredient(t *testing.T, r ingredients.IngredientRepository) {
+func testAddingIngredient(t *testing.T, r *ingredients.IngredientRepository) {
 	expected := ingredients.NewIngredientBuilder().Build()
 	err := r.Add(expected)
 	assert.NoError(t, err)
@@ -54,10 +54,11 @@ func testAddingIngredient(t *testing.T, r ingredients.IngredientRepository) {
 	actual, err := r.Get()
 
 	assert.NoError(t, err)
-	assert.Contains(t, actual, expected)
+	assert.Len(t, actual, 1)
+	assert.EqualExportedValues(t, expected, actual[0])
 }
 
-func testGettingIngredients(t *testing.T, r ingredients.IngredientRepository) {
+func testGettingIngredients(t *testing.T, r *ingredients.IngredientRepository) {
 	i1 := ingredients.NewIngredientBuilder().WithName("c").Build()
 	i2 := ingredients.NewIngredientBuilder().WithName("b").Build()
 	i3 := ingredients.NewIngredientBuilder().WithName("a").Build()
@@ -71,11 +72,14 @@ func testGettingIngredients(t *testing.T, r ingredients.IngredientRepository) {
 
 	i, err := r.Get()
 	assert.NoError(t, err)
-	assert.Equal(t, []*ingredients.Ingredient{i3, i2, i1}, i)
+	assert.Len(t, i, 3)
+	assert.EqualExportedValues(t, i3, i[0])
+	assert.EqualExportedValues(t, i2, i[1])
+	assert.EqualExportedValues(t, i1, i[2])
 }
 
-func testGettingZeroIngredients(t *testing.T, r ingredients.IngredientRepository) {
+func testGettingZeroIngredients(t *testing.T, r *ingredients.IngredientRepository) {
 	i, err := r.Get()
 	assert.NoError(t, err)
-	assert.Equal(t, []*ingredients.Ingredient{}, i)
+	assert.Len(t, i, 0)
 }

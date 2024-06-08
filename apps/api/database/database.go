@@ -32,9 +32,5 @@ func CreateDatabase(dbFile string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS ingredients (id VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255) NOT NULL)"); err != nil {
-		return nil, err
-	}
-
 	return db, nil
 }
