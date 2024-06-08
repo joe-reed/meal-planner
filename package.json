@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "serve": "nx run-many -t serve",
-    "test": "nx run-many -t test"
+    "test": "nx run-many -t test",
+    "dev": "nx run-many -t dev"
   },
   "private": true,
   "devDependencies": {

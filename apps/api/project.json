@@ -28,6 +28,12 @@
     },
     "lint": {
       "executor": "@nx-go/nx-go:lint"
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd apps/api && air -c .air.toml"
+      }
     }
   }
 }
