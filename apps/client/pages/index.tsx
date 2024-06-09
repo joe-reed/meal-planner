@@ -259,8 +259,11 @@ function ShoppingList({
       <h2 className="mb-2 font-bold">Shopping List</h2>
       <ul className="w-full">
         {shopIngredients.map((ingredient) => (
-          <li key={ingredient.id} className="flex justify-between">
-            <span>{ingredient.name}</span>
+          <li
+            key={ingredient.id}
+            className="mb-3 flex items-center justify-between leading-4"
+          >
+            <span className="w-5/6 break-words">{ingredient.name}</span>
             <span>{ingredient.amount}</span>
           </li>
         ))}
