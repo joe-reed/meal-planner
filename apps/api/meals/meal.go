@@ -21,7 +21,7 @@ func (m *Meal) Transition(event eventsourcing.Event) {
 	case *IngredientAdded:
 		m.MealIngredients = append(m.MealIngredients, e.Ingredient)
 	case *IngredientRemoved:
-		var ingredients []MealIngredient
+		ingredients := []MealIngredient{}
 		for _, ingredient := range m.MealIngredients {
 			if ingredient.IngredientId != e.Id {
 				ingredients = append(ingredients, ingredient)

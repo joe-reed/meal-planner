@@ -32,3 +32,25 @@ func TestViewingMeal(t *testing.T) {
 		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[{"id":"ing-123"}]}`+"\n", meal.Id), rec.Body.String())
 	}
 }
+
+func TestViewingMealWithNoIngredients(t *testing.T) {
+	meal := meals.NewMealBuilder().WithName("Burritos").Build()
+
+	repo := meals.NewFakeMealRepository()
+	err := repo.Save(meal)
+	assert.NoError(t, err)
+
+	e := echo.New()
+	req := httptest.NewRequest("GET", "/meals/"+meal.Id, nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetParamNames("id")
+	c.SetParamValues(meal.Id)
+	h := &meals.Handler{MealRepository: repo}
+
+	if assert.NoError(t, h.GetMeal(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[]}`+"\n", meal.Id), rec.Body.String())
+	}
+}
