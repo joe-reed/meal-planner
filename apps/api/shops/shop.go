@@ -23,7 +23,7 @@ func (s *Shop) Transition(event eventsourcing.Event) {
 	case *MealAdded:
 		s.Meals = append(s.Meals, &ShopMeal{MealId: e.Meal.MealId})
 	case *MealRemoved:
-		var meals []*ShopMeal
+		meals := []*ShopMeal{}
 		for _, meal := range s.Meals {
 			if meal.MealId != e.Id {
 				meals = append(meals, meal)

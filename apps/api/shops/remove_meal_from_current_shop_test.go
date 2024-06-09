@@ -36,3 +36,30 @@ func TestRemovingMealFromCurrentShop(t *testing.T) {
 		assert.Equal(t, []*shops.ShopMeal{{MealId: "def"}}, s.Meals)
 	}
 }
+
+func TestRemovingAllMealsFromCurrentShop(t *testing.T) {
+	shop, err := shops.NewShop(1)
+	assert.NoError(t, err)
+
+	shop.AddMeal(&shops.ShopMeal{MealId: "abc"})
+
+	r := shops.NewFakeShopRepository()
+	err = r.Save(shop)
+	assert.NoError(t, err)
+
+	e := echo.New()
+	req := httptest.NewRequest("DELETE", "/shops/current/meals/abc", nil)
+
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetParamNames("mealId")
+	c.SetParamValues("abc")
+	h := &shops.Handler{ShopRepository: r}
+
+	if assert.NoError(t, h.RemoveMealFromCurrentShop(c)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+		s, _ := r.Find(1)
+		assert.Equal(t, []*shops.ShopMeal{}, s.Meals)
+	}
+}
