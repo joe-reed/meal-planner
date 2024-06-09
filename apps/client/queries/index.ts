@@ -7,3 +7,4 @@ export * from "./useMeals";
 export * from "./useRemoveIngredientFromMeal";
 export * from "./useRemoveMealFromCurrentShop";
 export * from "./useStartShop";
+export * from "./useCreateIngredient";

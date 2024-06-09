@@ -68,4 +68,5 @@ func addIngredientRoutes(e *echo.Echo, db *sql.DB) {
 	handler := ingredients.Handler{IngredientRepository: r}
 
 	e.GET("/ingredients", handler.GetIngredients)
+	e.POST("/ingredients", handler.AddIngredient)
 }
