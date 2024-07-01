@@ -5,7 +5,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const response = await fetch(
-    `http://127.0.0.1:1323/meals/${req.query.id}/ingredients/${req.query.ingredientId}`,
+    `${process.env.API_BASE_URL}/meals/${req.query.id}/ingredients/${req.query.ingredientId}`,
     {
       method: "DELETE",
       headers: {

@@ -5,7 +5,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (req.method === "POST") {
-    const response = await fetch("http://127.0.0.1:1323", {
+    const response = await fetch(`${process.env.API_BASE_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export default async function handler(
     });
     res.status(201).json(await response.json());
   } else {
-    const response = await fetch("http://127.0.0.1:1323");
+    const response = await fetch(`${process.env.API_BASE_URL}`);
     res.status(200).json(await response.json());
   }
 }

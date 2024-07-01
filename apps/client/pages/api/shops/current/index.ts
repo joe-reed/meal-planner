@@ -4,6 +4,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const response = await fetch("http://127.0.0.1:1323/shops/current");
+  const response = await fetch(`${process.env.API_BASE_URL}/shops/current`);
   res.status(200).json(await response.json());
 }
