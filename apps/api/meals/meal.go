@@ -58,8 +58,36 @@ func (m *Meal) RemoveIngredient(id string) {
 	m.TrackChange(m, &IngredientRemoved{Id: id})
 }
 
+type Unit int
+
+//go:generate go run github.com/campoy/jsonenums -type=Unit
+const (
+	Number Unit = iota
+	Tsp
+	Tbsp
+	Cup
+	Oz
+	Lb
+	Gram
+	Kg
+)
+
+type Quantity struct {
+	Amount int  `json:"amount"`
+	Unit   Unit `json:"unit"`
+}
+
 type MealIngredient struct {
-	IngredientId string `json:"id"`
+	IngredientId string   `json:"id"`
+	Quantity     Quantity `json:"quantity"`
+}
+
+func NewMealIngredient(id string) MealIngredient {
+	return MealIngredient{IngredientId: id, Quantity: Quantity{1, Number}}
+}
+
+func (m *MealIngredient) WithQuantity(amount int, unit Unit) {
+	m.Quantity = Quantity{amount, unit}
 }
 
 type MealBuilder struct {

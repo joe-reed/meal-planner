@@ -53,8 +53,8 @@ func (h *Handler) AddMeal(c echo.Context) error {
 func (h *Handler) AddIngredientToMeal(c echo.Context) error {
 	mealId := c.Param("mealId")
 
-	ingredient := new(MealIngredient)
-	if err := c.Bind(ingredient); err != nil {
+	ingredient := NewMealIngredient("")
+	if err := c.Bind(&ingredient); err != nil {
 		return err
 	}
 
@@ -63,7 +63,7 @@ func (h *Handler) AddIngredientToMeal(c echo.Context) error {
 		return err
 	}
 
-	meal.AddIngredient(*ingredient)
+	meal.AddIngredient(ingredient)
 
 	if err := h.MealRepository.Save(meal); err != nil {
 		return err

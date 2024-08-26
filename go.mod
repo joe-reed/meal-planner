@@ -3,6 +3,7 @@ module github.com/joe-reed/meal-planner
 go 1.20
 
 require (
+	github.com/campoy/jsonenums v0.0.0-20201009151607-0f0230183423
 	github.com/google/uuid v1.6.0
 	github.com/hallgren/eventsourcing v0.5.0
 	github.com/hallgren/eventsourcing/core v0.4.0
@@ -24,5 +25,6 @@ require (
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/tools v0.9.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

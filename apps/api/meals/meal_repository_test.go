@@ -101,7 +101,7 @@ func testGettingMealsWithoutIngredients(t *testing.T, r *meals.MealRepository) {
 }
 
 func testFindingMeal(t *testing.T, r *meals.MealRepository) {
-	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
+	m := meals.NewMealBuilder().AddIngredient(meals.NewMealIngredient("a")).WithName("a").Build()
 	err := r.Save(m)
 	assert.NoError(t, err)
 
@@ -112,16 +112,16 @@ func testFindingMeal(t *testing.T, r *meals.MealRepository) {
 }
 
 func testSavingMeal(t *testing.T, r *meals.MealRepository) {
-	m := meals.NewMealBuilder().AddIngredient(meals.MealIngredient{IngredientId: "a"}).WithName("a").Build()
+	m := meals.NewMealBuilder().AddIngredient(meals.NewMealIngredient("a")).WithName("a").Build()
 	err := r.Save(m)
 	assert.NoError(t, err)
 
-	m.AddIngredient(meals.MealIngredient{IngredientId: "b"})
+	m.AddIngredient(meals.NewMealIngredient("b"))
 	err = r.Save(m)
 	assert.NoError(t, err)
 
 	found, err := r.Find(m.Id)
 	assert.NoError(t, err)
 	assert.EqualExportedValues(t, m, found)
-	assert.Equal(t, []meals.MealIngredient{{"a"}, {"b"}}, found.MealIngredients)
+	assert.Equal(t, []meals.MealIngredient{meals.NewMealIngredient("a"), meals.NewMealIngredient("b")}, found.MealIngredients)
 }
