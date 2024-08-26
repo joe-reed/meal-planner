@@ -6,4 +6,8 @@ export type Meal = {
 
 export type MealIngredient = {
   id: string;
+  quantity: {
+    amount: number;
+    unit: string;
+  };
 };

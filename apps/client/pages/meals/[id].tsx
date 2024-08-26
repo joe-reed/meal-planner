@@ -62,12 +62,22 @@ export default function MealPage() {
         {meal.ingredients.map((ingredient) => (
           <li key={ingredient.id} className="flex w-1/2 justify-between">
             <span>{ingredients.find((i) => i.id === ingredient.id)?.name}</span>
-            <button
-              onClick={() => removeIngredientFromMeal(ingredient.id)}
-              className="ml-2 text-red-500"
-            >
-              ❌
-            </button>
+            <span>
+              <span>
+                {ingredient.quantity.amount}
+                {ingredient.quantity.unit !== "Number"
+                  ? " " +
+                    ingredient.quantity.unit +
+                    (ingredient.quantity.amount > 1 ? "s" : "")
+                  : "x"}
+              </span>
+              <button
+                onClick={() => removeIngredientFromMeal(ingredient.id)}
+                className="ml-2 text-red-500"
+              >
+                ❌
+              </button>
+            </span>
           </li>
         ))}
       </ul>
