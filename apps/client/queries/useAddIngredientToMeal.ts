@@ -4,10 +4,13 @@ export function useAddIngredientToMeal(mealId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (ingredientId: string) => {
+    mutationFn: (body: {
+      id: string;
+      quantity: { amount: number; unit: string };
+    }) => {
       return fetch(`/api/meals/${mealId}/ingredients`, {
         method: "POST",
-        body: JSON.stringify({ id: ingredientId }),
+        body: JSON.stringify(body),
       });
     },
     onSuccess: async () => {

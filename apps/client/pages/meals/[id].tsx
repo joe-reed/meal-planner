@@ -31,6 +31,14 @@ export default function MealPage() {
     id as string,
   );
 
+  const meal = mealQuery.data as Meal;
+  const ingredients = ingredientsQuery.data as Ingredient[];
+
+  const [pendingIngredient, setPendingIngredient] = useState<{
+    id: string;
+    quantity: { amount: number; unit: string };
+  } | null>(null);
+
   if ([mealQuery, ingredientsQuery].some((query) => query.isInitialLoading)) {
     return <p>Loading...</p>;
   }
@@ -42,9 +50,6 @@ export default function MealPage() {
   if (queryWithError && queryWithError.error) {
     return <p>Error: {queryWithError.error.message}</p>;
   }
-
-  const meal = mealQuery.data as Meal;
-  const ingredients = ingredientsQuery.data as Ingredient[];
 
   return (
     <div className="flex flex-col">
@@ -58,7 +63,7 @@ export default function MealPage() {
           No ingredients yet: Add one using the search box below.
         </p>
       )}
-      <ul>
+      <ul className="mb-6">
         {meal.ingredients.map((ingredient) => (
           <li key={ingredient.id} className="flex w-1/2 justify-between">
             <span>{ingredients.find((i) => i.id === ingredient.id)?.name}</span>
@@ -83,13 +88,76 @@ export default function MealPage() {
       </ul>
 
       <div className="w-full md:w-1/2">
+        {pendingIngredient && (
+          <div className="flex items-center justify-between space-x-3">
+            <div className="whitespace-nowrap">
+              {
+                ingredients.find(
+                  (ingredient) => ingredient.id === pendingIngredient.id,
+                )?.name
+              }
+            </div>
+            <div className="flex space-x-1">
+              <input
+                type="number"
+                value={pendingIngredient.quantity.amount}
+                className="px-2 py-1"
+                size={2}
+                onChange={(e) =>
+                  setPendingIngredient({
+                    ...pendingIngredient,
+                    quantity: {
+                      ...pendingIngredient.quantity,
+                      amount: parseInt(e.target.value),
+                    },
+                  })
+                }
+              />
+              <select
+                onChange={(e) => {
+                  setPendingIngredient({
+                    ...pendingIngredient,
+                    quantity: {
+                      ...pendingIngredient.quantity,
+                      unit: e.target.value,
+                    },
+                  });
+                }}
+                className="button bg-white px-2 py-1"
+              >
+                <option value="Number">Number</option>
+                <option value="Cup">Cup</option>
+                <option value="Tsp">Tsp</option>
+                <option value="Tbsp">Tbsp</option>
+                <option value="Oz">Oz</option>
+                <option value="Lb">Lb</option>
+                <option value="Gram">Gram</option>
+                <option value="Kg">Kg</option>
+              </select>
+              <button
+                onClick={() => {
+                  if (pendingIngredient) {
+                    addIngredientToMeal(pendingIngredient);
+                    setPendingIngredient(null);
+                  }
+                }}
+                className="button"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        )}
         <SearchableSelect
           options={ingredients.filter(
             (ingredient) =>
               !meal.ingredients.some((i) => i.id === ingredient.id),
           )}
           onChange={(ingredient) => {
-            addIngredientToMeal(ingredient.id);
+            setPendingIngredient({
+              id: ingredient.id,
+              quantity: { amount: 1, unit: "Number" },
+            });
           }}
           emptyUi={(query) => <AddNewIngredientModal text={query} />}
         />
