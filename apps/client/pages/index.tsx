@@ -242,15 +242,15 @@ function ShoppingList({
           if (!acc[ingredient.id]) {
             acc[ingredient.id] = {
               ...ingredient,
-              amount: 0,
+              mealCount: 0,
             };
           }
 
-          acc[ingredient.id].amount += 1;
+          acc[ingredient.id].mealCount += 1;
 
           return acc;
         },
-        {} as Record<string, Ingredient & { amount: number }>,
+        {} as Record<string, Ingredient & { mealCount: number }>,
       ),
   );
 
@@ -263,8 +263,10 @@ function ShoppingList({
             key={ingredient.id}
             className="mb-3 flex items-center justify-between leading-4"
           >
-            <span className="w-5/6 break-words">{ingredient.name}</span>
-            <span>{ingredient.amount}</span>
+            <span className="w-4/6 break-words">{ingredient.name}</span>
+            <span>
+              {ingredient.mealCount} <span className="text-xs">meals</span>
+            </span>
           </li>
         ))}
       </ul>
