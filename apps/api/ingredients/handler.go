@@ -26,7 +26,7 @@ func (h *Handler) AddIngredient(c echo.Context) error {
 		return err
 	}
 
-	i, err := NewIngredient(body.Id, body.Name)
+	i, err := NewIngredient(body.Id, body.Name, body.Category)
 	if err != nil {
 		return err
 	}

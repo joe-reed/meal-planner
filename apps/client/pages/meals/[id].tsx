@@ -12,12 +12,13 @@ import {
   ComboboxInput,
   ComboboxOption,
   ComboboxOptions,
-  Transition,
+  Select,
 } from "@headlessui/react";
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import { Ingredient, Meal } from "../../types";
 import { useAddIngredientToMeal } from "../../queries/useAddIngredientToMeal";
 import { Modal } from "../../components/Modal";
+import { useCategories } from "../../queries/useCategories";
 
 export default function MealPage() {
   const {
@@ -38,6 +39,11 @@ export default function MealPage() {
     id: string;
     quantity: { amount: number; unit: string };
   } | null>(null);
+
+  const [ingredientSearchQuery, setIngredientSearchQuery] = useState("");
+
+  const [isAddIngredientModalOpen, setIsAddIngredientModalOpen] =
+    useState(false);
 
   if ([mealQuery, ingredientsQuery].some((query) => query.isInitialLoading)) {
     return <p>Loading...</p>;
@@ -125,6 +131,7 @@ export default function MealPage() {
                 }}
                 className="button bg-white px-2 py-1"
               >
+                {/*todo: fetch these from api*/}
                 <option value="Number">Number</option>
                 <option value="Cup">Cup</option>
                 <option value="Tsp">Tsp</option>
@@ -153,13 +160,26 @@ export default function MealPage() {
             (ingredient) =>
               !meal.ingredients.some((i) => i.id === ingredient.id),
           )}
-          onChange={(ingredient) => {
+          onSelect={(ingredient) => {
             setPendingIngredient({
               id: ingredient.id,
               quantity: { amount: 1, unit: "Number" },
             });
           }}
-          emptyUi={(query) => <AddNewIngredientModal text={query} />}
+          onInputChange={(query) => setIngredientSearchQuery(query)}
+          emptyUi={() => (
+            <button
+              onClick={() => setIsAddIngredientModalOpen(true)}
+              className="underline"
+            >
+              Add new ingredient
+            </button>
+          )}
+        />
+        <AddNewIngredientModal
+          text={ingredientSearchQuery}
+          isOpen={isAddIngredientModalOpen}
+          setIsOpen={setIsAddIngredientModalOpen}
         />
       </div>
     </div>
@@ -170,11 +190,13 @@ type Option = { id: string; name: string };
 
 function SearchableSelect({
   options,
-  onChange,
+  onSelect,
+  onInputChange,
   emptyUi,
 }: {
   options: Option[];
-  onChange: (option: Option) => void;
+  onSelect: (option: Option) => void;
+  onInputChange?: (query: string) => void;
   emptyUi?: (query: string) => React.ReactNode;
 }) {
   const [query, setQuery] = useState("");
@@ -190,8 +212,11 @@ function SearchableSelect({
     <Combobox
       onChange={(option: Option) => {
         if (!option) return;
+        onSelect(option);
+      }}
+      onClose={() => {
         setQuery("");
-        onChange(option);
+        onInputChange && onInputChange("");
       }}
       immediate
     >
@@ -199,7 +224,10 @@ function SearchableSelect({
         <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
           <ComboboxInput
             className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              onInputChange && onInputChange(event.target.value);
+            }}
             value={query}
             autoFocus
           />
@@ -209,87 +237,109 @@ function SearchableSelect({
             </span>
           </ComboboxButton>
         </div>
-        <Transition
-          as={Fragment}
-          leave="transition ease-in duration-100"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-          afterLeave={() => setQuery("")}
+        <ComboboxOptions
+          transition
+          className="absolute mt-1 max-h-60 w-full origin-top overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 transition duration-200 ease-out empty:invisible focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 sm:text-sm"
         >
-          <ComboboxOptions className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-            {filteredOptions.length === 0 ? (
-              <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
-                <span className="mr-3">No options</span>
-                {emptyUi && emptyUi(query)}
-              </div>
-            ) : (
-              filteredOptions.map((option) => (
-                <ComboboxOption
-                  key={option.id}
-                  value={option}
-                  className="ui-active:bg-teal-600 ui-active:text-white ui-not-active:text-gray-900 relative cursor-default select-none py-2 pl-10 pr-4"
-                >
-                  {option.name}
-                </ComboboxOption>
-              ))
-            )}
-          </ComboboxOptions>
-        </Transition>
+          {filteredOptions.length === 0 ? (
+            <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
+              <span className="mr-3">No results found</span>
+              {emptyUi && emptyUi(query)}
+            </div>
+          ) : (
+            filteredOptions.map((option) => (
+              <ComboboxOption
+                key={option.id}
+                value={option}
+                className="ui-active:bg-teal-600 ui-active:text-white ui-not-active:text-gray-900 relative cursor-default select-none py-2 pl-10 pr-4"
+              >
+                {option.name}
+              </ComboboxOption>
+            ))
+          )}
+        </ComboboxOptions>
       </div>
     </Combobox>
   );
 }
 
-function AddNewIngredientModal({ text }: { text: string }) {
+function AddNewIngredientModal({
+  text,
+  isOpen,
+  setIsOpen,
+}: {
+  text: string;
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+}) {
   const { mutateAsync } = useCreateIngredient();
 
+  const { data: categories } = useCategories();
+
   return (
-    <Modal
-      trigger={(onClick) => (
-        <button onClick={onClick} className="underline">
-          Add new ingredient
-        </button>
-      )}
-      title="Add new ingredient"
-      body={(close) => (
-        <div className="flex justify-between px-6">
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
+    <>
+      <Modal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        title="Add new ingredient"
+        body={(close) => (
+          <div className="flex justify-between px-6">
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
 
-              const formData = new FormData(e.target as HTMLFormElement);
-              const name = formData.get("name") as string;
+                const formData = new FormData(e.target as HTMLFormElement);
+                const name = formData.get("name") as string;
+                const category = formData.get("category") as string;
 
-              await mutateAsync({
-                name,
-              });
+                await mutateAsync({
+                  name,
+                  category,
+                });
 
-              close();
-            }}
-          >
-            <label className="mb-3 block">
-              <span className="mr-2">Name</span>
-              <input
-                type="text"
-                name="name"
-                required
-                className="rounded-md border py-1 px-2 leading-none"
-                defaultValue={text}
-                autoFocus
-              />
-            </label>
-            <div>
-              <button type="submit" className="button mr-3">
-                Create
-              </button>
+                close();
+              }}
+            >
+              <label className="mb-3 block">
+                <span className="mr-2">Name</span>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  className="rounded-md border py-1 px-2 leading-none"
+                  defaultValue={text}
+                />
+              </label>
 
-              <button onClick={close} className="underline">
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-    />
+              <label className="mb-3 block">
+                <span className="mr-2">Category</span>
+                <Select
+                  name="category"
+                  aria-label="Ingredient category"
+                  className="rounded-md border bg-white py-1 px-2 leading-none"
+                >
+                  <option value="">Select a category</option>
+                  {categories?.map((category) => (
+                    <option key={category.name} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </Select>
+              </label>
+
+              <div>
+                <button type="submit" className="button mr-3">
+                  Create
+                </button>
+
+                <button onClick={close} className="underline">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      />
+    </>
   );
 }

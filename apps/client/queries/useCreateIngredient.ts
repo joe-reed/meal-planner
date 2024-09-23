@@ -5,7 +5,7 @@ export function useCreateIngredient() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (ingredient: { name: string }) => {
+    mutationFn: (ingredient: { name: string; category: string }) => {
       return fetch("/api/ingredients", {
         method: "POST",
         body: JSON.stringify({ ...ingredient, id: uuid() }),

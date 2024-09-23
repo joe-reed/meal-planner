@@ -1,70 +1,79 @@
 package ingredients
 
 import (
-  "github.com/google/uuid"
-  "github.com/hallgren/eventsourcing"
+	"github.com/google/uuid"
+	"github.com/hallgren/eventsourcing"
+	"github.com/joe-reed/meal-planner/apps/api/categories"
 )
 
 type Ingredient struct {
-  eventsourcing.AggregateRoot
-  Id   string `json:"id"`
-  Name string `json:"name"`
+	eventsourcing.AggregateRoot
+	Id       string              `json:"id"`
+	Name     string              `json:"name"`
+	Category categories.Category `json:"category"`
 }
 
 func (m *Ingredient) Transition(event eventsourcing.Event) {
-  switch e := event.Data().(type) {
-  case *Created:
-    m.Id = e.Id
-    m.Name = e.Name
-  }
+	switch e := event.Data().(type) {
+	case *Created:
+		m.Id = e.Id
+		m.Name = e.Name
+		m.Category = e.Category
+	}
 }
 
 func (m *Ingredient) Register(r eventsourcing.RegisterFunc) {
-  r(&Created{})
+	r(&Created{})
 }
 
-func NewIngredient(id string, name string) (*Ingredient, error) {
-  i := &Ingredient{}
-  err := i.SetID(id)
-  if err != nil {
-    return nil, err
-  }
-  i.TrackChange(i, &Created{Id: id, Name: name})
+func NewIngredient(id string, name string, category categories.Category) (*Ingredient, error) {
+	i := &Ingredient{}
+	err := i.SetID(id)
+	if err != nil {
+		return nil, err
+	}
+	i.TrackChange(i, &Created{Id: id, Name: name, Category: category})
 
-  return i, nil
+	return i, nil
 }
 
 type IngredientBuilder struct {
-  id   string
-  name string
+	id       string
+	name     string
+	category categories.Category
 }
 
 func (b *IngredientBuilder) WithName(name string) *IngredientBuilder {
-  b.name = name
-  return b
+	b.name = name
+	return b
 }
 
 func (b *IngredientBuilder) WithId(id string) *IngredientBuilder {
-  b.id = id
-  return b
+	b.id = id
+	return b
+}
+
+func (b *IngredientBuilder) WithCategory(category categories.Category) *IngredientBuilder {
+	b.category = category
+	return b
 }
 
 func (b *IngredientBuilder) Build() *Ingredient {
-  id := uuid.New().String()
+	id := uuid.New().String()
 
-  if b.id != "" {
-    id = b.id
-  }
+	if b.id != "" {
+		id = b.id
+	}
 
-  i, err := NewIngredient(id, b.name)
+	i, err := NewIngredient(id, b.name, b.category)
 
-  if err != nil {
-    return nil
-  }
+	if err != nil {
+		return nil
+	}
 
-  return i
+	return i
 }
 
 func NewIngredientBuilder() *IngredientBuilder {
-  return &IngredientBuilder{"", ""}
+	return &IngredientBuilder{"", "", categories.Fruit}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"github.com/joe-reed/meal-planner/apps/api/categories"
 	"github.com/joe-reed/meal-planner/apps/api/database"
 	"github.com/joe-reed/meal-planner/apps/api/ingredients"
 	"github.com/joe-reed/meal-planner/apps/api/meals"
@@ -21,6 +22,7 @@ func main() {
 	addMealRoutes(e, db)
 	addShopRoutes(e, db)
 	addIngredientRoutes(e, db)
+	addCategoryRoutes(e)
 
 	e.Debug = true
 
@@ -69,4 +71,10 @@ func addIngredientRoutes(e *echo.Echo, db *sql.DB) {
 
 	e.GET("/ingredients", handler.GetIngredients)
 	e.POST("/ingredients", handler.AddIngredient)
+}
+
+func addCategoryRoutes(e *echo.Echo) {
+	handler := categories.Handler{}
+
+	e.GET("/categories", handler.GetCategories)
 }

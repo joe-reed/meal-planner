@@ -2,17 +2,22 @@ import React, { useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
 export type Props = {
-  trigger: (onClick: () => void) => React.ReactNode;
+  trigger?: (onClick: () => void) => React.ReactNode;
   title: string;
   body: (close: () => void) => React.ReactNode;
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
 };
 
-export function Modal({ trigger, title, body }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export function Modal({ isOpen, setIsOpen, trigger, title, body }: Props) {
+  const [internalIsOpen, internalSetIsOpen] = useState(false);
+
+  isOpen = isOpen ?? internalIsOpen;
+  setIsOpen = setIsOpen ?? internalSetIsOpen;
 
   return (
     <>
-      {trigger(() => setIsOpen(true))}
+      {trigger && trigger(() => setIsOpen(true))}
       <Dialog
         open={isOpen}
         onClose={() => setIsOpen(false)}

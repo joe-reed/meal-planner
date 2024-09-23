@@ -1,6 +1,7 @@
 package ingredients_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/categories"
 	"github.com/joe-reed/meal-planner/apps/api/database"
 	"github.com/joe-reed/meal-planner/apps/api/ingredients"
 	"os"
@@ -59,9 +60,9 @@ func testAddingIngredient(t *testing.T, r *ingredients.IngredientRepository) {
 }
 
 func testGettingIngredients(t *testing.T, r *ingredients.IngredientRepository) {
-	i1 := ingredients.NewIngredientBuilder().WithName("c").Build()
-	i2 := ingredients.NewIngredientBuilder().WithName("b").Build()
-	i3 := ingredients.NewIngredientBuilder().WithName("a").Build()
+	i1 := ingredients.NewIngredientBuilder().WithName("c").WithCategory(categories.Frozen).Build()
+	i2 := ingredients.NewIngredientBuilder().WithName("b").WithCategory(categories.Vegetables).Build()
+	i3 := ingredients.NewIngredientBuilder().WithName("a").WithCategory(categories.SeedsNutsAndDriedFruits).Build()
 
 	err := r.Add(i1)
 	assert.NoError(t, err)
