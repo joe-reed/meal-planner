@@ -38,11 +38,20 @@ export default function Index() {
 
   return (
     <>
-      <nav className="mb-2 flex justify-end space-x-2">
-        <Link href="/meals/create" className="button">
-          🍲 Create meal
-        </Link>
-        <StartShopButton />
+      <nav className="mb-7 flex justify-between">
+        <span className="space-x-2">
+          <Link href="/meals/create" className="button">
+            🍲 Create meal
+          </Link>
+
+          <NewShopButton />
+        </span>
+
+        <span className="space-x-2">
+          <Link href="/shop" className="button">
+            🛒 Go shopping
+          </Link>
+        </span>
       </nav>
       <section className="mb-4">
         <Meals meals={meals} currentShop={currentShop} />
@@ -113,7 +122,9 @@ function CurrentShop({
         <>
           <div className="mb-2 flex justify-between">
             <h2 className="font-bold">Shop #{currentShop.id}</h2>
-            <h3 className="text-xs font-bold">{meals.length} meals</h3>
+            <h3 className="text-xs font-bold">
+              {currentShop.meals.length} meals
+            </h3>
           </div>
           <ul className="flex flex-col space-y-1">
             {currentShop.meals.map((meal) => (
@@ -127,23 +138,23 @@ function CurrentShop({
           </ul>
         </>
       ) : (
-        <p>Click Start Shop to get started!</p>
+        <p>Click New Shop to get started!</p>
       )}
     </>
   );
 }
 
-function StartShopButton() {
+function NewShopButton() {
   const { mutate } = useStartShop();
 
   return (
     <Modal
       trigger={(onClick) => (
         <button className="button" onClick={onClick}>
-          🛒 Start Shop
+          🆕 New Shop
         </button>
       )}
-      title="Start new shop"
+      title="New shop"
       body={(close) => (
         <>
           <p className="mb-2">Are you sure you want to start a new shop?</p>
@@ -162,7 +173,7 @@ function StartShopButton() {
               }}
             >
               <button type="submit" className="button">
-                Start
+                Go
               </button>
             </form>
 
