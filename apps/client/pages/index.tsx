@@ -10,6 +10,7 @@ import {
 import { Meal, Ingredient, Shop } from "../types";
 import React, { PropsWithChildren } from "react";
 import { Modal } from "../components/Modal";
+import clsx from "clsx";
 
 export default function Index() {
   const mealsQuery = useMeals();
@@ -38,29 +39,32 @@ export default function Index() {
 
   return (
     <>
-      <nav className="mb-7 flex justify-between">
-        <span className="space-x-2">
-          <Link href="/meals/create" className="button">
+      <nav className="mb-7 flex flex-col justify-between sm:flex-row">
+        <span className="sm:space-x-2">
+          <Link
+            href="/meals/create"
+            className="button mb-2 block text-center sm:mb-0 sm:inline"
+          >
             🍲 Create meal
           </Link>
 
-          <NewShopButton />
+          <NewShopButton className="mb-2 block w-full sm:mb-0 sm:inline sm:w-auto" />
         </span>
 
         <span className="space-x-2">
-          <Link href="/shop" className="button">
+          <Link href="/shop" className="button block w-full text-center">
             🛒 Go shopping
           </Link>
         </span>
       </nav>
-      <section className="mb-4">
+      <section className="mb-8">
         <Meals meals={meals} currentShop={currentShop} />
       </section>
-      <section className="flex justify-between">
-        <div className="mr-4 w-1/2 md:mr-0">
+      <section className="flex flex-wrap justify-between">
+        <div className="mb-8 w-full pr-4 sm:mb-0 sm:w-1/2 xl:pr-0">
           <CurrentShop meals={meals} currentShop={currentShop} />
         </div>
-        <div className="w-1/2 md:w-1/4">
+        <div className="w-full sm:w-1/2 xl:w-1/4">
           <ShoppingList
             meals={meals}
             currentShop={currentShop}
@@ -144,13 +148,13 @@ function CurrentShop({
   );
 }
 
-function NewShopButton() {
+function NewShopButton({ className }: { className?: string }) {
   const { mutate } = useStartShop();
 
   return (
     <Modal
       trigger={(onClick) => (
-        <button className="button" onClick={onClick}>
+        <button className={clsx("button", className)} onClick={onClick}>
           🆕 New Shop
         </button>
       )}

@@ -12,8 +12,8 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Meal planner</title>
       </Head>
       <QueryClientProvider client={queryClient}>
-        <main className="p-5 flex justify-center">
-          <div className="w-full md:w-1/2">
+        <main className="flex justify-center p-5">
+          <div className="w-full md:w-2/3 lg:w-1/2">
             <Component {...pageProps} />
           </div>
         </main>
