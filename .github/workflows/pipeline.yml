@@ -37,6 +37,7 @@ jobs:
           file: ./apps/api/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          platforms: linux/arm64
 
   build-client:
     name: Build and push Client
@@ -64,3 +65,4 @@ jobs:
           file: ./apps/client/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          platforms: linux/arm64
