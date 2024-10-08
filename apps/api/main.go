@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"github.com/joe-reed/meal-planner/apps/api/basket"
 	"github.com/joe-reed/meal-planner/apps/api/categories"
 	"github.com/joe-reed/meal-planner/apps/api/database"
 	"github.com/joe-reed/meal-planner/apps/api/ingredients"
@@ -23,10 +24,25 @@ func main() {
 	addShopRoutes(e, db)
 	addIngredientRoutes(e, db)
 	addCategoryRoutes(e)
+	addBasketRoutes(e, db)
 
 	e.Debug = true
 
 	e.Logger.Fatal(e.Start("localhost:1323"))
+}
+
+func addBasketRoutes(e *echo.Echo, db *sql.DB) {
+	r, err := basket.NewSqliteBasketRepository(db)
+
+	if err != nil {
+		e.Logger.Fatal(e)
+	}
+
+	handler := basket.Handler{BasketRepository: r}
+
+	e.POST("/baskets/:shopId/items", handler.AddItemToBasket)
+	e.GET("/baskets/:shopId", handler.GetBasketItems)
+	e.DELETE("/baskets/:shopId/items/:ingredientId", handler.RemoveItemFromBasket)
 }
 
 func addMealRoutes(e *echo.Echo, db *sql.DB) {
