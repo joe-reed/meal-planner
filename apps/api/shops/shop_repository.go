@@ -81,16 +81,3 @@ func (r ShopRepository) Find(id int) (*Shop, error) {
 func (r ShopRepository) Save(s *Shop) error {
 	return r.er.Save(s)
 }
-
-func cloneShop(s *Shop) (*Shop, error) {
-	result, err := NewShop(s.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, m := range s.Meals {
-		result.AddMeal(m)
-	}
-
-	return result, nil
-}
