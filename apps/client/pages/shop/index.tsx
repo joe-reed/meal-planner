@@ -2,23 +2,33 @@ import { useCurrentShop, useIngredients, useMeals } from "../../queries";
 import { Ingredient, Meal, Shop } from "../../types";
 import React from "react";
 import BackButton from "../../components/BackButton";
+import { useBasket } from "../../queries/useBasket";
+import clsx from "clsx";
+import { useAddItemToBasket } from "../../queries/useAddItemToBasket";
+import { useRemoveItemFromBasket } from "../../queries/useRemoveItemFromBasket";
 
 export default function ShopPage() {
   const mealsQuery = useMeals();
   const currentShopQuery = useCurrentShop();
   const ingredientsQuery = useIngredients();
+  const shopId = currentShopQuery.data?.id;
+
+  const basketQuery = useBasket(shopId, !!shopId);
 
   if (
-    [mealsQuery, currentShopQuery, ingredientsQuery].some(
+    [mealsQuery, currentShopQuery, ingredientsQuery, basketQuery].some(
       (query) => query.isInitialLoading,
     )
   ) {
     return <p>Loading...</p>;
   }
 
-  const queryWithError = [mealsQuery, currentShopQuery, ingredientsQuery].find(
-    (query) => query.isError,
-  );
+  const queryWithError = [
+    mealsQuery,
+    currentShopQuery,
+    ingredientsQuery,
+    basketQuery,
+  ].find((query) => query.isError);
 
   if (queryWithError && queryWithError.error) {
     return <p>Error: {queryWithError.error.message}</p>;
@@ -27,6 +37,7 @@ export default function ShopPage() {
   const meals = mealsQuery.data as Meal[];
   const currentShop = currentShopQuery.data as Shop | null;
   const ingredients = ingredientsQuery.data as Ingredient[];
+  const basket = basketQuery.data;
 
   const shopIngredients = Object.values(
     (currentShop?.meals ?? [])
@@ -37,33 +48,43 @@ export default function ShopPage() {
           return ingredients.find((i) => i.id === ingredient.id) as Ingredient;
         });
       })
-      .reduce<{ [ingredientId: string]: Ingredient & { mealCount: number } }>(
-        (acc, ingredient) => {
-          if (!acc[ingredient.id]) {
-            acc[ingredient.id] = {
-              ...ingredient,
-              mealCount: 0,
-            };
-          }
+      .map((ingredient) => ({
+        ...ingredient,
+        isInBasket:
+          basket?.items.some((item) => item.ingredientId === ingredient.id) ??
+          false,
+      }))
+      .reduce<{
+        [ingredientId: string]: Ingredient & {
+          mealCount: number;
+          isInBasket: boolean;
+        };
+      }>((acc, ingredient) => {
+        if (!acc[ingredient.id]) {
+          acc[ingredient.id] = {
+            ...ingredient,
+            mealCount: 0,
+          };
+        }
 
-          acc[ingredient.id].mealCount += 1;
+        acc[ingredient.id].mealCount += 1;
 
-          return acc;
-        },
-        {},
-      ),
-  ).reduce<{ [category: string]: (Ingredient & { mealCount: number })[] }>(
-    (acc, ingredient) => {
-      const { category } = ingredient;
+        return acc;
+      }, {}),
+  ).reduce<{
+    [category: string]: (Ingredient & {
+      mealCount: number;
+      isInBasket: boolean;
+    })[];
+  }>((acc, ingredient) => {
+    const { category } = ingredient;
 
-      acc[category] = acc[category] || [];
+    acc[category] = acc[category] || [];
 
-      acc[category].push(ingredient);
+    acc[category].push(ingredient);
 
-      return acc;
-    },
-    {},
-  );
+    return acc;
+  }, {});
 
   return (
     <div className="flex w-full flex-col">
@@ -78,21 +99,57 @@ export default function ShopPage() {
             <h2 className="mb-2 text-xl font-bold">{category}</h2>
             <ul>
               {categoryIngredients.map((ingredient) => (
-                <li
+                <IngredientListItem
                   key={ingredient.id}
-                  className="mb-3 flex items-center justify-between leading-4"
-                >
-                  <span className="w-4/6 break-words">{ingredient.name}</span>
-                  <span>
-                    {ingredient.mealCount}{" "}
-                    <span className="text-xs">meals</span>
-                  </span>
-                </li>
+                  ingredient={ingredient}
+                  shopId={shopId as string}
+                />
               ))}
             </ul>
           </div>
         ),
       )}
     </div>
+  );
+}
+
+function IngredientListItem({
+  ingredient,
+  shopId,
+}: {
+  ingredient: Ingredient & {
+    mealCount: number;
+    isInBasket: boolean;
+  };
+  shopId: string;
+}) {
+  const { mutate: addItemToBasket } = useAddItemToBasket(shopId);
+  const { mutate: removeItemFromBasket } = useRemoveItemFromBasket(shopId);
+
+  return (
+    <li className="mb-3 flex items-center justify-between leading-4">
+      <label
+        className={clsx("flex w-full justify-between break-words pr-6", {
+          "line-through": ingredient.isInBasket,
+        })}
+      >
+        {ingredient.name}
+
+        <input
+          type="checkbox"
+          checked={ingredient.isInBasket}
+          onChange={() => {
+            if (ingredient.isInBasket) {
+              removeItemFromBasket(ingredient.id);
+            } else {
+              addItemToBasket({ ingredientId: ingredient.id });
+            }
+          }}
+        />
+      </label>
+      <span className="flex-no-shrink whitespace-nowrap">
+        {ingredient.mealCount} <span className="text-xs">meals</span>
+      </span>
+    </li>
   );
 }
