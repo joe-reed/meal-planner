@@ -1,12 +1,14 @@
 package shops
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type Handler struct {
 	ShopRepository *ShopRepository
+	Publisher      func(string)
 }
 
 func (h *Handler) CurrentShop(c echo.Context) error {
@@ -38,6 +40,8 @@ func (h *Handler) StartShop(c echo.Context) error {
 	}
 
 	err = h.ShopRepository.Save(newShop)
+
+	h.Publisher(fmt.Sprintf("shopStarted:%d", newShop.Id))
 
 	return c.JSON(http.StatusOK, shop)
 }
