@@ -14,11 +14,16 @@ import {
   ComboboxOptions,
   Select,
 } from "@headlessui/react";
-import React, { useState } from "react";
+import React, { Ref, useRef, useState } from "react";
 import { Ingredient, Meal } from "../../types";
 import { useAddIngredientToMeal } from "../../queries/useAddIngredientToMeal";
 import { Modal } from "../../components/Modal";
 import { useCategories } from "../../queries/useCategories";
+
+type PendingIngredient = {
+  id: string;
+  quantity: { amount: number; unit: string };
+};
 
 export default function MealPage() {
   const {
@@ -35,15 +40,36 @@ export default function MealPage() {
   const meal = mealQuery.data as Meal;
   const ingredients = ingredientsQuery.data as Ingredient[];
 
-  const [pendingIngredient, setPendingIngredient] = useState<{
-    id: string;
-    quantity: { amount: number; unit: string };
-  } | null>(null);
+  const [pendingIngredient, setPendingIngredient] =
+    useState<PendingIngredient | null>(null);
 
   const [ingredientSearchQuery, setIngredientSearchQuery] = useState("");
 
   const [isAddIngredientModalOpen, setIsAddIngredientModalOpen] =
     useState(false);
+
+  const numberInputRef = useRef<HTMLInputElement>(null);
+
+  const ingredientSearchInputRef = useRef<HTMLInputElement>(null);
+
+  function selectIngredient(ingredient: Ingredient) {
+    setPendingIngredient({
+      id: ingredient.id,
+      quantity: { amount: 1, unit: "Number" },
+    });
+    setIngredientSearchQuery("");
+    setTimeout(() => {
+      numberInputRef.current?.focus();
+    }, 10);
+  }
+
+  function addIngredient(pendingIngredient: PendingIngredient) {
+    addIngredientToMeal(pendingIngredient);
+    setPendingIngredient(null);
+
+    ingredientSearchInputRef.current?.focus();
+    ingredientSearchInputRef.current?.select();
+  }
 
   if ([mealQuery, ingredientsQuery].some((query) => query.isInitialLoading)) {
     return <p>Loading...</p>;
@@ -93,9 +119,9 @@ export default function MealPage() {
         ))}
       </ul>
 
-      <div className="w-full md:w-1/2">
+      <div className="w-full md:w-2/3">
         {pendingIngredient && (
-          <div className="flex items-center justify-between space-x-3">
+          <div className="mb-10 flex items-center justify-between space-x-3">
             <div className="whitespace-nowrap">
               {
                 ingredients.find(
@@ -105,9 +131,10 @@ export default function MealPage() {
             </div>
             <div className="flex space-x-1">
               <input
+                ref={numberInputRef}
                 type="number"
                 value={pendingIngredient.quantity.amount}
-                className="px-2 py-1"
+                className="button bg-white px-2 py-1"
                 size={2}
                 onChange={(e) =>
                   setPendingIngredient({
@@ -130,6 +157,7 @@ export default function MealPage() {
                   });
                 }}
                 className="button bg-white px-2 py-1"
+                autoFocus
               >
                 {/*todo: fetch these from api*/}
                 <option value="Number">Number</option>
@@ -144,8 +172,7 @@ export default function MealPage() {
               <button
                 onClick={() => {
                   if (pendingIngredient) {
-                    addIngredientToMeal(pendingIngredient);
-                    setPendingIngredient(null);
+                    addIngredient(pendingIngredient);
                   }
                 }}
                 className="button"
@@ -155,32 +182,29 @@ export default function MealPage() {
             </div>
           </div>
         )}
-        <SearchableSelect
-          options={ingredients.filter(
-            (ingredient) =>
-              !meal.ingredients.some((i) => i.id === ingredient.id),
-          )}
-          onSelect={(ingredient) => {
-            setPendingIngredient({
-              id: ingredient.id,
-              quantity: { amount: 1, unit: "Number" },
-            });
-          }}
-          onInputChange={(query) => setIngredientSearchQuery(query)}
-          emptyUi={() => (
-            <button
-              onClick={() => setIsAddIngredientModalOpen(true)}
-              className="underline"
-            >
-              Add new ingredient
-            </button>
-          )}
-        />
-        <AddNewIngredientModal
-          text={ingredientSearchQuery}
-          isOpen={isAddIngredientModalOpen}
-          setIsOpen={setIsAddIngredientModalOpen}
-        />
+        <div className="flex items-center">
+          <SearchableSelect<Ingredient>
+            options={ingredients.filter(
+              (ingredient) =>
+                !meal.ingredients.some((i) => i.id === ingredient.id),
+            )}
+            onSelect={selectIngredient}
+            onInputChange={(query) => setIngredientSearchQuery(query)}
+            inputRef={ingredientSearchInputRef}
+          />
+          <button
+            onClick={() => setIsAddIngredientModalOpen(true)}
+            className="ml-2 whitespace-nowrap underline"
+          >
+            Add new ingredient
+          </button>
+          <AddNewIngredientModal
+            text={ingredientSearchQuery}
+            isOpen={isAddIngredientModalOpen}
+            setIsOpen={setIsAddIngredientModalOpen}
+            onAdd={selectIngredient}
+          />
+        </div>
       </div>
     </div>
   );
@@ -188,16 +212,16 @@ export default function MealPage() {
 
 type Option = { id: string; name: string };
 
-function SearchableSelect({
+function SearchableSelect<T extends Option>({
   options,
   onSelect,
   onInputChange,
-  emptyUi,
+  inputRef,
 }: {
-  options: Option[];
-  onSelect: (option: Option) => void;
+  options: T[];
+  onSelect: (option: T) => void;
   onInputChange?: (query: string) => void;
-  emptyUi?: (query: string) => React.ReactNode;
+  inputRef?: Ref<HTMLInputElement>;
 }) {
   const [query, setQuery] = useState("");
 
@@ -210,13 +234,10 @@ function SearchableSelect({
 
   return (
     <Combobox
-      onChange={(option: Option) => {
+      onChange={(option: T) => {
         if (!option) return;
         onSelect(option);
-      }}
-      onClose={() => {
         setQuery("");
-        onInputChange && onInputChange("");
       }}
       immediate
     >
@@ -229,6 +250,7 @@ function SearchableSelect({
               onInputChange && onInputChange(event.target.value);
             }}
             value={query}
+            ref={inputRef}
             autoFocus
           />
           <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -244,7 +266,6 @@ function SearchableSelect({
           {filteredOptions.length === 0 ? (
             <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
               <span className="mr-3">No results found</span>
-              {emptyUi && emptyUi(query)}
             </div>
           ) : (
             filteredOptions.map((option) => (
@@ -267,10 +288,12 @@ function AddNewIngredientModal({
   text,
   isOpen,
   setIsOpen,
+  onAdd,
 }: {
   text: string;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
+  onAdd: (ingredient: Ingredient) => void;
 }) {
   const { mutateAsync } = useCreateIngredient();
 
@@ -292,10 +315,12 @@ function AddNewIngredientModal({
                 const name = formData.get("name") as string;
                 const category = formData.get("category") as string;
 
-                await mutateAsync({
+                const response = await mutateAsync({
                   name,
                   category,
                 });
+
+                onAdd(await response.json());
 
                 close();
               }}
@@ -308,6 +333,7 @@ function AddNewIngredientModal({
                   required
                   className="rounded-md border py-1 px-2 leading-none"
                   defaultValue={text}
+                  data-autofocus
                 />
               </label>
 
