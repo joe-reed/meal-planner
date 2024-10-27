@@ -15,6 +15,12 @@ export default function ShopPage() {
 
   const basketQuery = useBasket(shopId, !!shopId);
 
+  const [showItemsInBasket, setShowItemsInBasket] = React.useState(false);
+
+  function toggleShowItemsInBasket() {
+    setShowItemsInBasket(!showItemsInBasket);
+  }
+
   if (
     [mealsQuery, currentShopQuery, ingredientsQuery, basketQuery].some(
       (query) => query.isInitialLoading,
@@ -71,26 +77,33 @@ export default function ShopPage() {
 
         return acc;
       }, {}),
-  ).reduce<{
-    [category: string]: (Ingredient & {
-      mealCount: number;
-      isInBasket: boolean;
-    })[];
-  }>((acc, ingredient) => {
-    const { category } = ingredient;
+  )
+    .filter((ingredient) => showItemsInBasket || !ingredient.isInBasket)
+    .reduce<{
+      [category: string]: (Ingredient & {
+        mealCount: number;
+        isInBasket: boolean;
+      })[];
+    }>((acc, ingredient) => {
+      const { category } = ingredient;
 
-    acc[category] = acc[category] || [];
+      acc[category] = acc[category] || [];
 
-    acc[category].push(ingredient);
+      acc[category].push(ingredient);
 
-    return acc;
-  }, {});
+      return acc;
+    }, {});
 
   return (
     <div className="flex w-full flex-col">
-      <div className="mb-4 flex items-center">
-        <BackButton className="mr-3" destination="/" />
-        <h1 className="text-lg font-bold">Current shop</h1>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center">
+          <BackButton className="mr-3" destination="/" />
+          <h1 className="text-lg font-bold">Current shop</h1>
+        </div>
+        <button onClick={toggleShowItemsInBasket} className="button">
+          Toggle showing all items
+        </button>
       </div>
 
       {Object.entries(shopIngredients).map(
