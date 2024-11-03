@@ -1,3 +1,2 @@
 Dockerfile
 .env.local
-apps/client/.next
