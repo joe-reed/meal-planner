@@ -1,4 +1,4 @@
-FROM node:alpine as builder
+FROM node:20-alpine as builder
 WORKDIR /build
 ENV NX_DAEMON=false
 RUN npx next telemetry disable
@@ -7,7 +7,7 @@ RUN npm install
 COPY ./apps/client ./apps/client
 RUN npx nx build client --skip-nx-cache
 
-FROM node:alpine
+FROM node:20-alpine
 WORKDIR /app
 ENV NX_DAEMON=false
 COPY --from=builder /build/dist/apps/client/package.json ./
