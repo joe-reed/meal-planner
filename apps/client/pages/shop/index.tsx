@@ -106,7 +106,7 @@ export default function ShopPage() {
           <h1 className="text-lg font-bold">Current shop</h1>
         </div>
         <button onClick={toggleShowItemsInBasket} className="button">
-          Toggle showing all items
+          Toggle all
         </button>
       </div>
 
