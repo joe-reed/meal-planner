@@ -8,7 +8,10 @@ export default function CreateMeal() {
 
   return (
     <div>
-      <BackButton destination="/" />
+      <div className="mb-4">
+        <BackButton destination="/" />
+      </div>
+
       <form
         className="flex flex-col items-start"
         onSubmit={async (e) => {
