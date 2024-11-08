@@ -97,7 +97,7 @@ export default function MealPage() {
       )}
       <ul className="mb-6">
         {meal.ingredients.map((ingredient) => (
-          <li key={ingredient.id} className="flex w-1/2 justify-between">
+          <li key={ingredient.id} className="flex justify-between md:w-1/2">
             <span>{ingredients.find((i) => i.id === ingredient.id)?.name}</span>
             <span>
               <span>
