@@ -306,7 +306,7 @@ function AddNewIngredientModal({
         setIsOpen={setIsOpen}
         title="Add new ingredient"
         body={(close) => (
-          <div className="flex justify-between px-6">
+          <div className="flex justify-between">
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -325,8 +325,8 @@ function AddNewIngredientModal({
                 close();
               }}
             >
-              <label className="mb-3 block">
-                <span className="mr-2">Name</span>
+              <label className="mb-3 flex flex-col">
+                <span>Name</span>
                 <input
                   type="text"
                   name="name"
@@ -337,8 +337,8 @@ function AddNewIngredientModal({
                 />
               </label>
 
-              <label className="mb-3 block">
-                <span className="mr-2">Category</span>
+              <label className="mb-3 flex flex-col">
+                <span>Category</span>
                 <Select
                   name="category"
                   aria-label="Ingredient category"

@@ -10,6 +10,7 @@ export default function CreateMeal() {
     <div>
       <BackButton destination="/" />
       <form
+        className="flex flex-col items-start"
         onSubmit={async (e) => {
           e.preventDefault();
 
@@ -22,14 +23,13 @@ export default function CreateMeal() {
           await push(`/meals/${meal.id}`);
         }}
       >
-        <label className="mr-2">
-          <span className="mr-2">Name</span>
+        <label className="mb-3 flex flex-col">
+          <span>Name</span>
           <input
             type="text"
             name="name"
             required
             className="rounded-md border py-1 px-2 leading-none"
-            autoFocus
           />
         </label>
 
