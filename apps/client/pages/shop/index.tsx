@@ -77,22 +77,26 @@ export default function ShopPage() {
 
         return acc;
       }, {}),
-  )
-    .filter((ingredient) => showItemsInBasket || !ingredient.isInBasket)
-    .reduce<{
-      [category: string]: (Ingredient & {
-        mealCount: number;
-        isInBasket: boolean;
-      })[];
-    }>((acc, ingredient) => {
-      const { category } = ingredient;
+  );
 
-      acc[category] = acc[category] || [];
+  const filteredIngredients = shopIngredients.filter(
+    (ingredient) => showItemsInBasket || !ingredient.isInBasket,
+  );
 
-      acc[category].push(ingredient);
+  const categorisedIngredients = filteredIngredients.reduce<{
+    [category: string]: (Ingredient & {
+      mealCount: number;
+      isInBasket: boolean;
+    })[];
+  }>((acc, ingredient) => {
+    const { category } = ingredient;
 
-      return acc;
-    }, {});
+    acc[category] = acc[category] || [];
+
+    acc[category].push(ingredient);
+
+    return acc;
+  }, {});
 
   return (
     <div className="flex w-full flex-col">
@@ -106,7 +110,20 @@ export default function ShopPage() {
         </button>
       </div>
 
-      {Object.entries(shopIngredients).map(
+      {filteredIngredients.length === 0 ? (
+        shopIngredients.length === 0 ? (
+          <p className="text-center">
+            No ingredients in this shop yet. Go back and add some meals!
+          </p>
+        ) : (
+          <p className="text-center">
+            All ingredients are in basket. Use the button above to show all
+            ingredients.
+          </p>
+        )
+      ) : null}
+
+      {Object.entries(categorisedIngredients).map(
         ([category, categoryIngredients]) => (
           <div className="mb-4" key={category}>
             <h2 className="mb-2 text-xl font-bold">{category}</h2>
