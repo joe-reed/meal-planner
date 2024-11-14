@@ -100,6 +100,7 @@ func addMealRoutes(e *echo.Echo, db *sql.DB) {
 	e.GET("/", handler.GetMeals)
 	e.GET("/meals/:id", handler.GetMeal)
 	e.POST("/", handler.AddMeal)
+	e.POST("/meals/upload", handler.UploadMeals)
 	e.POST("/meals/:mealId/ingredients", handler.AddIngredientToMeal)
 	e.DELETE("/meals/:mealId/ingredients/:ingredientId", handler.RemoveIngredientFromMeal)
 }

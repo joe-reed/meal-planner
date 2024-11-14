@@ -1,9 +1,14 @@
 package meals
 
 import (
-	"net/http"
-
+	"bytes"
+	"encoding/csv"
+	"errors"
+	"fmt"
 	"github.com/labstack/echo/v4"
+	"mime/multipart"
+	"net/http"
+	"strconv"
 )
 
 type Handler struct {
@@ -47,7 +52,7 @@ func (h *Handler) AddMeal(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusAccepted, m)
+	return c.JSON(http.StatusCreated, m)
 }
 
 func (h *Handler) AddIngredientToMeal(c echo.Context) error {
@@ -63,7 +68,7 @@ func (h *Handler) AddIngredientToMeal(c echo.Context) error {
 		return err
 	}
 
-	meal.AddIngredient(ingredient)
+	meal.AddIngredient(*ingredient)
 
 	if err := h.MealRepository.Save(meal); err != nil {
 		return err
@@ -88,4 +93,97 @@ func (h *Handler) RemoveIngredientFromMeal(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, meal)
+}
+
+func (h *Handler) UploadMeals(c echo.Context) error {
+	file, err := c.FormFile("meals")
+
+	if err != nil {
+		return err
+	}
+
+	src, err := file.Open()
+
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	meals, err := ParseMeals(src)
+
+	if err != nil {
+		return err
+	}
+
+	for _, m := range meals {
+		if err := h.MealRepository.Save(m); err != nil {
+			return err
+		}
+	}
+
+	return c.NoContent(http.StatusCreated)
+}
+
+func ParseMeals(src multipart.File) ([]*Meal, error) {
+	var buf bytes.Buffer
+	_, err := buf.ReadFrom(src)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var meals []*Meal
+	var meal *Meal
+
+	csvReader := csv.NewReader(&buf)
+	records, err := csvReader.ReadAll()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i, record := range records {
+		if i == 0 {
+			if record[0] != "name" || record[1] != "ingredient" || record[2] != "amount" || record[3] != "unit" {
+				return nil, errors.New("invalid csv header")
+			}
+
+			continue
+		}
+
+		if len(record) != 4 {
+			return nil, errors.New("invalid csv row")
+		}
+
+		mealName := record[0]
+
+		if meal == nil || mealName != meal.Name {
+			if meal != nil {
+				meals = append(meals, meal)
+			}
+
+			meal = NewMealBuilder().WithName(mealName).Build()
+		}
+
+		ingredientId := record[1]
+		amount, err := strconv.Atoi(record[2])
+
+		if err != nil {
+			return nil, err
+		}
+
+		unit, ok := UnitFromString(record[3])
+
+		if !ok {
+			return nil, fmt.Errorf("invalid unit: %s", record[3])
+		}
+
+		meal.AddIngredient(*NewMealIngredient(ingredientId).WithQuantity(amount, unit))
+	}
+
+	if meal != nil {
+		meals = append(meals, meal)
+	}
+
+	return meals, nil
 }
