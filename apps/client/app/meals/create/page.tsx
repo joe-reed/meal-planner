@@ -1,8 +1,10 @@
-import { useRouter } from "next/router";
-import { useCreateMeal } from "../../queries";
-import BackButton from "../../components/BackButton";
+"use client";
 
-export default function CreateMeal() {
+import { useRouter } from "next/navigation";
+import { useCreateMeal } from "../../../queries";
+import BackButton from "../../../components/BackButton";
+
+export default function CreateMealPage() {
   const { mutateAsync } = useCreateMeal();
   const { push } = useRouter();
 
@@ -18,10 +20,9 @@ export default function CreateMeal() {
           e.preventDefault();
 
           const formData = new FormData(e.target as HTMLFormElement);
-          const response = await mutateAsync({
+          const meal = await mutateAsync({
             name: formData.get("name") as string,
           });
-          const meal = await response.json();
 
           await push(`/meals/${meal.id}`);
         }}

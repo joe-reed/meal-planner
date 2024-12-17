@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import clsx from "clsx";
 
 export default function BackButton({

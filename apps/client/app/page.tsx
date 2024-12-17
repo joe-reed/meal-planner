@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   useAddMealToCurrentShop,
@@ -12,7 +14,7 @@ import React, { PropsWithChildren } from "react";
 import { Modal } from "../components/Modal";
 import clsx from "clsx";
 
-export default function Index() {
+export default function HomePage() {
   const mealsQuery = useMeals();
   const currentShopQuery = useCurrentShop();
   const ingredientsQuery = useIngredients();

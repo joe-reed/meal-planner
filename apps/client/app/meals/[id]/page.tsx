@@ -1,11 +1,13 @@
-import { useRouter } from "next/router";
+"use client";
+
+import { useParams } from "next/navigation";
 import {
   useCreateIngredient,
   useIngredients,
   useMeal,
   useRemoveIngredientFromMeal,
-} from "../../queries";
-import BackButton from "../../components/BackButton";
+} from "../../../queries";
+import BackButton from "../../../components/BackButton";
 import {
   Combobox,
   ComboboxButton,
@@ -15,10 +17,10 @@ import {
   Select,
 } from "@headlessui/react";
 import React, { Ref, useRef, useState } from "react";
-import { Ingredient, Meal } from "../../types";
-import { useAddIngredientToMeal } from "../../queries/useAddIngredientToMeal";
-import { Modal } from "../../components/Modal";
-import { useCategories } from "../../queries/useCategories";
+import { Ingredient, Meal } from "../../../types";
+import { useAddIngredientToMeal } from "../../../queries/useAddIngredientToMeal";
+import { Modal } from "../../../components/Modal";
+import { useCategories } from "../../../queries/useCategories";
 
 type PendingIngredient = {
   id: string;
@@ -26,9 +28,8 @@ type PendingIngredient = {
 };
 
 export default function MealPage() {
-  const {
-    query: { id },
-  } = useRouter();
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
 
   const mealQuery = useMeal(id as string);
   const ingredientsQuery = useIngredients();
@@ -320,7 +321,7 @@ function AddNewIngredientModal({
                   category,
                 });
 
-                onAdd(await response.json());
+                onAdd(response);
 
                 close();
               }}

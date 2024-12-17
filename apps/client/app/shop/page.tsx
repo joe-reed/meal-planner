@@ -1,3 +1,5 @@
+"use client";
+
 import { useCurrentShop, useIngredients, useMeals } from "../../queries";
 import { Ingredient, Meal, Shop } from "../../types";
 import React from "react";

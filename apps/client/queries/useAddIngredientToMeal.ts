@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addIngredientToMeal } from "../actions";
 
 export function useAddIngredientToMeal(mealId: string) {
   const queryClient = useQueryClient();
@@ -7,12 +8,7 @@ export function useAddIngredientToMeal(mealId: string) {
     mutationFn: (body: {
       id: string;
       quantity: { amount: number; unit: string };
-    }) => {
-      return fetch(`/api/meals/${mealId}/ingredients`, {
-        method: "POST",
-        body: JSON.stringify(body),
-      });
-    },
+    }) => addIngredientToMeal(mealId, JSON.stringify(body)),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [`meals/${mealId}`] });
     },
