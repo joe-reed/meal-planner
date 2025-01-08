@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  meal-planner-api:
+    build:
+      dockerfile: apps/api/Dockerfile
+      context: .
+    ports:
+      - "1323:1323"
+    volumes:
+      - "./apps/api/sqlite:/app/sqlite"
+
+  meal-planner-client:
+    build:
+      dockerfile: apps/client/Dockerfile
+      context: .
+    ports:
+      - "4200:4200"
+    environment:
+      - API_BASE_URL=http://meal-planner-api:1323

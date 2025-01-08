@@ -18,7 +18,7 @@ type EventSubscriber func(func(string))
 func main() {
 	e := echo.New()
 
-	dbFile := "meal-planner.db"
+	dbFile := "sqlite/meal-planner.db"
 	db, err := database.CreateDatabase(dbFile)
 	if err != nil {
 		e.Logger.Fatal(err)
@@ -33,7 +33,7 @@ func main() {
 	addBasketRoutes(e, db, subscribe)
 
 	e.Debug = true
-	e.Logger.Fatal(e.Start("localhost:1323"))
+	e.Logger.Fatal(e.Start(":1323"))
 }
 
 func setupEvents() (func(string), func(func(string))) {
