@@ -12,6 +12,7 @@ Add ingredients, create meals with those ingredients, and produce a shopping lis
 ## Local development
 1. Install node 20 and npm. I recommend using [nvm](https://github.com/nvm-sh/nvm) for this - once installed, run `nvm install` in this repo to get the relevant version.
 1. Install [Go](https://go.dev/doc/install)
+1. Run `npm install` 
 1. Run `npm run serve` to start the API and UI locally with hot reloading.
 
 ## Features
