@@ -1,5 +1,6 @@
 FROM node:20-alpine as build
 WORKDIR build
+ENV NX_DAEMON=false
 COPY package*.json ./
 RUN npm ci
 COPY apps/client apps/client
