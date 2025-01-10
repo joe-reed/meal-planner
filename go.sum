@@ -33,8 +33,8 @@ github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeN
 github.com/google/pprof v0.0.0-20210407192527-94a9f03dee38/go.mod h1:kpwsk12EmLew5upagYY7GY0pfYCcupk39gWOCRROcvE=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/hallgren/eventsourcing v0.5.0 h1:jgGZBef7ilVKQPWg6gQCbQQoYVeNjT6lz2YIdjqA8Vg=
-github.com/hallgren/eventsourcing v0.5.0/go.mod h1:RXT/6pJsKlGvNY9nPQhqA2rZQ0Bs0VEsuCMZByoIkaE=
+github.com/hallgren/eventsourcing v0.7.0 h1:XbNcH969y8piN/SiZX+pfk2rNrI2RD6t4tXaiFFJiqE=
+github.com/hallgren/eventsourcing v0.7.0/go.mod h1:62QwV0m8wLQM6SZwtuGn4lwA5UUFozFnALyZvFeX9ps=
 github.com/hallgren/eventsourcing/core v0.4.0 h1:a11TT3df7JlrZtIogqbGmLGgmeugRavwD8HrLtW1Uxw=
 github.com/hallgren/eventsourcing/core v0.4.0/go.mod h1:rgo2kFwNVCb0bzUub5nOPlUYNlFkp1uUQBEQx5fM3Lk=
 github.com/hallgren/eventsourcing/eventstore/sql v0.4.0 h1:qmhhuDoDtVEt/73NzLgU+RZlKsU6ksYTV9F/HTQEzC8=
