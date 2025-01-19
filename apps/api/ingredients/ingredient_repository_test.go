@@ -37,6 +37,7 @@ func runSuite(t *testing.T, factory func() *ingredients.IngredientRepository, te
 		{"adding an ingredient", testAddingIngredient},
 		{"getting all ingredients", testGettingIngredients},
 		{"getting empty list of ingredients", testGettingZeroIngredients},
+		{"getting ingredient by name", testGettingIngredientByName},
 	}
 
 	for _, test := range tests {
@@ -83,4 +84,15 @@ func testGettingZeroIngredients(t *testing.T, r *ingredients.IngredientRepositor
 	i, err := r.Get()
 	assert.NoError(t, err)
 	assert.Len(t, i, 0)
+}
+
+func testGettingIngredientByName(t *testing.T, r *ingredients.IngredientRepository) {
+	i := ingredients.NewIngredientBuilder().WithName("test name").WithCategory(categories.Frozen).Build()
+
+	err := r.Add(i)
+	assert.NoError(t, err)
+
+	found, err := r.GetByName("test name")
+	assert.NoError(t, err)
+	assert.EqualExportedValues(t, found, i)
 }

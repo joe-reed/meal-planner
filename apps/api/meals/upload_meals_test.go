@@ -2,6 +2,7 @@ package meals_test
 
 import (
 	"bytes"
+	"github.com/joe-reed/meal-planner/apps/api/ingredients"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -14,6 +15,16 @@ import (
 
 func TestUploadingMeals(t *testing.T) {
 	repo := meals.NewFakeMealRepository()
+	ingredientRepo := ingredients.NewFakeIngredientRepository()
+
+	err := ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Abc Name").WithId("abc").Build())
+	require.NoError(t, err)
+
+	err = ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Def Name").WithId("def").Build())
+	require.NoError(t, err)
+
+	err = ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Ghi Name").WithId("ghi").Build())
+	require.NoError(t, err)
 
 	e := echo.New()
 	body := &bytes.Buffer{}
@@ -22,7 +33,7 @@ func TestUploadingMeals(t *testing.T) {
 	part, err := w.CreateFormFile("meals", "meals.csv")
 	require.NoError(t, err)
 
-	_, err = part.Write([]byte("name,ingredient,amount,unit\nfoo,abc,300,Gram\nfoo,def,5,Tbsp\nbar,def,400,Gram\nbar,ghi,6,Tbsp"))
+	_, err = part.Write([]byte("name,ingredient,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
 	require.NoError(t, err)
 
 	err = w.Close()
@@ -35,7 +46,7 @@ func TestUploadingMeals(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := &meals.Handler{MealRepository: repo}
+	h := &meals.Handler{MealRepository: repo, IngredientRepository: ingredientRepo}
 
 	err = h.UploadMeals(c)
 
@@ -50,15 +61,15 @@ func TestUploadingMeals(t *testing.T) {
 
 	require.Equal(t, m[0].Name, "bar")
 	require.Len(t, m[0].MealIngredients, 2)
-	require.Equal(t, m[0].MealIngredients, []meals.MealIngredient{
+	require.Equal(t, []meals.MealIngredient{
 		*meals.NewMealIngredient("def").WithQuantity(400, meals.Gram),
 		*meals.NewMealIngredient("ghi").WithQuantity(6, meals.Tbsp),
-	})
+	}, m[0].MealIngredients)
 
 	require.Equal(t, m[1].Name, "foo")
 	require.Len(t, m[1].MealIngredients, 2)
-	require.Equal(t, m[1].MealIngredients, []meals.MealIngredient{
+	require.Equal(t, []meals.MealIngredient{
 		*meals.NewMealIngredient("abc").WithQuantity(300, meals.Gram),
 		*meals.NewMealIngredient("def").WithQuantity(5, meals.Tbsp),
-	})
+	}, m[1].MealIngredients)
 }

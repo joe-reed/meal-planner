@@ -6,13 +6,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"strconv"
+
+	"github.com/joe-reed/meal-planner/apps/api/ingredients"
 )
 
 type Handler struct {
 	MealRepository *MealRepository
+
+	// todo: refactor to reference exported application service not repository directly
+	IngredientRepository *ingredients.IngredientRepository
 }
 
 func (h *Handler) GetMeals(c echo.Context) error {
@@ -109,11 +115,13 @@ func (h *Handler) UploadMeals(c echo.Context) error {
 	}
 	defer src.Close()
 
-	meals, err := ParseMeals(src)
+	meals, err := ParseMeals(src, h.IngredientRepository)
 
 	if err != nil {
 		return err
 	}
+
+	slog.Info("uploading meals", "meals", meals)
 
 	for _, m := range meals {
 		if err := h.MealRepository.Save(m); err != nil {
@@ -124,7 +132,7 @@ func (h *Handler) UploadMeals(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-func ParseMeals(src multipart.File) ([]*Meal, error) {
+func ParseMeals(src multipart.File, ingredientRepository *ingredients.IngredientRepository) ([]*Meal, error) {
 	var buf bytes.Buffer
 	_, err := buf.ReadFrom(src)
 
@@ -165,7 +173,7 @@ func ParseMeals(src multipart.File) ([]*Meal, error) {
 			meal = NewMealBuilder().WithName(mealName).Build()
 		}
 
-		ingredientId := record[1]
+		ingredientName := record[1]
 		amount, err := strconv.Atoi(record[2])
 
 		if err != nil {
@@ -178,7 +186,13 @@ func ParseMeals(src multipart.File) ([]*Meal, error) {
 			return nil, fmt.Errorf("invalid unit: %s", record[3])
 		}
 
-		meal.AddIngredient(*NewMealIngredient(ingredientId).WithQuantity(amount, unit))
+		ingredient, err := ingredientRepository.GetByName(ingredientName)
+
+		if err != nil {
+			return nil, err
+		}
+
+		meal.AddIngredient(*NewMealIngredient(ingredient.Id).WithQuantity(amount, unit))
 	}
 
 	if meal != nil {
