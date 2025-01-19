@@ -23,7 +23,7 @@ func TestStartingShop(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &shops.Handler{ShopRepository: r}
+	h := &shops.Handler{ShopRepository: r, Publisher: func(string) {}}
 
 	if assert.NoError(t, h.StartShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
