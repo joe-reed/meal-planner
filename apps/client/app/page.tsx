@@ -50,11 +50,19 @@ export default function HomePage() {
             🍲 Create meal
           </Link>
 
-          <NewShopButton className="mb-2 block w-full sm:mb-0 sm:inline sm:w-auto" />
+          <Link
+            href="/meals/upload"
+            className="button block text-center sm:mb-0 sm:inline"
+          >
+            📤 Upload meals
+          </Link>
         </span>
 
-        <span className="space-x-2">
-          <Link href="/shop" className="button block w-full text-center">
+        <span className="sm:space-x-2">
+          <Link
+            href="/shop"
+            className="button block text-center sm:mb-0 sm:inline"
+          >
             🛒 Go shopping
           </Link>
         </span>
@@ -126,11 +134,12 @@ function CurrentShop({
     <>
       {currentShop ? (
         <>
-          <div className="mb-2 flex justify-between">
+          <div className="mb-2 flex items-center justify-between">
             <h2 className="font-bold">Shop #{currentShop.id}</h2>
             <h3 className="text-xs font-bold">
               {currentShop.meals.length} meals
             </h3>
+            <NewShopButton className="button" />
           </div>
           <ul className="flex flex-col space-y-1">
             {currentShop.meals.map((meal) => (

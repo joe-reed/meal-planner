@@ -3,5 +3,9 @@
 @tailwind utilities;
 
 .button {
-  @apply border rounded-lg px-2 py-1 leading-none;
+  @apply border rounded-lg px-2 py-1 leading-none bg-white;
+}
+
+.file-button {
+  @apply file:border file:rounded-lg file:px-2 file:py-1 file:leading-none file:bg-white file:border-gray-200;
 }
