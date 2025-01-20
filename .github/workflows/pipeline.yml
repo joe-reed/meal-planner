@@ -60,14 +60,6 @@ jobs:
           cache: 'npm'
 
       -
-        name: Install dependencies
-        run: npm install
-
-      -
-        name: Build client
-        run: npx nx build client
-
-      -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
