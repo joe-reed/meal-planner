@@ -1,21 +1,14 @@
 {
+  "implicitDependencies": {
+    "go.mod": "*"
+  },
   "targetDefaults": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "cache": true,
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "cache": true
     },
     "test": {
-      "inputs": [
-        "default",
-        "^default",
-        "{workspaceRoot}/jest.preset.js"
-      ],
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
       "cache": true
     },
     "lint": {
@@ -27,11 +20,7 @@
       "cache": true
     },
     "@nx/jest:jest": {
-      "inputs": [
-        "default",
-        "^default",
-        "{workspaceRoot}/jest.preset.js"
-      ],
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
       "cache": true,
       "options": {
         "passWithNoTests": true
@@ -66,13 +55,8 @@
     }
   },
   "useInferencePlugins": false,
-  "plugins": [
-    "@nx-go/nx-go"
-  ],
+  "plugins": ["@nx-go/nx-go"],
   "namedInputs": {
-    "sharedGlobals": [
-      "{workspaceRoot}/go.mod",
-      "{workspaceRoot}/go.mod"
-    ]
+    "sharedGlobals": ["{workspaceRoot}/go.mod"]
   }
 }
