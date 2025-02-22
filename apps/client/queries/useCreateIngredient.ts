@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { uuid } from "uuidv4";
+import { v4 as uuid } from "uuid";
 import { createIngredient } from "../actions";
 
 export function useCreateIngredient() {

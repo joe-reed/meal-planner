@@ -61,6 +61,6 @@
     "react-aria-components": "^1.0.0",
     "react-dom": "18.2.0",
     "tslib": "^2.3.0",
-    "uuidv4": "^6.2.13"
+    "uuid": "^11.1.0"
   }
 }
