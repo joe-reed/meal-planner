@@ -33,7 +33,9 @@ func NewSqliteMealRepository(db *sql.DB) (*MealRepository, error) {
 func NewFakeMealRepository() *MealRepository {
 	es := memory.Create()
 
-	return NewMealRepository(es, es.All(0, 10000))
+	return NewMealRepository(es, func() (core.Iterator, error) {
+		return es.All(0, 10000)()
+	})
 }
 
 func (r MealRepository) Get() ([]*Meal, error) {
@@ -85,4 +87,20 @@ func (r MealRepository) Find(id string) (*Meal, error) {
 
 func (r MealRepository) Save(m *Meal) error {
 	return r.er.Save(m)
+}
+
+func (r MealRepository) FindByName(name string) (*Meal, error) {
+	meals, err := r.Get()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, m := range meals {
+		if m.Name == name {
+			return m, nil
+		}
+	}
+
+	return nil, nil
 }

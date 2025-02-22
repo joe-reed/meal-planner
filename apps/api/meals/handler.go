@@ -47,6 +47,16 @@ func (h *Handler) AddMeal(c echo.Context) error {
 		return err
 	}
 
+	existingMeal, err := h.MealRepository.FindByName(body.Name)
+
+	if err != nil {
+		return err
+	}
+
+	if existingMeal != nil {
+		return c.JSON(http.StatusBadRequest, "meal already exists")
+	}
+
 	m, err := NewMeal(body.Id, body.Name, body.MealIngredients)
 	if err != nil {
 		return err
