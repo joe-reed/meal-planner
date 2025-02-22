@@ -125,12 +125,12 @@ export default function ShopPage() {
         )
       ) : null}
 
-      {Object.entries(categorisedIngredients).map(
-        ([category, categoryIngredients]) => (
+      {Object.keys(categorisedIngredients).sort().map(
+        (category) => (
           <div className="mb-4" key={category}>
             <h2 className="mb-2 text-xl font-bold">{category}</h2>
             <ul>
-              {categoryIngredients.map((ingredient) => (
+              {categorisedIngredients[category].map((ingredient) => (
                 <IngredientListItem
                   key={ingredient.id}
                   ingredient={ingredient}
