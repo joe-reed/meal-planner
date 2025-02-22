@@ -41,7 +41,7 @@ export default function HomePage() {
 
   return (
     <>
-      <nav className="mb-7 flex flex-col justify-between sm:flex-row">
+      <div className="mb-7 flex flex-col justify-between sm:flex-row">
         <span className="sm:space-x-2">
           <Link
             href="/meals/create"
@@ -66,7 +66,7 @@ export default function HomePage() {
             🛒 Go shopping
           </Link>
         </span>
-      </nav>
+      </div>
       <section className="mb-8">
         <Meals meals={meals} currentShop={currentShop} />
       </section>
@@ -153,7 +153,10 @@ function CurrentShop({
           </ul>
         </>
       ) : (
-        <p>Click New Shop to get started!</p>
+        <div>
+          <p className="mb-2">No shop in progress. Get started! </p>
+          <NewShopButton className="button" />
+        </div>
       )}
     </>
   );
