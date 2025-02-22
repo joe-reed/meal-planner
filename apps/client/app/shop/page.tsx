@@ -108,7 +108,9 @@ export default function ShopPage() {
           <h1 className="text-lg font-bold">Current shop</h1>
         </div>
         <button onClick={toggleShowItemsInBasket} className="button">
-          {showItemsInBasket ? "Hide ingredients in basket" : "Show all ingredients"}
+          {showItemsInBasket
+            ? "Hide ingredients in basket"
+            : "Show all ingredients"}
         </button>
       </div>
 
@@ -125,8 +127,9 @@ export default function ShopPage() {
         )
       ) : null}
 
-      {Object.keys(categorisedIngredients).sort().map(
-        (category) => (
+      {Object.keys(categorisedIngredients)
+        .sort()
+        .map((category) => (
           <div className="mb-4" key={category}>
             <h2 className="mb-2 text-xl font-bold">{category}</h2>
             <ul>
@@ -139,8 +142,7 @@ export default function ShopPage() {
               ))}
             </ul>
           </div>
-        ),
-      )}
+        ))}
     </div>
   );
 }
