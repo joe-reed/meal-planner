@@ -59,7 +59,12 @@ export async function createMeal(body: string) {
     headers,
     body,
   });
-  return response.json();
+
+  if (!response.ok) {
+    return { error: await response.text(), meal: null };
+  }
+
+  return { error: null, meal: await response.json() };
 }
 
 export async function fetchCurrentShop() {

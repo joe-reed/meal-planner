@@ -3,10 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useCreateMeal } from "../../../queries";
 import BackButton from "../../../components/BackButton";
+import { useState } from "react";
 
 export default function CreateMealPage() {
   const { mutateAsync } = useCreateMeal();
   const { push } = useRouter();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   return (
     <div>
@@ -20,9 +22,15 @@ export default function CreateMealPage() {
           e.preventDefault();
 
           const formData = new FormData(e.target as HTMLFormElement);
-          const meal = await mutateAsync({
+
+          const { error, meal } = await mutateAsync({
             name: formData.get("name") as string,
           });
+
+          if (error) {
+            setErrorMessage(error);
+            return;
+          }
 
           await push(`/meals/${meal.id}`);
         }}
@@ -40,6 +48,8 @@ export default function CreateMealPage() {
         <button type="submit" className="button">
           Create
         </button>
+
+        {errorMessage ? <p className="text-red-500">{errorMessage}</p> : null}
       </form>
     </div>
   );
