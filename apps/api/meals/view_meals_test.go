@@ -25,7 +25,7 @@ func TestViewingMeals(t *testing.T) {
 	assert.NoError(t, err)
 
 	e := echo.New()
-	req := httptest.NewRequest("", "/", nil)
+	req := httptest.NewRequest("", "/meals", nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)

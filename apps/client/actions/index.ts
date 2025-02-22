@@ -54,7 +54,7 @@ export async function createIngredient(body: string) {
 }
 
 export async function createMeal(body: string) {
-  const response = await fetch(`${process.env.API_BASE_URL}`, {
+  const response = await fetch(`${process.env.API_BASE_URL}/meals`, {
     method: "POST",
     headers,
     body,
@@ -87,7 +87,7 @@ export async function fetchMeal(mealId: string) {
 }
 
 export async function fetchMeals() {
-  const response = await fetch(`${process.env.API_BASE_URL}`);
+  const response = await fetch(`${process.env.API_BASE_URL}/meals`);
   if (!response.ok) {
     throw new Error("Error fetching meals");
   }

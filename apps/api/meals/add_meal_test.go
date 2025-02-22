@@ -15,7 +15,7 @@ func TestAddingMeal(t *testing.T) {
 	repo := meals.NewFakeMealRepository()
 
 	e := echo.New()
-	req := httptest.NewRequest("POST", "/", strings.NewReader(`{"id": "123","name":"foo"}`))
+	req := httptest.NewRequest("POST", "/meals", strings.NewReader(`{"id": "123","name":"foo"}`))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)

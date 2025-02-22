@@ -103,10 +103,10 @@ func addMealRoutes(e *echo.Echo, db *sql.DB) {
 
 	handler := meals.Handler{MealRepository: mealRepo, IngredientRepository: ingredientRepo}
 
-	e.GET("/", handler.GetMeals)
+	e.GET("/meals", handler.GetMeals)
 	e.POST("/meals/upload", handler.UploadMeals)
 	e.GET("/meals/:id", handler.GetMeal)
-	e.POST("/", handler.AddMeal)
+	e.POST("/meals", handler.AddMeal)
 	e.POST("/meals/:mealId/ingredients", handler.AddIngredientToMeal)
 	e.DELETE("/meals/:mealId/ingredients/:ingredientId", handler.RemoveIngredientFromMeal)
 }
