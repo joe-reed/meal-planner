@@ -1,8 +1,6 @@
 module github.com/joe-reed/meal-planner
 
-go 1.23.0
-
-toolchain go1.23.3
+go 1.24.1
 
 require (
 	github.com/campoy/jsonenums v0.0.0-20201009151607-0f0230183423
