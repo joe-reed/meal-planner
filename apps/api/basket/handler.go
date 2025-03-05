@@ -8,6 +8,7 @@ import (
 
 type Handler struct {
 	BasketRepository *BasketRepository
+	Publisher        func(string)
 }
 
 func (h *Handler) AddItemToBasket(c echo.Context) error {
@@ -29,6 +30,8 @@ func (h *Handler) AddItemToBasket(c echo.Context) error {
 		return err
 	}
 
+	h.Publisher("itemAdded")
+
 	return c.JSON(http.StatusOK, b)
 }
 
@@ -47,6 +50,8 @@ func (h *Handler) RemoveItemFromBasket(c echo.Context) error {
 	if err := h.BasketRepository.Save(b); err != nil {
 		return err
 	}
+
+	h.Publisher("itemRemoved")
 
 	return c.JSON(http.StatusOK, b)
 }

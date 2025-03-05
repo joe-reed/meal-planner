@@ -2,11 +2,12 @@ package shops
 
 import (
 	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/aggregate"
 	"strconv"
 )
 
 type Shop struct {
-	eventsourcing.AggregateRoot
+	aggregate.Root
 	Id    int         `json:"id"`
 	Meals []*ShopMeal `json:"meals"`
 }
@@ -39,7 +40,7 @@ func (s *Shop) Transition(event eventsourcing.Event) {
 	}
 }
 
-func (s *Shop) Register(r eventsourcing.RegisterFunc) {
+func (s *Shop) Register(r aggregate.RegisterFunc) {
 	r(&Created{}, &MealAdded{}, &MealRemoved{}, &MealsSet{})
 }
 
@@ -52,21 +53,21 @@ func NewShop(id int) (*Shop, error) {
 		return nil, err
 	}
 
-	s.TrackChange(s, &Created{Id: id})
+	aggregate.TrackChange(s, &Created{Id: id})
 
 	return s, nil
 }
 
 func (s *Shop) AddMeal(m *ShopMeal) *Shop {
-	s.TrackChange(s, &MealAdded{Meal: *m})
+	aggregate.TrackChange(s, &MealAdded{Meal: *m})
 	return s
 }
 
 func (s *Shop) SetMeals(m []*ShopMeal) *Shop {
-	s.TrackChange(s, &MealsSet{Meals: m})
+	aggregate.TrackChange(s, &MealsSet{Meals: m})
 	return s
 }
 
 func (s *Shop) RemoveMeal(id string) {
-	s.TrackChange(s, &MealRemoved{Id: id})
+	aggregate.TrackChange(s, &MealRemoved{Id: id})
 }

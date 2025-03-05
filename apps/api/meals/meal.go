@@ -3,10 +3,11 @@ package meals
 import (
 	"github.com/google/uuid"
 	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/aggregate"
 )
 
 type Meal struct {
-	eventsourcing.AggregateRoot
+	aggregate.Root
 	Id              string           `json:"id"`
 	Name            string           `json:"name"`
 	MealIngredients []MealIngredient `json:"ingredients"`
@@ -31,7 +32,7 @@ func (m *Meal) Transition(event eventsourcing.Event) {
 	}
 }
 
-func (m *Meal) Register(r eventsourcing.RegisterFunc) {
+func (m *Meal) Register(r aggregate.RegisterFunc) {
 	r(&Created{}, &IngredientAdded{}, &IngredientRemoved{})
 }
 
@@ -41,21 +42,21 @@ func NewMeal(id string, name string, ingredients []MealIngredient) (*Meal, error
 	if err != nil {
 		return nil, err
 	}
-	m.TrackChange(m, &Created{Id: id, Name: name})
+	aggregate.TrackChange(m, &Created{Id: id, Name: name})
 
 	for _, i := range ingredients {
-		m.TrackChange(m, &IngredientAdded{Ingredient: i})
+		aggregate.TrackChange(m, &IngredientAdded{Ingredient: i})
 	}
 
 	return m, nil
 }
 
 func (m *Meal) AddIngredient(ingredient MealIngredient) {
-	m.TrackChange(m, &IngredientAdded{Ingredient: ingredient})
+	aggregate.TrackChange(m, &IngredientAdded{Ingredient: ingredient})
 }
 
 func (m *Meal) RemoveIngredient(id string) {
-	m.TrackChange(m, &IngredientRemoved{Id: id})
+	aggregate.TrackChange(m, &IngredientRemoved{Id: id})
 }
 
 type Quantity struct {

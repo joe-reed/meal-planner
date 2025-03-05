@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/aggregate"
 	"github.com/hallgren/eventsourcing/core"
 	"github.com/hallgren/eventsourcing/eventstore/memory"
 	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
@@ -13,14 +14,13 @@ import (
 )
 
 type IngredientRepository struct {
-	er  *eventsourcing.EventRepository
+	es  core.EventStore
 	all func() (core.Iterator, error)
 }
 
 func NewIngredientRepository(es core.EventStore, all func() (core.Iterator, error)) *IngredientRepository {
-	er := eventsourcing.NewEventRepository(es)
-	er.Register(&Ingredient{})
-	return &IngredientRepository{er, all}
+	aggregate.Register(&Ingredient{})
+	return &IngredientRepository{es, all}
 }
 
 func NewSqliteIngredientRepository(db *sql.DB) (*IngredientRepository, error) {
@@ -40,15 +40,19 @@ func NewFakeIngredientRepository() *IngredientRepository {
 }
 
 func (r IngredientRepository) Add(i *Ingredient) error {
-	return r.er.Save(i)
+	return aggregate.Save(r.es, i)
 }
 
 func (r IngredientRepository) Get() ([]*Ingredient, error) {
 	ingredientMap := map[string]*Ingredient{}
 
-	p := r.er.Projections.Projection(
+	p := eventsourcing.NewProjection(
 		r.all,
 		func(e eventsourcing.Event) error {
+			if e.AggregateType() != "Ingredient" {
+				return nil
+			}
+
 			ingredient, ok := ingredientMap[e.AggregateID()]
 			if !ok {
 				ingredient = &Ingredient{}

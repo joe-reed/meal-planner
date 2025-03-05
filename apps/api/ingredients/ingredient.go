@@ -3,11 +3,12 @@ package ingredients
 import (
 	"github.com/google/uuid"
 	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/aggregate"
 	"github.com/joe-reed/meal-planner/apps/api/categories"
 )
 
 type Ingredient struct {
-	eventsourcing.AggregateRoot
+	aggregate.Root
 	Id       string              `json:"id"`
 	Name     string              `json:"name"`
 	Category categories.Category `json:"category"`
@@ -22,7 +23,7 @@ func (m *Ingredient) Transition(event eventsourcing.Event) {
 	}
 }
 
-func (m *Ingredient) Register(r eventsourcing.RegisterFunc) {
+func (m *Ingredient) Register(r aggregate.RegisterFunc) {
 	r(&Created{})
 }
 
@@ -32,7 +33,7 @@ func NewIngredient(id string, name string, category categories.Category) (*Ingre
 	if err != nil {
 		return nil, err
 	}
-	i.TrackChange(i, &Created{Id: id, Name: name, Category: category})
+	aggregate.TrackChange(i, &Created{Id: id, Name: name, Category: category})
 
 	return i, nil
 }

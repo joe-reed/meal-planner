@@ -1,8 +1,10 @@
 package meals
 
 import (
+	"context"
 	"database/sql"
 	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/aggregate"
 	"github.com/hallgren/eventsourcing/core"
 	"github.com/hallgren/eventsourcing/eventstore/memory"
 	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
@@ -11,14 +13,13 @@ import (
 )
 
 type MealRepository struct {
-	er  *eventsourcing.EventRepository
+	es  core.EventStore
 	all func() (core.Iterator, error)
 }
 
 func NewMealRepository(es core.EventStore, all func() (core.Iterator, error)) *MealRepository {
-	er := eventsourcing.NewEventRepository(es)
-	er.Register(&Meal{})
-	r := &MealRepository{er, all}
+	aggregate.Register(&Meal{})
+	r := &MealRepository{es, all}
 	return r
 }
 
@@ -41,9 +42,13 @@ func NewFakeMealRepository() *MealRepository {
 func (r MealRepository) Get() ([]*Meal, error) {
 	mealMap := map[string]*Meal{}
 
-	p := r.er.Projections.Projection(
+	p := eventsourcing.NewProjection(
 		r.all,
 		func(e eventsourcing.Event) error {
+			if e.AggregateType() != "Meal" {
+				return nil
+			}
+
 			meal, ok := mealMap[e.AggregateID()]
 			if !ok {
 				meal = &Meal{}
@@ -77,7 +82,7 @@ func (r MealRepository) Get() ([]*Meal, error) {
 
 func (r MealRepository) Find(id string) (*Meal, error) {
 	m := &Meal{}
-	err := r.er.Get(id, m)
+	err := aggregate.Load(context.Background(), r.es, id, m)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +91,7 @@ func (r MealRepository) Find(id string) (*Meal, error) {
 }
 
 func (r MealRepository) Save(m *Meal) error {
-	return r.er.Save(m)
+	return aggregate.Save(r.es, m)
 }
 
 func (r MealRepository) FindByName(name string) (*Meal, error) {

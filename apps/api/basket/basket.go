@@ -2,11 +2,12 @@ package basket
 
 import (
 	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/aggregate"
 	"strconv"
 )
 
 type Basket struct {
-	eventsourcing.AggregateRoot
+	aggregate.Root
 	ShopId int           `json:"shopId"`
 	Items  []*BasketItem `json:"items"`
 }
@@ -39,7 +40,7 @@ func (b *Basket) Transition(event eventsourcing.Event) {
 	}
 }
 
-func (b *Basket) Register(r eventsourcing.RegisterFunc) {
+func (b *Basket) Register(r aggregate.RegisterFunc) {
 	r(&Created{}, &ItemAdded{}, &ItemRemoved{}, &ItemsSet{})
 }
 
@@ -52,21 +53,21 @@ func NewBasket(shopId int) (*Basket, error) {
 		return nil, err
 	}
 
-	b.TrackChange(b, &Created{ShopId: shopId})
+	aggregate.TrackChange(b, &Created{ShopId: shopId})
 
 	return b, nil
 }
 
 func (b *Basket) AddItem(m *BasketItem) *Basket {
-	b.TrackChange(b, &ItemAdded{Item: *m})
+	aggregate.TrackChange(b, &ItemAdded{Item: *m})
 	return b
 }
 
 func (b *Basket) SetItems(m []*BasketItem) *Basket {
-	b.TrackChange(b, &ItemsSet{Items: m})
+	aggregate.TrackChange(b, &ItemsSet{Items: m})
 	return b
 }
 
 func (b *Basket) RemoveItem(id string) {
-	b.TrackChange(b, &ItemRemoved{IngredientId: id})
+	aggregate.TrackChange(b, &ItemRemoved{IngredientId: id})
 }

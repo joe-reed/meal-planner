@@ -1,8 +1,10 @@
 package shops
 
 import (
+	"context"
 	"database/sql"
 	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/aggregate"
 	"github.com/hallgren/eventsourcing/core"
 	"github.com/hallgren/eventsourcing/eventstore/memory"
 	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
@@ -11,14 +13,13 @@ import (
 )
 
 type ShopRepository struct {
-	er  *eventsourcing.EventRepository
+	es  core.EventStore
 	all func() (core.Iterator, error)
 }
 
 func NewShopRepository(es core.EventStore, all func() (core.Iterator, error)) *ShopRepository {
-	er := eventsourcing.NewEventRepository(es)
-	er.Register(&Shop{})
-	r := &ShopRepository{er, all}
+	aggregate.Register(&Shop{})
+	r := &ShopRepository{es, all}
 	return r
 }
 
@@ -39,9 +40,13 @@ func NewFakeShopRepository() *ShopRepository {
 func (r ShopRepository) Current() (*Shop, error) {
 	currentId := 0
 
-	p := r.er.Projections.Projection(
+	p := eventsourcing.NewProjection(
 		r.all,
 		func(e eventsourcing.Event) error {
+			if e.AggregateType() != "Shop" {
+				return nil
+			}
+
 			aId, err := strconv.Atoi(e.AggregateID())
 			if err != nil {
 				return err
@@ -70,7 +75,7 @@ func (r ShopRepository) Current() (*Shop, error) {
 
 func (r ShopRepository) Find(id int) (*Shop, error) {
 	s := &Shop{}
-	err := r.er.Get(strconv.Itoa(id), s)
+	err := aggregate.Load(context.Background(), r.es, strconv.Itoa(id), s)
 	if err != nil {
 		return nil, err
 	}
@@ -79,5 +84,5 @@ func (r ShopRepository) Find(id int) (*Shop, error) {
 }
 
 func (r ShopRepository) Save(s *Shop) error {
-	return r.er.Save(s)
+	return aggregate.Save(r.es, s)
 }

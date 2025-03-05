@@ -1,8 +1,9 @@
 package basket
 
 import (
+	"context"
 	"database/sql"
-	"github.com/hallgren/eventsourcing"
+	"github.com/hallgren/eventsourcing/aggregate"
 	"github.com/hallgren/eventsourcing/core"
 	"github.com/hallgren/eventsourcing/eventstore/memory"
 	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
@@ -11,14 +12,13 @@ import (
 )
 
 type BasketRepository struct {
-	er  *eventsourcing.EventRepository
+	es  core.EventStore
 	all func() (core.Iterator, error)
 }
 
 func NewBasketRepository(es core.EventStore, all func() (core.Iterator, error)) *BasketRepository {
-	er := eventsourcing.NewEventRepository(es)
-	er.Register(&Basket{})
-	r := &BasketRepository{er, all}
+	aggregate.Register(&Basket{})
+	r := &BasketRepository{es, all}
 	return r
 }
 
@@ -38,7 +38,7 @@ func NewFakeBasketRepository() *BasketRepository {
 
 func (r BasketRepository) FindByShopId(shopId int) (*Basket, error) {
 	b := &Basket{}
-	err := r.er.Get(strconv.Itoa(shopId), b)
+	err := aggregate.Load(context.Background(), r.es, strconv.Itoa(shopId), b)
 	if err != nil {
 		return nil, err
 	}
@@ -47,5 +47,5 @@ func (r BasketRepository) FindByShopId(shopId int) (*Basket, error) {
 }
 
 func (r BasketRepository) Save(b *Basket) error {
-	return r.er.Save(b)
+	return aggregate.Save(r.es, b)
 }
