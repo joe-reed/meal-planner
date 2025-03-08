@@ -8,7 +8,7 @@ export function useAddItemToBasket(shopId: string) {
     mutationFn: (body: { ingredientId: string }) =>
       addItemToBasket(shopId, JSON.stringify(body)),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [`baskets/${shopId}`] });
+      await queryClient.invalidateQueries({ queryKey: ["shopping-list"] });
     },
   });
 }
