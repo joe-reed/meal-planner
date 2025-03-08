@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"database/sql"
+	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
 	"github.com/joe-reed/meal-planner/apps/api/basket"
 	"github.com/joe-reed/meal-planner/apps/api/categories"
 	"github.com/joe-reed/meal-planner/apps/api/database"
 	"github.com/joe-reed/meal-planner/apps/api/ingredients"
 	"github.com/joe-reed/meal-planner/apps/api/meals"
+	"github.com/joe-reed/meal-planner/apps/api/shopping_list"
 	"github.com/joe-reed/meal-planner/apps/api/shops"
 	"github.com/labstack/echo/v4"
 	"strconv"
@@ -20,9 +23,12 @@ func main() {
 
 	dbFile := "sqlite/meal-planner.db"
 	db, err := database.CreateDatabase(dbFile)
+
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
+
+	es := sqlStore.Open(db)
 
 	publisher, subscribe := setupEvents()
 
@@ -31,6 +37,27 @@ func main() {
 	addIngredientRoutes(e, db)
 	addCategoryRoutes(e)
 	addBasketRoutes(e, db, subscribe)
+
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+
+	p, output := shopping_list.CreateShoppingListProjection(es)
+
+	result := p.RunToEnd(context.TODO())
+
+	if result.Error != nil {
+		e.Logger.Fatal(result.Error)
+	}
+
+	e.GET("/shopping-list", func(c echo.Context) error {
+		result = p.RunToEnd(context.TODO())
+		if result.Error != nil {
+			e.Logger.Fatal(result.Error)
+		}
+
+		return c.JSON(200, output)
+	})
 
 	e.Debug = true
 	e.Logger.Fatal(e.Start(":1323"))
@@ -69,6 +96,7 @@ func addBasketRoutes(e *echo.Echo, db *sql.DB, subscribe func(func(string))) {
 
 	subscribe(func(message string) {
 		parts := strings.Split(message, ":")
+
 		if parts[0] == "shopStarted" {
 			e.Logger.Debug("Creating basket for shop " + parts[1])
 			shopId, _ := strconv.Atoi(parts[1])
@@ -83,8 +111,8 @@ func addBasketRoutes(e *echo.Echo, db *sql.DB, subscribe func(func(string))) {
 		}
 	})
 
-	e.POST("/baskets/:shopId/items", handler.AddItemToBasket)
 	e.GET("/baskets/:shopId", handler.GetBasketItems)
+	e.POST("/baskets/:shopId/items", handler.AddItemToBasket)
 	e.DELETE("/baskets/:shopId/items/:ingredientId", handler.RemoveItemFromBasket)
 }
 

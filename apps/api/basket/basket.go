@@ -71,3 +71,7 @@ func (b *Basket) SetItems(m []*BasketItem) *Basket {
 func (b *Basket) RemoveItem(id string) {
 	aggregate.TrackChange(b, &ItemRemoved{IngredientId: id})
 }
+
+func NewBasketItem(ingredientId string) *BasketItem {
+	return &BasketItem{IngredientId: ingredientId}
+}

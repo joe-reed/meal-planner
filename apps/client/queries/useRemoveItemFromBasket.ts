@@ -8,7 +8,7 @@ export function useRemoveItemFromBasket(shopId: string) {
     mutationFn: (ingredientId: string) =>
       removeItemFromBasket(shopId, ingredientId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [`baskets/${shopId}`] });
+      await queryClient.invalidateQueries({ queryKey: ["shopping-list"] });
     },
   });
 }

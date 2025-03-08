@@ -1,3 +1,5 @@
+github.com/brianvoe/gofakeit/v7 v7.2.1 h1:AGojgaaCdgq4Adzrd2uWdbGNDyX6MWNhHdQBraNfOHI=
+github.com/brianvoe/gofakeit/v7 v7.2.1/go.mod h1:QXuPeBw164PJCzCUZVmgpgHJ3Llj49jSLVkKPMtxtxA=
 github.com/campoy/jsonenums v0.0.0-20201009151607-0f0230183423 h1:VpafO/KGTHfUZSJ/3FgibSr/BPZELlJ+ZiozqN/YHNc=
 github.com/campoy/jsonenums v0.0.0-20201009151607-0f0230183423/go.mod h1:Q9wN7HDfRAAFkNeQbMKz9G8lzkS75y2tTzcE/HMNMrc=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

@@ -57,7 +57,12 @@ func (h *Handler) AddMeal(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "meal already exists")
 	}
 
-	m, err := NewMeal(body.Id, body.Name, body.MealIngredients)
+	mealIngredients := body.MealIngredients
+	if mealIngredients == nil {
+		mealIngredients = make([]MealIngredient, 0)
+	}
+
+	m, err := NewMeal(body.Id, body.Name, mealIngredients)
 	if err != nil {
 		return err
 	}

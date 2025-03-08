@@ -1,8 +1,9 @@
 package meals
 
 type Created struct {
-	Id   string
-	Name string
+	Id              string
+	Name            string
+	MealIngredients []MealIngredient
 }
 
 type IngredientAdded struct {

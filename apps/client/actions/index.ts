@@ -99,6 +99,14 @@ export async function fetchMeals() {
   return response.json();
 }
 
+export async function fetchShoppingList() {
+  const response = await fetch(`${process.env.API_BASE_URL}/shopping-list`);
+  if (!response.ok) {
+    throw new Error("Error fetching shopping-list");
+  }
+  return response.json();
+}
+
 export async function removeIngredientFromMeal(
   mealId: string,
   ingredientId: string,

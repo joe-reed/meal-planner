@@ -1,21 +1,15 @@
 "use client";
 
-import { useCurrentShop, useIngredients, useMeals } from "../../queries";
-import { Ingredient, Meal, Shop } from "../../types";
+import { Ingredient } from "../../types";
 import React from "react";
 import BackButton from "../../components/BackButton";
-import { useBasket } from "../../queries/useBasket";
 import clsx from "clsx";
 import { useAddItemToBasket } from "../../queries/useAddItemToBasket";
 import { useRemoveItemFromBasket } from "../../queries/useRemoveItemFromBasket";
+import { useShoppingList } from "../../queries/useShoppingList";
 
 export default function ShopPage() {
-  const mealsQuery = useMeals();
-  const currentShopQuery = useCurrentShop();
-  const ingredientsQuery = useIngredients();
-  const shopId = currentShopQuery.data?.id;
-
-  const basketQuery = useBasket(shopId, !!shopId);
+  const shoppingListQuery = useShoppingList();
 
   const [showItemsInBasket, setShowItemsInBasket] = React.useState(false);
 
@@ -23,82 +17,31 @@ export default function ShopPage() {
     setShowItemsInBasket(!showItemsInBasket);
   }
 
-  if (
-    [mealsQuery, currentShopQuery, ingredientsQuery, basketQuery].some(
-      (query) => query.isInitialLoading,
-    )
-  ) {
+  if (shoppingListQuery.isInitialLoading) {
     return <p>Loading...</p>;
   }
 
-  const queryWithError = [
-    mealsQuery,
-    currentShopQuery,
-    ingredientsQuery,
-    basketQuery,
-  ].find((query) => query.isError);
-
-  if (queryWithError && queryWithError.error) {
-    return <p>Error: {queryWithError.error.message}</p>;
+  if (shoppingListQuery.error) {
+    return <p>Error: {shoppingListQuery.error.message}</p>;
   }
 
-  const meals = mealsQuery.data as Meal[];
-  const currentShop = currentShopQuery.data as Shop | null;
-  const ingredients = ingredientsQuery.data as Ingredient[];
-  const basket = basketQuery.data;
+  const { shopId, shoppingList: shoppingListData } = shoppingListQuery.data || {
+    shopId: "0",
+    shoppingList: {},
+  };
+  const shoppingList = Object.values(shoppingListData);
 
-  const shopIngredients = Object.values(
-    (currentShop?.meals ?? [])
-      .flatMap((shopMeal) => {
-        const meal = meals.find((m) => m.id === shopMeal.id) as Meal;
-
-        return meal.ingredients.map((ingredient) => {
-          return ingredients.find((i) => i.id === ingredient.id) as Ingredient;
-        });
-      })
-      .map((ingredient) => ({
-        ...ingredient,
-        isInBasket:
-          basket?.items.some((item) => item.ingredientId === ingredient.id) ??
-          false,
-      }))
-      .reduce<{
-        [ingredientId: string]: Ingredient & {
-          mealCount: number;
-          isInBasket: boolean;
-        };
-      }>((acc, ingredient) => {
-        if (!acc[ingredient.id]) {
-          acc[ingredient.id] = {
-            ...ingredient,
-            mealCount: 0,
-          };
-        }
-
-        acc[ingredient.id].mealCount += 1;
-
-        return acc;
-      }, {}),
-  );
-
-  const filteredIngredients = shopIngredients.filter(
+  const filteredIngredients = shoppingList.filter(
     (ingredient) => showItemsInBasket || !ingredient.isInBasket,
   );
 
-  const categorisedIngredients = filteredIngredients.reduce<{
-    [category: string]: (Ingredient & {
+  const categorisedIngredients = Object.groupBy<
+    string,
+    Ingredient & {
       mealCount: number;
       isInBasket: boolean;
-    })[];
-  }>((acc, ingredient) => {
-    const { category } = ingredient;
-
-    acc[category] = acc[category] || [];
-
-    acc[category].push(ingredient);
-
-    return acc;
-  }, {});
+    }
+  >(filteredIngredients, ({ category }) => category);
 
   return (
     <div className="flex w-full flex-col">
@@ -115,7 +58,7 @@ export default function ShopPage() {
       </div>
 
       {filteredIngredients.length === 0 ? (
-        shopIngredients.length === 0 ? (
+        shoppingList.length === 0 ? (
           <p className="text-center">
             No ingredients in this shop yet. Go back and add some meals!
           </p>
@@ -133,11 +76,11 @@ export default function ShopPage() {
           <div className="mb-4" key={category}>
             <h2 className="mb-2 text-xl font-bold">{category}</h2>
             <ul>
-              {categorisedIngredients[category].map((ingredient) => (
+              {(categorisedIngredients[category] ?? []).map((ingredient) => (
                 <IngredientListItem
                   key={ingredient.id}
                   ingredient={ingredient}
-                  shopId={shopId as string}
+                  shopId={shopId}
                 />
               ))}
             </ul>
