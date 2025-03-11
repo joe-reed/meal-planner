@@ -130,10 +130,16 @@ func (h *Handler) UploadMeals(c echo.Context) error {
 	}
 	defer src.Close()
 
-	meals, err := ParseMeals(src, h.IngredientRepository)
+	meals, notFoundIngredients, err := ParseMeals(src, h.IngredientRepository)
 
 	if err != nil {
 		return err
+	}
+
+	if len(notFoundIngredients) > 0 {
+		return c.JSON(http.StatusBadRequest, struct {
+			NotFoundIngredients []string `json:"notFoundIngredients"`
+		}{notFoundIngredients})
 	}
 
 	slog.Info("uploading meals", "meals", meals)
@@ -147,35 +153,34 @@ func (h *Handler) UploadMeals(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-func ParseMeals(src multipart.File, ingredientRepository *ingredients.IngredientRepository) ([]*Meal, error) {
+func ParseMeals(src multipart.File, ingredientRepository *ingredients.IngredientRepository) (meals []*Meal, notFoundIngredients []string, err error) {
 	var buf bytes.Buffer
-	_, err := buf.ReadFrom(src)
+	_, err = buf.ReadFrom(src)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var meals []*Meal
 	var meal *Meal
 
 	csvReader := csv.NewReader(&buf)
 	records, err := csvReader.ReadAll()
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	for i, record := range records {
 		if i == 0 {
 			if record[0] != "name" || record[1] != "ingredient" || record[2] != "amount" || record[3] != "unit" {
-				return nil, errors.New("invalid csv header")
+				return nil, nil, errors.New("invalid csv header")
 			}
 
 			continue
 		}
 
 		if len(record) != 4 {
-			return nil, errors.New("invalid csv row")
+			return nil, nil, errors.New("invalid csv row")
 		}
 
 		mealName := record[0]
@@ -192,19 +197,20 @@ func ParseMeals(src multipart.File, ingredientRepository *ingredients.Ingredient
 		amount, err := strconv.Atoi(record[2])
 
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		unit, ok := UnitFromString(record[3])
 
 		if !ok {
-			return nil, fmt.Errorf("invalid unit: %s", record[3])
+			return nil, nil, fmt.Errorf("invalid unit: %s", record[3])
 		}
 
 		ingredient, err := ingredientRepository.GetByName(ingredientName)
 
 		if err != nil {
-			return nil, err
+			notFoundIngredients = append(notFoundIngredients, ingredientName)
+			continue
 		}
 
 		meal.AddIngredient(*NewMealIngredient(ingredient.Id).WithQuantity(amount, unit))
@@ -214,5 +220,5 @@ func ParseMeals(src multipart.File, ingredientRepository *ingredients.Ingredient
 		meals = append(meals, meal)
 	}
 
-	return meals, nil
+	return meals, notFoundIngredients, nil
 }

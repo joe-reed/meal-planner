@@ -73,3 +73,41 @@ func TestUploadingMeals(t *testing.T) {
 		*meals.NewMealIngredient("def").WithQuantity(5, meals.Tbsp),
 	}, m[1].MealIngredients)
 }
+
+func TestIngredientsNotExisting(t *testing.T) {
+	repo := meals.NewFakeMealRepository()
+
+	e := echo.New()
+	body := &bytes.Buffer{}
+	w := multipart.NewWriter(body)
+
+	part, err := w.CreateFormFile("meals", "meals.csv")
+	require.NoError(t, err)
+
+	_, err = part.Write([]byte("name,ingredient,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
+	require.NoError(t, err)
+
+	err = w.Close()
+	require.NoError(t, err)
+
+	req := httptest.NewRequest("POST", "/meals/upload", body)
+
+	req.Header.Set(echo.HeaderContentType, w.FormDataContentType())
+
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	h := &meals.Handler{MealRepository: repo, IngredientRepository: ingredients.NewFakeIngredientRepository()}
+
+	err = h.UploadMeals(c)
+
+	require.NoError(t, err)
+
+	require.Equal(t, http.StatusBadRequest, rec.Code)
+
+	m, err := repo.Get()
+
+	require.Len(t, m, 0)
+
+	require.Equal(t, "{\"notFoundIngredients\":[\"Abc Name\",\"Def Name\",\"Def Name\",\"Ghi Name\"]}\n", rec.Body.String())
+}

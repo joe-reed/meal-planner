@@ -8,7 +8,8 @@ export async function POST(req: Request) {
     body: formData,
   });
 
-  console.log(response.status);
-
-  return new NextResponse();
+  return new NextResponse(response.body, {
+    status: response.status,
+    headers: response.headers,
+  });
 }
