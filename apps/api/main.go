@@ -4,13 +4,13 @@ import (
 	"context"
 	"database/sql"
 	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
-	"github.com/joe-reed/meal-planner/apps/api/basket"
-	"github.com/joe-reed/meal-planner/apps/api/categories"
-	"github.com/joe-reed/meal-planner/apps/api/database"
-	"github.com/joe-reed/meal-planner/apps/api/ingredients"
-	"github.com/joe-reed/meal-planner/apps/api/meals"
-	"github.com/joe-reed/meal-planner/apps/api/shopping_list"
-	"github.com/joe-reed/meal-planner/apps/api/shops"
+	"github.com/joe-reed/meal-planner/apps/api/internal/database"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/basket"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shopping_list"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
+	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"github.com/labstack/echo/v4"
 	"strconv"
 	"strings"
@@ -92,7 +92,7 @@ func addBasketRoutes(e *echo.Echo, db *sql.DB, subscribe func(func(string))) {
 		e.Logger.Fatal(e)
 	}
 
-	handler := basket.Handler{BasketRepository: r}
+	handler := handlers.BasketHandler{BasketRepository: r}
 
 	subscribe(func(message string) {
 		parts := strings.Split(message, ":")
@@ -129,7 +129,7 @@ func addMealRoutes(e *echo.Echo, db *sql.DB) {
 		e.Logger.Fatal(e)
 	}
 
-	handler := meals.Handler{MealRepository: mealRepo, IngredientRepository: ingredientRepo}
+	handler := handlers.MealsHandler{MealRepository: mealRepo, IngredientRepository: ingredientRepo}
 
 	e.GET("/meals", handler.GetMeals)
 	e.POST("/meals/upload", handler.UploadMeals)
@@ -146,7 +146,7 @@ func addShopRoutes(e *echo.Echo, db *sql.DB, publisher func(string)) {
 		e.Logger.Fatal(e)
 	}
 
-	handler := shops.Handler{ShopRepository: r, Publisher: publisher}
+	handler := handlers.ShopsHandler{ShopRepository: r, Publisher: publisher}
 
 	e.GET("/shops/current", handler.CurrentShop)
 	e.POST("/shops/current/meals", handler.AddMealToCurrentShop)
@@ -161,14 +161,14 @@ func addIngredientRoutes(e *echo.Echo, db *sql.DB) {
 		e.Logger.Fatal(e)
 	}
 
-	handler := ingredients.Handler{IngredientRepository: r}
+	handler := handlers.IngredientsHandler{IngredientRepository: r}
 
 	e.GET("/ingredients", handler.GetIngredients)
 	e.POST("/ingredients", handler.AddIngredient)
 }
 
 func addCategoryRoutes(e *echo.Echo) {
-	handler := categories.Handler{}
+	handler := handlers.CategoriesHandler{}
 
 	e.GET("/categories", handler.GetCategories)
 }
