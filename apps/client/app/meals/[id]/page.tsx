@@ -162,13 +162,19 @@ export default function MealPage() {
               >
                 {/*todo: fetch these from api*/}
                 <option value="Number">Number</option>
-                <option value="Cup">Cup</option>
                 <option value="Tsp">Tsp</option>
                 <option value="Tbsp">Tbsp</option>
+                <option value="Cup">Cup</option>
                 <option value="Oz">Oz</option>
                 <option value="Lb">Lb</option>
                 <option value="Gram">Gram</option>
                 <option value="Kg">Kg</option>
+                <option value="Ml">Ml</option>
+                <option value="Litre">Litre</option>
+                <option value="Pinch">Pinch</option>
+                <option value="Bunch">Bunch</option>
+                <option value="Pack">Pack</option>
+                <option value="Tin">Tin</option>
               </select>
               <button
                 onClick={() => {

@@ -12,6 +12,12 @@ const (
 	Lb
 	Gram
 	Kg
+	Ml
+	Litre
+	Pinch
+	Bunch
+	Pack
+	Tin
 )
 
 func UnitFromString(s string) (Unit, bool) {

@@ -17,6 +17,12 @@ var (
 		"Lb":     Lb,
 		"Gram":   Gram,
 		"Kg":     Kg,
+		"Ml":     Ml,
+		"Litre":  Litre,
+		"Pinch":  Pinch,
+		"Bunch":  Bunch,
+		"Pack":   Pack,
+		"Tin":    Tin,
 	}
 
 	_UnitValueToName = map[Unit]string{
@@ -28,6 +34,12 @@ var (
 		Lb:     "Lb",
 		Gram:   "Gram",
 		Kg:     "Kg",
+		Ml:     "Ml",
+		Litre:  "Litre",
+		Pinch:  "Pinch",
+		Bunch:  "Bunch",
+		Pack:   "Pack",
+		Tin:    "Tin",
 	}
 )
 
@@ -43,6 +55,12 @@ func init() {
 			interface{}(Lb).(fmt.Stringer).String():     Lb,
 			interface{}(Gram).(fmt.Stringer).String():   Gram,
 			interface{}(Kg).(fmt.Stringer).String():     Kg,
+			interface{}(Ml).(fmt.Stringer).String():     Ml,
+			interface{}(Litre).(fmt.Stringer).String():  Litre,
+			interface{}(Pinch).(fmt.Stringer).String():  Pinch,
+			interface{}(Bunch).(fmt.Stringer).String():  Bunch,
+			interface{}(Pack).(fmt.Stringer).String():   Pack,
+			interface{}(Tin).(fmt.Stringer).String():    Tin,
 		}
 	}
 }
