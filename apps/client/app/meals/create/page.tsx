@@ -35,7 +35,7 @@ export default function CreateMealPage() {
           await push(`/meals/${meal.id}`);
         }}
       >
-        <label className="mb-3 flex flex-col">
+        <label className="mb-3 flex w-2/3 flex-col">
           <span>Name</span>
           <input
             type="text"
