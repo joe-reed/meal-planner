@@ -35,23 +35,17 @@ export default function HomePage() {
   return (
     <>
       <div className="mb-7 flex flex-col justify-between sm:flex-row">
-        <span className="sm:space-x-2">
-          <Link
-            href="/meals/create"
-            className="button mb-2 block text-center sm:mb-0 sm:inline"
-          >
+        <span className="mb-3 flex space-x-2 sm:mb-0 sm:inline">
+          <Link href="/meals/create" className="button w-1/2 text-center">
             🍲 Create meal
           </Link>
 
-          <Link
-            href="/meals/upload"
-            className="button block text-center sm:mb-0 sm:inline"
-          >
+          <Link href="/meals/upload" className="button w-1/2 text-center">
             📤 Upload meals
           </Link>
         </span>
 
-        <span className="sm:space-x-2">
+        <span>
           <Link
             href="/shop"
             className="button block text-center sm:mb-0 sm:inline"
