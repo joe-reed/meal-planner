@@ -7,6 +7,8 @@ import clsx from "clsx";
 import { useAddItemToBasket } from "../../queries/useAddItemToBasket";
 import { useRemoveItemFromBasket } from "../../queries/useRemoveItemFromBasket";
 import { useShoppingList } from "../../queries/useShoppingList";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
+import { Unit } from "../../components/Unit";
 
 export default function ShopPage() {
   const shoppingListQuery = useShoppingList();
@@ -40,6 +42,7 @@ export default function ShopPage() {
     Ingredient & {
       mealCount: number;
       isInBasket: boolean;
+      quantities: { unit: string; amount: number }[];
     }
   >(filteredIngredients, ({ category }) => category);
 
@@ -97,6 +100,7 @@ function IngredientListItem({
   ingredient: Ingredient & {
     mealCount: number;
     isInBasket: boolean;
+    quantities: { unit: string; amount: number }[];
   };
   shopId: string;
 }) {
@@ -124,9 +128,22 @@ function IngredientListItem({
           }}
         />
       </label>
-      <span className="flex-no-shrink whitespace-nowrap">
-        {ingredient.mealCount} <span className="text-xs">meals</span>
-      </span>
+      <Popover className="relative">
+        <PopoverButton className="flex-no-shrink whitespace-nowrap">
+          {ingredient.mealCount} <span className="text-xs">meals</span>
+        </PopoverButton>
+        <PopoverPanel
+          anchor="bottom"
+          className="flex flex-col space-y-2 rounded-lg border bg-white px-3 py-2 text-xs shadow-lg"
+        >
+          {ingredient.quantities.map(({ unit, amount }, index) => (
+            <span key={index}>
+              {amount}
+              <Unit quantity={{ unit, amount }} />
+            </span>
+          ))}
+        </PopoverPanel>
+      </Popover>
     </li>
   );
 }

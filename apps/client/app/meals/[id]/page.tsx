@@ -21,6 +21,7 @@ import { Ingredient, Meal } from "../../../types";
 import { useAddIngredientToMeal } from "../../../queries/useAddIngredientToMeal";
 import { Modal } from "../../../components/Modal";
 import { useCategories } from "../../../queries/useCategories";
+import { Unit } from "../../../components/Unit";
 
 type PendingIngredient = {
   id: string;
@@ -103,11 +104,7 @@ export default function MealPage() {
             <span>
               <span>
                 {ingredient.quantity.amount}
-                {ingredient.quantity.unit !== "Number"
-                  ? " " +
-                    ingredient.quantity.unit +
-                    (ingredient.quantity.amount > 1 ? "s" : "")
-                  : "x"}
+                <Unit quantity={ingredient.quantity} />
               </span>
               <button
                 onClick={() => removeIngredientFromMeal(ingredient.id)}
