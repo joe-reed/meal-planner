@@ -112,3 +112,55 @@ func TestIngredientsNotExisting(t *testing.T) {
 
 	require.Equal(t, "{\"notFoundIngredients\":[\"Abc Name\",\"Def Name\",\"Def Name\",\"Ghi Name\"]}\n", rec.Body.String())
 }
+
+func TestMealAlreadyExisting(t *testing.T) {
+	ingredientRepo := ingredients.NewFakeIngredientRepository()
+
+	err := ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Abc Name").WithId("abc").Build())
+	require.NoError(t, err)
+
+	err = ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Def Name").WithId("def").Build())
+	require.NoError(t, err)
+
+	err = ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Ghi Name").WithId("ghi").Build())
+	require.NoError(t, err)
+
+	repo := meals.NewFakeMealRepository()
+
+	e := echo.New()
+	body := &bytes.Buffer{}
+	w := multipart.NewWriter(body)
+
+	part, err := w.CreateFormFile("meals", "meals.csv")
+	require.NoError(t, err)
+
+	err = repo.Save(
+		meals.NewMealBuilder().WithName("bar").Build(),
+	)
+	require.NoError(t, err)
+
+	_, err = part.Write([]byte("name,ingredient,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
+	require.NoError(t, err)
+
+	err = w.Close()
+	require.NoError(t, err)
+
+	req := httptest.NewRequest("POST", "/meals/upload", body)
+
+	req.Header.Set(echo.HeaderContentType, w.FormDataContentType())
+
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	h := &handlers.MealsHandler{MealRepository: repo, IngredientRepository: ingredientRepo}
+
+	err = h.UploadMeals(c)
+
+	m, err := repo.Get()
+
+	require.Equal(t, http.StatusBadRequest, rec.Code)
+
+	require.Len(t, m, 1)
+
+	require.Equal(t, "{\"error\":\"meal already exists\",\"mealName\":\"bar\"}\n", rec.Body.String())
+}

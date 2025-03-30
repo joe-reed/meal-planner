@@ -143,6 +143,17 @@ func (h *MealsHandler) UploadMeals(c echo.Context) error {
 		}{notFoundIngredients})
 	}
 
+	for _, m := range meals {
+		meal, _ := h.MealRepository.FindByName(m.Name)
+
+		if meal != nil {
+			return c.JSON(http.StatusBadRequest, struct {
+				Error    string `json:"error"`
+				MealName string `json:"mealName"`
+			}{"meal already exists", m.Name})
+		}
+	}
+
 	slog.Info("uploading meals", "meals", meals)
 
 	for _, m := range meals {
