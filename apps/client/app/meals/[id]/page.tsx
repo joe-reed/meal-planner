@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { z } from "zod";
 import {
   useCreateIngredient,
   useIngredients,
@@ -25,7 +26,7 @@ import { Unit } from "../../../components/Unit";
 
 type PendingIngredient = {
   id: string;
-  quantity: { amount: number; unit: string };
+  quantity: { amount: string; unit: string };
 };
 
 export default function MealPage() {
@@ -57,7 +58,7 @@ export default function MealPage() {
   function selectIngredient(ingredient: Ingredient) {
     setPendingIngredient({
       id: ingredient.id,
-      quantity: { amount: 1, unit: "Number" },
+      quantity: { amount: "", unit: "Number" },
     });
     setIngredientSearchQuery("");
     setTimeout(() => {
@@ -66,7 +67,17 @@ export default function MealPage() {
   }
 
   function addIngredient(pendingIngredient: PendingIngredient) {
-    addIngredientToMeal(pendingIngredient);
+    addIngredientToMeal(
+      z
+        .object({
+          id: z.string(),
+          quantity: z.object({
+            amount: z.coerce.number().positive(),
+            unit: z.string(),
+          }),
+        })
+        .parse(pendingIngredient),
+    );
     setPendingIngredient(null);
 
     ingredientSearchInputRef.current?.focus();
@@ -130,6 +141,7 @@ export default function MealPage() {
             <div className="flex space-x-1">
               <input
                 ref={numberInputRef}
+                autoFocus
                 type="number"
                 value={pendingIngredient.quantity.amount}
                 className="button bg-white px-2 py-1"
@@ -139,7 +151,7 @@ export default function MealPage() {
                     ...pendingIngredient,
                     quantity: {
                       ...pendingIngredient.quantity,
-                      amount: parseInt(e.target.value),
+                      amount: e.target.value,
                     },
                   })
                 }
@@ -155,7 +167,6 @@ export default function MealPage() {
                   });
                 }}
                 className="button bg-white px-2 py-1"
-                autoFocus
               >
                 {/*todo: fetch these from api*/}
                 <option value="Number">Number</option>
