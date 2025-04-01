@@ -47,49 +47,56 @@ export default function ShopPage() {
   >(filteredIngredients, ({ category }) => category);
 
   return (
-    <div className="flex w-full flex-col">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <BackButton className="mr-3" destination="/" />
-          <h1 className="text-lg font-bold">Current shop</h1>
-        </div>
-        <button onClick={toggleShowItemsInBasket} className="button">
-          {showItemsInBasket
-            ? "Hide ingredients in basket"
-            : "Show all ingredients"}
-        </button>
-      </div>
-
-      {filteredIngredients.length === 0 ? (
-        shoppingList.length === 0 ? (
-          <p className="text-center">
-            No ingredients in this shop yet. Go back and add some meals!
-          </p>
-        ) : (
-          <p className="text-center">
-            All ingredients are in basket. Use the button above to show all
-            ingredients.
-          </p>
-        )
-      ) : null}
-
-      {Object.keys(categorisedIngredients)
-        .sort()
-        .map((category) => (
-          <div className="mb-4" key={category}>
-            <h2 className="mb-2 text-xl font-bold">{category}</h2>
-            <ul>
-              {(categorisedIngredients[category] ?? []).map((ingredient) => (
-                <IngredientListItem
-                  key={ingredient.id}
-                  ingredient={ingredient}
-                  shopId={shopId}
-                />
-              ))}
-            </ul>
+    <>
+      <ShowIngredientsButton
+        showItemsInBasket={showItemsInBasket}
+        toggleShowItemsInBasket={toggleShowItemsInBasket}
+        className="fixed bottom-4 right-4 z-10 shadow-md sm:hidden"
+      />
+      <div className="flex w-full flex-col">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <BackButton className="mr-3" destination="/" />
+            <h1 className="text-lg font-bold">Current shop</h1>
           </div>
-        ))}
-    </div>
+          <ShowIngredientsButton
+            showItemsInBasket={showItemsInBasket}
+            toggleShowItemsInBasket={toggleShowItemsInBasket}
+            className="hidden sm:block"
+          />
+        </div>
+
+        {filteredIngredients.length === 0 ? (
+          shoppingList.length === 0 ? (
+            <p className="text-center">
+              No ingredients in this shop yet. Go back and add some meals!
+            </p>
+          ) : (
+            <p className="text-center">
+              All ingredients are in basket. Use the button above to show all
+              ingredients.
+            </p>
+          )
+        ) : null}
+
+        {Object.keys(categorisedIngredients)
+          .sort()
+          .map((category) => (
+            <div className="mb-4" key={category}>
+              <h2 className="mb-2 text-xl font-bold">{category}</h2>
+              <ul>
+                {(categorisedIngredients[category] ?? []).map((ingredient) => (
+                  <IngredientListItem
+                    key={ingredient.id}
+                    ingredient={ingredient}
+                    shopId={shopId}
+                  />
+                ))}
+              </ul>
+            </div>
+          ))}
+      </div>
+    </>
   );
 }
 
@@ -145,5 +152,25 @@ function IngredientListItem({
         </PopoverPanel>
       </Popover>
     </li>
+  );
+}
+function ShowIngredientsButton({
+  showItemsInBasket,
+  toggleShowItemsInBasket,
+  className,
+}: {
+  showItemsInBasket: boolean;
+  toggleShowItemsInBasket: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={toggleShowItemsInBasket}
+      className={clsx("button", className)}
+    >
+      {showItemsInBasket
+        ? "Hide ingredients in basket"
+        : "Show all ingredients"}
+    </button>
   );
 }
