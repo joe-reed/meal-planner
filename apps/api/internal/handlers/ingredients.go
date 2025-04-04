@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
 	"net/http"
 
@@ -8,11 +9,11 @@ import (
 )
 
 type IngredientsHandler struct {
-	IngredientRepository *ingredients.IngredientRepository
+	Application *application.IngredientApplication
 }
 
 func (h *IngredientsHandler) GetIngredients(c echo.Context) error {
-	ings, err := h.IngredientRepository.Get()
+	ings, err := h.Application.ListIngredients()
 
 	if err != nil {
 		return err
@@ -27,14 +28,9 @@ func (h *IngredientsHandler) AddIngredient(c echo.Context) error {
 		return err
 	}
 
-	i, err := ingredients.NewIngredient(body.Id, body.Name, body.Category)
+	i, err := h.Application.AddIngredient(body.Id, body.Name, body.Category)
+
 	if err != nil {
-		return err
-	}
-
-	c.Logger().Debugf("Adding ingredient: %v", i)
-
-	if err := h.IngredientRepository.Add(i); err != nil {
 		return err
 	}
 

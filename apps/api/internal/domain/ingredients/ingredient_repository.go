@@ -83,7 +83,7 @@ func (r IngredientRepository) Get() ([]*Ingredient, error) {
 	return ingredients, nil
 }
 
-func (r IngredientRepository) GetByName(name string) (*Ingredient, error) {
+func (r IngredientRepository) GetByName(name IngredientName) (*Ingredient, error) {
 	ingredients, err := r.Get()
 
 	if err != nil {

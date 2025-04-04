@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/database"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/basket"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
@@ -161,7 +162,7 @@ func addIngredientRoutes(e *echo.Echo, db *sql.DB) {
 		e.Logger.Fatal(e)
 	}
 
-	handler := handlers.IngredientsHandler{IngredientRepository: r}
+	handler := handlers.IngredientsHandler{Application: application.NewIngredientApplication(r)}
 
 	e.GET("/ingredients", handler.GetIngredients)
 	e.POST("/ingredients", handler.AddIngredient)

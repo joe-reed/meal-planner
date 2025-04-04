@@ -139,7 +139,7 @@ func (h *MealsHandler) UploadMeals(c echo.Context) error {
 
 	if len(notFoundIngredients) > 0 {
 		return c.JSON(http.StatusBadRequest, struct {
-			NotFoundIngredients []string `json:"notFoundIngredients"`
+			NotFoundIngredients []ingredients.IngredientName `json:"notFoundIngredients"`
 		}{notFoundIngredients})
 	}
 
@@ -165,7 +165,7 @@ func (h *MealsHandler) UploadMeals(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-func ParseMeals(src multipart.File, ingredientRepository *ingredients.IngredientRepository) (m []*meals.Meal, notFoundIngredients []string, err error) {
+func ParseMeals(src multipart.File, ingredientRepository *ingredients.IngredientRepository) (m []*meals.Meal, notFoundIngredients []ingredients.IngredientName, err error) {
 	var buf bytes.Buffer
 	_, err = buf.ReadFrom(src)
 
@@ -205,7 +205,12 @@ func ParseMeals(src multipart.File, ingredientRepository *ingredients.Ingredient
 			meal = meals.NewMealBuilder().WithName(mealName).Build()
 		}
 
-		ingredientName := record[1]
+		ingredientName, err := ingredients.NewIngredientName(record[1])
+
+		if err != nil {
+			return nil, nil, err
+		}
+
 		amount, err := strconv.Atoi(record[2])
 
 		if err != nil {

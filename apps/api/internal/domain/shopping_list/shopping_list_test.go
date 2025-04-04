@@ -511,7 +511,7 @@ func (s *ShoppingListSuite) createRepositories(db *sql.DB) {
 	s.basketRepository = basketRepository
 }
 
-func (s *ShoppingListSuite) addIngredient(id, name string, category categories.Category) *ingredients.Ingredient {
+func (s *ShoppingListSuite) addIngredient(id string, name ingredients.IngredientName, category categories.Category) *ingredients.Ingredient {
 	ingredient, err := ingredients.NewIngredient(id, name, category)
 	assert.NoError(s.T(), err)
 

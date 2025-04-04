@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/categories"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
@@ -21,7 +22,7 @@ func TestAddingIngredient(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &handlers.IngredientsHandler{IngredientRepository: repo}
+	h := &handlers.IngredientsHandler{Application: application.NewIngredientApplication(repo)}
 
 	if assert.NoError(t, h.AddIngredient(c)) {
 		m, err := repo.Get()

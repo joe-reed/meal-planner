@@ -1,16 +1,30 @@
 package ingredients
 
 import (
+	"errors"
 	"github.com/google/uuid"
 	"github.com/hallgren/eventsourcing"
 	"github.com/hallgren/eventsourcing/aggregate"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/categories"
 )
 
+type IngredientName string
+
+func (i IngredientName) String() string {
+	return string(i)
+}
+
+func NewIngredientName(name string) (IngredientName, error) {
+	if len(name) == 0 {
+		return "", errors.New("name cannot be empty")
+	}
+	return IngredientName(name), nil
+}
+
 type Ingredient struct {
 	aggregate.Root
 	Id       string              `json:"id"`
-	Name     string              `json:"name"`
+	Name     IngredientName      `json:"name"`
 	Category categories.Category `json:"category"`
 }
 
@@ -18,7 +32,7 @@ func (m *Ingredient) Transition(event eventsourcing.Event) {
 	switch e := event.Data().(type) {
 	case *Created:
 		m.Id = e.Id
-		m.Name = e.Name
+		m.Name = IngredientName(e.Name)
 		m.Category = e.Category
 	}
 }
@@ -27,24 +41,24 @@ func (m *Ingredient) Register(r aggregate.RegisterFunc) {
 	r(&Created{})
 }
 
-func NewIngredient(id string, name string, category categories.Category) (*Ingredient, error) {
+func NewIngredient(id string, name IngredientName, category categories.Category) (*Ingredient, error) {
 	i := &Ingredient{}
 	err := i.SetID(id)
 	if err != nil {
 		return nil, err
 	}
-	aggregate.TrackChange(i, &Created{Id: id, Name: name, Category: category})
+	aggregate.TrackChange(i, &Created{Id: id, Name: name.String(), Category: category})
 
 	return i, nil
 }
 
 type IngredientBuilder struct {
 	id       string
-	name     string
+	name     IngredientName
 	category categories.Category
 }
 
-func (b *IngredientBuilder) WithName(name string) *IngredientBuilder {
+func (b *IngredientBuilder) WithName(name IngredientName) *IngredientBuilder {
 	b.name = name
 	return b
 }
