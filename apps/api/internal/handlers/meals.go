@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
 	"github.com/labstack/echo/v4"
 	"log/slog"
@@ -20,6 +21,8 @@ type MealsHandler struct {
 
 	// todo: refactor to reference exported application service not repository directly
 	IngredientRepository *ingredients.IngredientRepository
+
+	Application *application.MealApplication
 }
 
 func (h *MealsHandler) GetMeals(c echo.Context) error {
@@ -48,30 +51,24 @@ func (h *MealsHandler) AddMeal(c echo.Context) error {
 		return err
 	}
 
-	existingMeal, err := h.MealRepository.FindByName(body.Name)
-
-	if err != nil {
-		return err
-	}
-
-	if existingMeal != nil {
-		return c.String(http.StatusBadRequest, "meal already exists")
-	}
-
 	mealIngredients := body.MealIngredients
 	if mealIngredients == nil {
 		mealIngredients = make([]meals.MealIngredient, 0)
 	}
 
-	m, err := meals.NewMeal(body.Id, body.Name, mealIngredients)
+	m, err := h.Application.AddMeal(
+		body.Id,
+		body.Name,
+		mealIngredients,
+	)
+
 	if err != nil {
-		return err
-	}
-
-	c.Logger().Debugf("Adding meal: %v", m)
-
-	if err := h.MealRepository.Save(m); err != nil {
-		return err
+		if errors.Is(err, application.MealAlreadyExists) {
+			return c.JSON(http.StatusBadRequest, struct {
+				Error    string `json:"error"`
+				MealName string `json:"mealName"`
+			}{"meal already exists", body.Name})
+		}
 	}
 
 	return c.JSON(http.StatusCreated, m)
