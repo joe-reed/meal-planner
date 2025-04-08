@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"fmt"
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
 	"net/http/httptest"
@@ -30,7 +31,7 @@ func TestViewingMeals(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &handlers.MealsHandler{MealRepository: repo}
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
 
 	if assert.NoError(t, h.GetMeals(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)

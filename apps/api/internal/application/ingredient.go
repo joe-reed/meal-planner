@@ -29,7 +29,7 @@ func (a *IngredientApplication) AddIngredient(id string, name ingredients.Ingred
 	return i, nil
 }
 
-func (a *IngredientApplication) ListIngredients() ([]*ingredients.Ingredient, error) {
+func (a *IngredientApplication) GetIngredients() ([]*ingredients.Ingredient, error) {
 	ings, err := a.r.Get()
 
 	if err != nil {

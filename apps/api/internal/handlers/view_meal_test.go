@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"fmt"
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
 	"net/http/httptest"
@@ -26,9 +27,9 @@ func TestViewingMeal(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("id")
 	c.SetParamValues(meal.Id)
-	h := &handlers.MealsHandler{MealRepository: repo}
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
 
-	if assert.NoError(t, h.GetMeal(c)) {
+	if assert.NoError(t, h.FindMeal(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[{"id":"ing-123","quantity":{"amount":1,"unit":"Number"}}]}`+"\n", meal.Id), rec.Body.String())
 	}
@@ -48,9 +49,9 @@ func TestViewingMealWithNoIngredients(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("id")
 	c.SetParamValues(meal.Id)
-	h := &handlers.MealsHandler{MealRepository: repo}
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
 
-	if assert.NoError(t, h.GetMeal(c)) {
+	if assert.NoError(t, h.FindMeal(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[]}`+"\n", meal.Id), rec.Body.String())
 	}

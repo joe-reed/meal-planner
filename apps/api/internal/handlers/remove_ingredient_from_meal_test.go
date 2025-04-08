@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
 	"net/http/httptest"
@@ -29,7 +30,7 @@ func TestRemovingIngredientFromMeal(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("mealId", "ingredientId")
 	c.SetParamValues("123", "ing-1")
-	h := &handlers.MealsHandler{MealRepository: repo}
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
 
 	if assert.NoError(t, h.RemoveIngredientFromMeal(c)) {
 		m, err := repo.Find("123")
@@ -57,7 +58,7 @@ func TestRemovingAllIngredientsFromMeal(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("mealId", "ingredientId")
 	c.SetParamValues("123", "ing-1")
-	h := &handlers.MealsHandler{MealRepository: repo}
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
 
 	if assert.NoError(t, h.RemoveIngredientFromMeal(c)) {
 		m, err := repo.Find("123")

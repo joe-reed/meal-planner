@@ -2,6 +2,7 @@ package handlers_test
 
 import (
 	"bytes"
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"mime/multipart"
@@ -47,7 +48,7 @@ func TestUploadingMeals(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := &handlers.MealsHandler{MealRepository: repo, IngredientRepository: ingredientRepo}
+	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(ingredientRepo, repo)}
 
 	err = h.UploadMeals(c)
 
@@ -98,7 +99,7 @@ func TestIngredientsNotExisting(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := &handlers.MealsHandler{MealRepository: repo, IngredientRepository: ingredients.NewFakeIngredientRepository()}
+	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(ingredients.NewFakeIngredientRepository(), repo)}
 
 	err = h.UploadMeals(c)
 
@@ -152,7 +153,7 @@ func TestMealAlreadyExisting(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := &handlers.MealsHandler{MealRepository: repo, IngredientRepository: ingredientRepo}
+	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(ingredientRepo, repo)}
 
 	err = h.UploadMeals(c)
 

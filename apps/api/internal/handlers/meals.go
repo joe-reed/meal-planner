@@ -1,48 +1,35 @@
 package handlers
 
 import (
-	"bytes"
-	"encoding/csv"
 	"errors"
-	"fmt"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
 	"github.com/labstack/echo/v4"
-	"log/slog"
-	"mime/multipart"
 	"net/http"
-	"strconv"
-
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
 )
 
 type MealsHandler struct {
-	MealRepository *meals.MealRepository
-
-	// todo: refactor to reference exported application service not repository directly
-	IngredientRepository *ingredients.IngredientRepository
-
 	Application *application.MealApplication
 }
 
 func (h *MealsHandler) GetMeals(c echo.Context) error {
-	meals, err := h.MealRepository.Get()
+	m, err := h.Application.GetMeals()
 
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, meals)
+	return c.JSON(http.StatusOK, m)
 }
 
-func (h *MealsHandler) GetMeal(c echo.Context) error {
-	meal, err := h.MealRepository.Find(c.Param("id"))
+func (h *MealsHandler) FindMeal(c echo.Context) error {
+	m, err := h.Application.FindMeal(c.Param("id"))
 
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, meal)
+	return c.JSON(http.StatusOK, m)
 }
 
 func (h *MealsHandler) AddMeal(c echo.Context) error {
@@ -63,11 +50,12 @@ func (h *MealsHandler) AddMeal(c echo.Context) error {
 	)
 
 	if err != nil {
-		if errors.Is(err, application.MealAlreadyExists) {
+		var mealAlreadyExists *application.MealAlreadyExists
+		if errors.As(err, &mealAlreadyExists) {
 			return c.JSON(http.StatusBadRequest, struct {
 				Error    string `json:"error"`
 				MealName string `json:"mealName"`
-			}{"meal already exists", body.Name})
+			}{mealAlreadyExists.Error(), mealAlreadyExists.MealName})
 		}
 	}
 
@@ -82,14 +70,8 @@ func (h *MealsHandler) AddIngredientToMeal(c echo.Context) error {
 		return err
 	}
 
-	meal, err := h.MealRepository.Find(mealId)
+	meal, err := h.Application.AddIngredientToMeal(mealId, *ingredient)
 	if err != nil {
-		return err
-	}
-
-	meal.AddIngredient(*ingredient)
-
-	if err := h.MealRepository.Save(meal); err != nil {
 		return err
 	}
 
@@ -100,139 +82,10 @@ func (h *MealsHandler) RemoveIngredientFromMeal(c echo.Context) error {
 	mealId := c.Param("mealId")
 	ingredientId := c.Param("ingredientId")
 
-	meal, err := h.MealRepository.Find(mealId)
+	meal, err := h.Application.RemoveIngredientFromMeal(mealId, ingredientId)
 	if err != nil {
-		return err
-	}
-
-	meal.RemoveIngredient(ingredientId)
-
-	if err := h.MealRepository.Save(meal); err != nil {
 		return err
 	}
 
 	return c.JSON(http.StatusOK, meal)
-}
-
-func (h *MealsHandler) UploadMeals(c echo.Context) error {
-	file, err := c.FormFile("meals")
-
-	if err != nil {
-		return err
-	}
-
-	src, err := file.Open()
-
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-
-	meals, notFoundIngredients, err := ParseMeals(src, h.IngredientRepository)
-
-	if err != nil {
-		return err
-	}
-
-	if len(notFoundIngredients) > 0 {
-		return c.JSON(http.StatusBadRequest, struct {
-			NotFoundIngredients []ingredients.IngredientName `json:"notFoundIngredients"`
-		}{notFoundIngredients})
-	}
-
-	for _, m := range meals {
-		meal, _ := h.MealRepository.FindByName(m.Name)
-
-		if meal != nil {
-			return c.JSON(http.StatusBadRequest, struct {
-				Error    string `json:"error"`
-				MealName string `json:"mealName"`
-			}{"meal already exists", m.Name})
-		}
-	}
-
-	slog.Info("uploading meals", "meals", meals)
-
-	for _, m := range meals {
-		if err := h.MealRepository.Save(m); err != nil {
-			return err
-		}
-	}
-
-	return c.NoContent(http.StatusCreated)
-}
-
-func ParseMeals(src multipart.File, ingredientRepository *ingredients.IngredientRepository) (m []*meals.Meal, notFoundIngredients []ingredients.IngredientName, err error) {
-	var buf bytes.Buffer
-	_, err = buf.ReadFrom(src)
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var meal *meals.Meal
-
-	csvReader := csv.NewReader(&buf)
-	records, err := csvReader.ReadAll()
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	for i, record := range records {
-		if i == 0 {
-			if record[0] != "name" || record[1] != "ingredient" || record[2] != "amount" || record[3] != "unit" {
-				return nil, nil, errors.New("invalid csv header")
-			}
-
-			continue
-		}
-
-		if len(record) != 4 {
-			return nil, nil, errors.New("invalid csv row")
-		}
-
-		mealName := record[0]
-
-		if meal == nil || mealName != meal.Name {
-			if meal != nil {
-				m = append(m, meal)
-			}
-
-			meal = meals.NewMealBuilder().WithName(mealName).Build()
-		}
-
-		ingredientName, err := ingredients.NewIngredientName(record[1])
-
-		if err != nil {
-			return nil, nil, err
-		}
-
-		amount, err := strconv.Atoi(record[2])
-
-		if err != nil {
-			return nil, nil, err
-		}
-
-		unit, ok := meals.UnitFromString(record[3])
-
-		if !ok {
-			return nil, nil, fmt.Errorf("invalid unit: %s", record[3])
-		}
-
-		ingredient, err := ingredientRepository.GetByName(ingredientName)
-
-		if err != nil {
-			notFoundIngredients = append(notFoundIngredients, ingredientName)
-			continue
-		}
-
-		meal.AddIngredient(*meals.NewMealIngredient(ingredient.Id).WithQuantity(amount, unit))
-	}
-
-	if meal != nil {
-		m = append(m, meal)
-	}
-
-	return m, notFoundIngredients, nil
 }

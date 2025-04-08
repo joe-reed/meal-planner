@@ -13,7 +13,7 @@ type IngredientsHandler struct {
 }
 
 func (h *IngredientsHandler) GetIngredients(c echo.Context) error {
-	ings, err := h.Application.ListIngredients()
+	ings, err := h.Application.GetIngredients()
 
 	if err != nil {
 		return err

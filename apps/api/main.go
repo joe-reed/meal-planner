@@ -34,6 +34,7 @@ func main() {
 	publisher, subscribe := setupEvents()
 
 	addMealRoutes(e, db)
+	addUploadRoutes(e, db)
 	addShopRoutes(e, db, publisher)
 	addIngredientRoutes(e, db)
 	addCategoryRoutes(e)
@@ -124,20 +125,35 @@ func addMealRoutes(e *echo.Echo, db *sql.DB) {
 		e.Logger.Fatal(e)
 	}
 
+	handler := handlers.MealsHandler{
+		Application: application.NewMealApplication(mealRepo),
+	}
+
+	e.GET("/meals", handler.GetMeals)
+	e.GET("/meals/:id", handler.FindMeal)
+	e.POST("/meals", handler.AddMeal)
+	e.POST("/meals/:mealId/ingredients", handler.AddIngredientToMeal)
+	e.DELETE("/meals/:mealId/ingredients/:ingredientId", handler.RemoveIngredientFromMeal)
+}
+
+func addUploadRoutes(e *echo.Echo, db *sql.DB) {
+	mealRepo, err := meals.NewSqliteMealRepository(db)
+
+	if err != nil {
+		e.Logger.Fatal(e)
+	}
+
 	ingredientRepo, err := ingredients.NewSqliteIngredientRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
 	}
 
-	handler := handlers.MealsHandler{MealRepository: mealRepo, IngredientRepository: ingredientRepo}
+	handler := handlers.UploadHandler{
+		Application: application.NewUploadMealsApplication(ingredientRepo, mealRepo),
+	}
 
-	e.GET("/meals", handler.GetMeals)
 	e.POST("/meals/upload", handler.UploadMeals)
-	e.GET("/meals/:id", handler.GetMeal)
-	e.POST("/meals", handler.AddMeal)
-	e.POST("/meals/:mealId/ingredients", handler.AddIngredientToMeal)
-	e.DELETE("/meals/:mealId/ingredients/:ingredientId", handler.RemoveIngredientFromMeal)
 }
 
 func addShopRoutes(e *echo.Echo, db *sql.DB, publisher func(string)) {

@@ -2,7 +2,6 @@ package handlers_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
 	"net/http/httptest"
@@ -22,7 +21,7 @@ func TestAddingMeal(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &handlers.MealsHandler{MealRepository: repo, IngredientRepository: ingredients.NewFakeIngredientRepository(), Application: application.NewMealApplication(repo)}
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
 
 	if assert.NoError(t, h.AddMeal(c)) {
 		m, err := repo.Get()
@@ -45,7 +44,7 @@ func TestAddingDuplicateMeal(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &handlers.MealsHandler{MealRepository: repo, IngredientRepository: ingredients.NewFakeIngredientRepository(), Application: application.NewMealApplication(repo)}
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
 
 	if assert.NoError(t, h.AddMeal(c)) {
 		m, err := repo.Get()
