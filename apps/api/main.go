@@ -94,7 +94,7 @@ func addBasketRoutes(e *echo.Echo, db *sql.DB, subscribe func(func(string))) {
 		e.Logger.Fatal(e)
 	}
 
-	handler := handlers.BasketHandler{BasketRepository: r}
+	handler := handlers.BasketHandler{Application: application.NewBasketApplication(r)}
 
 	subscribe(func(message string) {
 		parts := strings.Split(message, ":")
@@ -113,7 +113,7 @@ func addBasketRoutes(e *echo.Echo, db *sql.DB, subscribe func(func(string))) {
 		}
 	})
 
-	e.GET("/baskets/:shopId", handler.GetBasketItems)
+	e.GET("/baskets/:shopId", handler.GetBasket)
 	e.POST("/baskets/:shopId/items", handler.AddItemToBasket)
 	e.DELETE("/baskets/:shopId/items/:ingredientId", handler.RemoveItemFromBasket)
 }

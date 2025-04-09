@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/basket"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
@@ -31,7 +32,7 @@ func TestRemovingItemFromBasket(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("shopId", "ingredientId")
 	c.SetParamValues("1", "ing-1")
-	h := &handlers.BasketHandler{BasketRepository: br}
+	h := &handlers.BasketHandler{Application: application.NewBasketApplication(br)}
 
 	if assert.NoError(t, h.RemoveItemFromBasket(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)

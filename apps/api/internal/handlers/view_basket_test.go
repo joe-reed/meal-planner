@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/basket"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
@@ -31,9 +32,9 @@ func TestViewingBasket(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("shopId")
 	c.SetParamValues("1")
-	h := &handlers.BasketHandler{BasketRepository: br}
+	h := &handlers.BasketHandler{Application: application.NewBasketApplication(br)}
 
-	if assert.NoError(t, h.GetBasketItems(c)) {
+	if assert.NoError(t, h.GetBasket(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, `{"shopId":1,"items":[{"ingredientId":"ing-1"},{"ingredientId":"ing-2"}]}`+"\n", rec.Body.String())
 	}
@@ -56,9 +57,9 @@ func TestViewingBasketWithNoItems(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("shopId")
 	c.SetParamValues("1")
-	h := &handlers.BasketHandler{BasketRepository: br}
+	h := &handlers.BasketHandler{Application: application.NewBasketApplication(br)}
 
-	if assert.NoError(t, h.GetBasketItems(c)) {
+	if assert.NoError(t, h.GetBasket(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, `{"shopId":1,"items":[]}`+"\n", rec.Body.String())
 	}
