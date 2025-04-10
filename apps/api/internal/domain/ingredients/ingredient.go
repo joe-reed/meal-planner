@@ -23,9 +23,9 @@ func NewIngredientName(name string) (IngredientName, error) {
 
 type Ingredient struct {
 	aggregate.Root
-	Id       string              `json:"id"`
-	Name     IngredientName      `json:"name"`
-	Category categories.Category `json:"category"`
+	Id       string                  `json:"id"`
+	Name     IngredientName          `json:"name"`
+	Category categories.CategoryName `json:"category"`
 }
 
 func (m *Ingredient) Transition(event eventsourcing.Event) {
@@ -41,7 +41,7 @@ func (m *Ingredient) Register(r aggregate.RegisterFunc) {
 	r(&Created{})
 }
 
-func NewIngredient(id string, name IngredientName, category categories.Category) (*Ingredient, error) {
+func NewIngredient(id string, name IngredientName, category categories.CategoryName) (*Ingredient, error) {
 	i := &Ingredient{}
 	err := i.SetID(id)
 	if err != nil {
@@ -55,7 +55,7 @@ func NewIngredient(id string, name IngredientName, category categories.Category)
 type IngredientBuilder struct {
 	id       string
 	name     IngredientName
-	category categories.Category
+	category categories.CategoryName
 }
 
 func (b *IngredientBuilder) WithName(name IngredientName) *IngredientBuilder {
@@ -68,7 +68,7 @@ func (b *IngredientBuilder) WithId(id string) *IngredientBuilder {
 	return b
 }
 
-func (b *IngredientBuilder) WithCategory(category categories.Category) *IngredientBuilder {
+func (b *IngredientBuilder) WithCategory(category categories.CategoryName) *IngredientBuilder {
 	b.category = category
 	return b
 }

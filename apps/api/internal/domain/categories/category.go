@@ -2,11 +2,11 @@ package categories
 
 import "sort"
 
-type Category int
+type CategoryName int
 
-//go:generate go run github.com/campoy/jsonenums -type=Category
+//go:generate go run github.com/campoy/jsonenums -type=CategoryName
 const (
-	Fruit Category = iota
+	Fruit CategoryName = iota
 	Meat
 	FishAndSeafood
 	FoodCupboard
@@ -27,14 +27,20 @@ const (
 	Eggs
 )
 
-func Categories() []string {
-	v := make([]string, 0, len(_CategoryValueToName))
+type Category struct {
+	Name string `json:"name"`
+}
 
-	for _, value := range _CategoryValueToName {
-		v = append(v, value)
+func Categories() []Category {
+	v := make([]Category, 0, len(_CategoryNameValueToName))
+
+	for _, value := range _CategoryNameValueToName {
+		v = append(v, Category{Name: value})
 	}
 
-	sort.Strings(v)
+	sort.Slice(v, func(i, j int) bool {
+		return v[i].Name < v[j].Name
+	})
 
 	return v
 }

@@ -14,7 +14,7 @@ func NewIngredientApplication(r *ingredients.IngredientRepository) *IngredientAp
 	return &IngredientApplication{r: r}
 }
 
-func (a *IngredientApplication) AddIngredient(id string, name ingredients.IngredientName, category categories.Category) (*ingredients.Ingredient, error) {
+func (a *IngredientApplication) AddIngredient(id string, name ingredients.IngredientName, category categories.CategoryName) (*ingredients.Ingredient, error) {
 	i, err := ingredients.NewIngredient(id, name, category)
 	if err != nil {
 		return nil, err
