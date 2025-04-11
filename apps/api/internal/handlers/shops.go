@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -9,11 +9,11 @@ import (
 
 type ShopsHandler struct {
 	ShopRepository *shops.ShopRepository
-	Publisher      func(string)
+	Application    *application.ShopApplication
 }
 
 func (h *ShopsHandler) CurrentShop(c echo.Context) error {
-	shop, err := h.ShopRepository.Current()
+	shop, err := h.Application.GetCurrentShop()
 
 	if err != nil {
 		return err
@@ -23,26 +23,11 @@ func (h *ShopsHandler) CurrentShop(c echo.Context) error {
 }
 
 func (h *ShopsHandler) StartShop(c echo.Context) error {
-	shop, err := h.ShopRepository.Current()
-	if err != nil {
-		return err
-	}
-
-	var newShop *shops.Shop
-
-	if shop == nil {
-		newShop, err = shops.NewShop(1)
-	} else {
-		newShop, err = shops.NewShop(shop.Id + 1)
-	}
+	shop, err := h.Application.StartShop()
 
 	if err != nil {
 		return err
 	}
-
-	err = h.ShopRepository.Save(newShop)
-
-	h.Publisher(fmt.Sprintf("shopStarted:%d", newShop.Id))
 
 	return c.JSON(http.StatusOK, shop)
 }
