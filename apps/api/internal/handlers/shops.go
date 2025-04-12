@@ -33,21 +33,14 @@ func (h *ShopsHandler) StartShop(c echo.Context) error {
 }
 
 func (h *ShopsHandler) AddMealToCurrentShop(c echo.Context) error {
-	shop, err := h.ShopRepository.Current()
-
-	if err != nil {
-		return err
-	}
-
 	shopMeal := new(shops.ShopMeal)
 	if err := c.Bind(shopMeal); err != nil {
 		return err
 	}
-	c.Logger().Debugf("Adding meal to shop: shopId: %d mealId: %s", shop.Id, shopMeal.MealId)
 
-	shop.AddMeal(shopMeal)
+	shop, err := h.Application.AddMealToCurrentShop(shopMeal)
 
-	if err := h.ShopRepository.Save(shop); err != nil {
+	if err != nil {
 		return err
 	}
 

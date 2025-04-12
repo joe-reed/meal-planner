@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
@@ -26,7 +27,7 @@ func TestAddingMealToCurrentShop(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &handlers.ShopsHandler{ShopRepository: r}
+	h := &handlers.ShopsHandler{ShopRepository: r, Application: application.NewShopApplication(r, func(string) {})}
 
 	if assert.NoError(t, h.AddMealToCurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)

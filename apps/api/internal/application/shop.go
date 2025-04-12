@@ -3,6 +3,7 @@ package application
 import (
 	"fmt"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
+	"log/slog"
 )
 
 type ShopApplication struct {
@@ -45,4 +46,25 @@ func (a *ShopApplication) StartShop() (*shops.Shop, error) {
 	a.Publisher(fmt.Sprintf("shopStarted:%d", newShop.Id))
 
 	return newShop, nil
+}
+
+func (a *ShopApplication) AddMealToCurrentShop(shopMeal *shops.ShopMeal) (*shops.Shop, error) {
+	shop, err := a.r.Current()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if shop == nil {
+		return nil, fmt.Errorf("no current shop")
+	}
+
+	slog.Debug("Adding meal to shop", "shopId", shop.Id, "mealId", shopMeal.MealId)
+	shop.AddMeal(shopMeal)
+
+	if err := a.r.Save(shop); err != nil {
+		return nil, err
+	}
+
+	return shop, nil
 }
