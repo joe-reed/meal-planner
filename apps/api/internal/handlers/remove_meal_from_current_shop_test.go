@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
@@ -29,7 +30,7 @@ func TestRemovingMealFromCurrentShop(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("mealId")
 	c.SetParamValues("abc")
-	h := &handlers.ShopsHandler{ShopRepository: r}
+	h := &handlers.ShopsHandler{Application: application.NewShopApplication(r, func(string) {})}
 
 	if assert.NoError(t, h.RemoveMealFromCurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -56,7 +57,7 @@ func TestRemovingAllMealsFromCurrentShop(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.SetParamNames("mealId")
 	c.SetParamValues("abc")
-	h := &handlers.ShopsHandler{ShopRepository: r}
+	h := &handlers.ShopsHandler{Application: application.NewShopApplication(r, func(string) {})}
 
 	if assert.NoError(t, h.RemoveMealFromCurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)

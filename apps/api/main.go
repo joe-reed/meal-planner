@@ -163,7 +163,7 @@ func addShopRoutes(e *echo.Echo, db *sql.DB, publisher func(string)) {
 		e.Logger.Fatal(e)
 	}
 
-	handler := handlers.ShopsHandler{ShopRepository: r, Application: application.NewShopApplication(r, publisher)}
+	handler := handlers.ShopsHandler{Application: application.NewShopApplication(r, publisher)}
 
 	e.GET("/shops/current", handler.CurrentShop)
 	e.POST("/shops/current/meals", handler.AddMealToCurrentShop)

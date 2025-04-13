@@ -8,8 +8,7 @@ import (
 )
 
 type ShopsHandler struct {
-	ShopRepository *shops.ShopRepository
-	Application    *application.ShopApplication
+	Application *application.ShopApplication
 }
 
 func (h *ShopsHandler) CurrentShop(c echo.Context) error {
@@ -48,18 +47,9 @@ func (h *ShopsHandler) AddMealToCurrentShop(c echo.Context) error {
 }
 
 func (h *ShopsHandler) RemoveMealFromCurrentShop(c echo.Context) error {
-	shop, err := h.ShopRepository.Current()
+	shop, err := h.Application.RemoveMealFromCurrentShop(c.Param("mealId"))
 
 	if err != nil {
-		return err
-	}
-
-	mealId := c.Param("mealId")
-	c.Logger().Debugf("Removing meal from shop: shopId: %d mealId: %s", shop.Id, mealId)
-
-	shop.RemoveMeal(mealId)
-
-	if err := h.ShopRepository.Save(shop); err != nil {
 		return err
 	}
 

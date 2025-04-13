@@ -32,7 +32,7 @@ func TestGettingCurrentShop(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &handlers.ShopsHandler{ShopRepository: r, Application: application.NewShopApplication(r, func(string) {})}
+	h := &handlers.ShopsHandler{Application: application.NewShopApplication(r, func(string) {})}
 
 	if assert.NoError(t, h.CurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -53,7 +53,7 @@ func TestGettingCurrentShopWithNoMeals(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	h := &handlers.ShopsHandler{ShopRepository: r, Application: application.NewShopApplication(r, func(string) {})}
+	h := &handlers.ShopsHandler{Application: application.NewShopApplication(r, func(string) {})}
 
 	if assert.NoError(t, h.CurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
