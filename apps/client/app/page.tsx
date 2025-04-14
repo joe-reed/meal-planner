@@ -54,13 +54,13 @@ export default function HomePage() {
           </Link>
         </span>
       </div>
-      <section className="mb-8">
-        <Meals meals={meals} currentShop={currentShop} />
-      </section>
-      <section className="flex flex-wrap justify-between">
+      <section className="mb-8 flex flex-wrap justify-between">
         <div className="mx-auto w-full xl:w-2/3">
           <CurrentShop meals={meals} currentShop={currentShop} />
         </div>
+      </section>
+      <section>
+        <Meals meals={meals} currentShop={currentShop} />
       </section>
     </>
   );
