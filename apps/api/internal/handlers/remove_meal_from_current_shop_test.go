@@ -2,24 +2,23 @@ package handlers_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shop"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestRemovingMealFromCurrentShop(t *testing.T) {
-	shop, err := shops.NewShop(1)
+	s, err := shop.NewShop(1)
 	assert.NoError(t, err)
 
-	shop.AddMeal(&shops.ShopMeal{MealId: "abc"}).AddMeal(&shops.ShopMeal{MealId: "def"})
+	s.AddMeal(&shop.ShopMeal{MealId: "abc"}).AddMeal(&shop.ShopMeal{MealId: "def"})
 
-	r := shops.NewFakeShopRepository()
-	err = r.Save(shop)
+	r := shop.NewFakeShopRepository()
+	err = r.Save(s)
 	assert.NoError(t, err)
 
 	e := echo.New()
@@ -35,18 +34,18 @@ func TestRemovingMealFromCurrentShop(t *testing.T) {
 	if assert.NoError(t, h.RemoveMealFromCurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		s, _ := r.Find(1)
-		assert.Equal(t, []*shops.ShopMeal{{MealId: "def"}}, s.Meals)
+		assert.Equal(t, []*shop.ShopMeal{{MealId: "def"}}, s.Meals)
 	}
 }
 
 func TestRemovingAllMealsFromCurrentShop(t *testing.T) {
-	shop, err := shops.NewShop(1)
+	s, err := shop.NewShop(1)
 	assert.NoError(t, err)
 
-	shop.AddMeal(&shops.ShopMeal{MealId: "abc"})
+	s.AddMeal(&shop.ShopMeal{MealId: "abc"})
 
-	r := shops.NewFakeShopRepository()
-	err = r.Save(shop)
+	r := shop.NewFakeShopRepository()
+	err = r.Save(s)
 	assert.NoError(t, err)
 
 	e := echo.New()
@@ -62,6 +61,6 @@ func TestRemovingAllMealsFromCurrentShop(t *testing.T) {
 	if assert.NoError(t, h.RemoveMealFromCurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		s, _ := r.Find(1)
-		assert.Equal(t, []*shops.ShopMeal{}, s.Meals)
+		assert.Equal(t, []*shop.ShopMeal{}, s.Meals)
 	}
 }

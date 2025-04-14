@@ -1,21 +1,21 @@
 package application
 
 import (
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/categories"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/category"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"log/slog"
 )
 
 type IngredientApplication struct {
-	r *ingredients.IngredientRepository
+	r *ingredient.IngredientRepository
 }
 
-func NewIngredientApplication(r *ingredients.IngredientRepository) *IngredientApplication {
+func NewIngredientApplication(r *ingredient.IngredientRepository) *IngredientApplication {
 	return &IngredientApplication{r: r}
 }
 
-func (a *IngredientApplication) AddIngredient(id string, name ingredients.IngredientName, category categories.CategoryName) (*ingredients.Ingredient, error) {
-	i, err := ingredients.NewIngredient(id, name, category)
+func (a *IngredientApplication) AddIngredient(id string, name ingredient.IngredientName, category category.CategoryName) (*ingredient.Ingredient, error) {
+	i, err := ingredient.NewIngredient(id, name, category)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (a *IngredientApplication) AddIngredient(id string, name ingredients.Ingred
 	return i, nil
 }
 
-func (a *IngredientApplication) GetIngredients() ([]*ingredients.Ingredient, error) {
+func (a *IngredientApplication) GetIngredients() ([]*ingredient.Ingredient, error) {
 	ings, err := a.r.Get()
 
 	if err != nil {

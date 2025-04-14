@@ -1,11 +1,11 @@
-package ingredients
+package ingredient
 
 import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/hallgren/eventsourcing"
 	"github.com/hallgren/eventsourcing/aggregate"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/categories"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/category"
 )
 
 type IngredientName string
@@ -23,9 +23,9 @@ func NewIngredientName(name string) (IngredientName, error) {
 
 type Ingredient struct {
 	aggregate.Root
-	Id       string                  `json:"id"`
-	Name     IngredientName          `json:"name"`
-	Category categories.CategoryName `json:"category"`
+	Id       string                `json:"id"`
+	Name     IngredientName        `json:"name"`
+	Category category.CategoryName `json:"category"`
 }
 
 func (m *Ingredient) Transition(event eventsourcing.Event) {
@@ -41,7 +41,7 @@ func (m *Ingredient) Register(r aggregate.RegisterFunc) {
 	r(&Created{})
 }
 
-func NewIngredient(id string, name IngredientName, category categories.CategoryName) (*Ingredient, error) {
+func NewIngredient(id string, name IngredientName, category category.CategoryName) (*Ingredient, error) {
 	i := &Ingredient{}
 	err := i.SetID(id)
 	if err != nil {
@@ -55,7 +55,7 @@ func NewIngredient(id string, name IngredientName, category categories.CategoryN
 type IngredientBuilder struct {
 	id       string
 	name     IngredientName
-	category categories.CategoryName
+	category category.CategoryName
 }
 
 func (b *IngredientBuilder) WithName(name IngredientName) *IngredientBuilder {
@@ -68,7 +68,7 @@ func (b *IngredientBuilder) WithId(id string) *IngredientBuilder {
 	return b
 }
 
-func (b *IngredientBuilder) WithCategory(category categories.CategoryName) *IngredientBuilder {
+func (b *IngredientBuilder) WithCategory(category category.CategoryName) *IngredientBuilder {
 	b.category = category
 	return b
 }
@@ -90,5 +90,5 @@ func (b *IngredientBuilder) Build() *Ingredient {
 }
 
 func NewIngredientBuilder() *IngredientBuilder {
-	return &IngredientBuilder{"", "", categories.Fruit}
+	return &IngredientBuilder{"", "", category.Fruit}
 }

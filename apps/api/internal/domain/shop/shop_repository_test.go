@@ -1,25 +1,24 @@
-package shops_test
+package shop_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/database"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shop"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestFakeShopRepository(t *testing.T) {
-	runSuite(t, func() *shops.ShopRepository {
-		return shops.NewFakeShopRepository()
+	runSuite(t, func() *shop.ShopRepository {
+		return shop.NewFakeShopRepository()
 	}, func() {})
 }
 
 func TestSqliteMealRepository(t *testing.T) {
-	runSuite(t, func() *shops.ShopRepository {
+	runSuite(t, func() *shop.ShopRepository {
 		db, err := database.CreateDatabase("test.db")
 		assert.NoError(t, err)
-		r, err := shops.NewSqliteShopRepository(db)
+		r, err := shop.NewSqliteShopRepository(db)
 		assert.NoError(t, err)
 		return r
 	}, func() {
@@ -28,10 +27,10 @@ func TestSqliteMealRepository(t *testing.T) {
 	})
 }
 
-func runSuite(t *testing.T, factory func() *shops.ShopRepository, teardown func()) {
+func runSuite(t *testing.T, factory func() *shop.ShopRepository, teardown func()) {
 	tests := []struct {
 		title string
-		run   func(t *testing.T, r *shops.ShopRepository)
+		run   func(t *testing.T, r *shop.ShopRepository)
 	}{
 		{"getting current shop", testGettingCurrentShop},
 		{"getting current shop with no meals", testGettingCurrentShopWithNoMeals},
@@ -49,15 +48,15 @@ func runSuite(t *testing.T, factory func() *shops.ShopRepository, teardown func(
 	}
 }
 
-func testGettingCurrentShop(t *testing.T, r *shops.ShopRepository) {
-	s1, err := shops.NewShop(1)
+func testGettingCurrentShop(t *testing.T, r *shop.ShopRepository) {
+	s1, err := shop.NewShop(1)
 	assert.NoError(t, err)
-	s2, err := shops.NewShop(2)
+	s2, err := shop.NewShop(2)
 	assert.NoError(t, err)
-	s3, err := shops.NewShop(3)
+	s3, err := shop.NewShop(3)
 	assert.NoError(t, err)
 
-	s3.AddMeal(&shops.ShopMeal{MealId: "123"}).AddMeal(&shops.ShopMeal{MealId: "456"})
+	s3.AddMeal(&shop.ShopMeal{MealId: "123"}).AddMeal(&shop.ShopMeal{MealId: "456"})
 
 	err = r.Save(s1)
 	assert.NoError(t, err)
@@ -72,14 +71,14 @@ func testGettingCurrentShop(t *testing.T, r *shops.ShopRepository) {
 	assert.EqualExportedValues(t, s3, s)
 }
 
-func testGettingCurrentShopIfNoShopsExist(t *testing.T, r *shops.ShopRepository) {
+func testGettingCurrentShopIfNoShopsExist(t *testing.T, r *shop.ShopRepository) {
 	s, err := r.Current()
 	assert.NoError(t, err)
 	assert.Nil(t, s)
 }
 
-func testGettingCurrentShopWithNoMeals(t *testing.T, r *shops.ShopRepository) {
-	s1, err := shops.NewShop(1)
+func testGettingCurrentShopWithNoMeals(t *testing.T, r *shop.ShopRepository) {
+	s1, err := shop.NewShop(1)
 	assert.NoError(t, err)
 
 	err = r.Save(s1)
@@ -90,10 +89,10 @@ func testGettingCurrentShopWithNoMeals(t *testing.T, r *shops.ShopRepository) {
 	assert.Len(t, s.Meals, 0)
 }
 
-func testFindingShop(t *testing.T, r *shops.ShopRepository) {
-	s, err := shops.NewShop(1)
+func testFindingShop(t *testing.T, r *shop.ShopRepository) {
+	s, err := shop.NewShop(1)
 	assert.NoError(t, err)
-	s.AddMeal(&shops.ShopMeal{MealId: "abc"})
+	s.AddMeal(&shop.ShopMeal{MealId: "abc"})
 
 	err = r.Save(s)
 	assert.NoError(t, err)
@@ -103,8 +102,8 @@ func testFindingShop(t *testing.T, r *shops.ShopRepository) {
 	assert.EqualExportedValues(t, s, found)
 }
 
-func testFindingShopWithNoMeals(t *testing.T, r *shops.ShopRepository) {
-	s, err := shops.NewShop(1)
+func testFindingShopWithNoMeals(t *testing.T, r *shop.ShopRepository) {
+	s, err := shop.NewShop(1)
 	assert.NoError(t, err)
 
 	err = r.Save(s)
@@ -116,14 +115,14 @@ func testFindingShopWithNoMeals(t *testing.T, r *shops.ShopRepository) {
 	assert.Len(t, found.Meals, 0)
 }
 
-func testSavingShop(t *testing.T, r *shops.ShopRepository) {
-	s, err := shops.NewShop(1)
+func testSavingShop(t *testing.T, r *shop.ShopRepository) {
+	s, err := shop.NewShop(1)
 	assert.NoError(t, err)
 
 	err = r.Save(s)
 	assert.NoError(t, err)
 
-	s = s.AddMeal(&shops.ShopMeal{MealId: "abc"})
+	s = s.AddMeal(&shop.ShopMeal{MealId: "abc"})
 
 	err = r.Save(s)
 	assert.NoError(t, err)

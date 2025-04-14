@@ -3,22 +3,21 @@ package handlers_test
 import (
 	"fmt"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestViewingMeals(t *testing.T) {
-	meal1 := meals.NewMealBuilder().WithName("Burritos").Build()
-	meal2 := meals.NewMealBuilder().WithName("Shepherd's pie").Build()
-	meal3 := meals.NewMealBuilder().WithName("Tacos").Build()
+	meal1 := meal.NewMealBuilder().WithName("Burritos").Build()
+	meal2 := meal.NewMealBuilder().WithName("Shepherd's pie").Build()
+	meal3 := meal.NewMealBuilder().WithName("Tacos").Build()
 
-	repo := meals.NewFakeMealRepository()
+	repo := meal.NewFakeMealRepository()
 	err := repo.Save(meal1)
 	assert.NoError(t, err)
 	err = repo.Save(meal2)

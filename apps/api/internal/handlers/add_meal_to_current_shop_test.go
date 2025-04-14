@@ -2,23 +2,22 @@ package handlers_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shop"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAddingMealToCurrentShop(t *testing.T) {
-	shop, err := shops.NewShop(1)
+	s, err := shop.NewShop(1)
 	assert.NoError(t, err)
 
-	r := shops.NewFakeShopRepository()
-	err = r.Save(shop)
+	r := shop.NewFakeShopRepository()
+	err = r.Save(s)
 	assert.NoError(t, err)
 
 	e := echo.New()
@@ -32,6 +31,6 @@ func TestAddingMealToCurrentShop(t *testing.T) {
 	if assert.NoError(t, h.AddMealToCurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		s, _ := r.Find(1)
-		assert.Equal(t, []*shops.ShopMeal{{MealId: "abc"}}, s.Meals)
+		assert.Equal(t, []*shop.ShopMeal{{MealId: "abc"}}, s.Meals)
 	}
 }

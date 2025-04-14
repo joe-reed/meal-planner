@@ -1,4 +1,4 @@
-package ingredients
+package ingredient
 
 import (
 	"database/sql"

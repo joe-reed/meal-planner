@@ -2,21 +2,20 @@ package handlers_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shop"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestStartingShop(t *testing.T) {
-	shop1, err := shops.NewShop(1)
+	shop1, err := shop.NewShop(1)
 	assert.NoError(t, err)
 
-	r := shops.NewFakeShopRepository()
+	r := shop.NewFakeShopRepository()
 	err = r.Save(shop1)
 	assert.NoError(t, err)
 

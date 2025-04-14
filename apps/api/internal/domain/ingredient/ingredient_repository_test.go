@@ -1,26 +1,25 @@
-package ingredients_test
+package ingredient_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/database"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/categories"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/category"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestFakeIngredientRepository(t *testing.T) {
-	runSuite(t, func() *ingredients.IngredientRepository {
-		return ingredients.NewFakeIngredientRepository()
+	runSuite(t, func() *ingredient.IngredientRepository {
+		return ingredient.NewFakeIngredientRepository()
 	}, func() {})
 }
 
 func TestSqliteIngredientRepository(t *testing.T) {
-	runSuite(t, func() *ingredients.IngredientRepository {
+	runSuite(t, func() *ingredient.IngredientRepository {
 		db, err := database.CreateDatabase("test.db")
 		assert.NoError(t, err)
-		r, err := ingredients.NewSqliteIngredientRepository(db)
+		r, err := ingredient.NewSqliteIngredientRepository(db)
 		assert.NoError(t, err)
 		return r
 	}, func() {
@@ -29,10 +28,10 @@ func TestSqliteIngredientRepository(t *testing.T) {
 	})
 }
 
-func runSuite(t *testing.T, factory func() *ingredients.IngredientRepository, teardown func()) {
+func runSuite(t *testing.T, factory func() *ingredient.IngredientRepository, teardown func()) {
 	tests := []struct {
 		title string
-		run   func(t *testing.T, r *ingredients.IngredientRepository)
+		run   func(t *testing.T, r *ingredient.IngredientRepository)
 	}{
 		{"adding an ingredient", testAddingIngredient},
 		{"getting all ingredients", testGettingIngredients},
@@ -48,8 +47,8 @@ func runSuite(t *testing.T, factory func() *ingredients.IngredientRepository, te
 	}
 }
 
-func testAddingIngredient(t *testing.T, r *ingredients.IngredientRepository) {
-	expected := ingredients.NewIngredientBuilder().Build()
+func testAddingIngredient(t *testing.T, r *ingredient.IngredientRepository) {
+	expected := ingredient.NewIngredientBuilder().Build()
 	err := r.Add(expected)
 	assert.NoError(t, err)
 
@@ -60,10 +59,10 @@ func testAddingIngredient(t *testing.T, r *ingredients.IngredientRepository) {
 	assert.EqualExportedValues(t, expected, actual[0])
 }
 
-func testGettingIngredients(t *testing.T, r *ingredients.IngredientRepository) {
-	i1 := ingredients.NewIngredientBuilder().WithName("c").WithCategory(categories.Frozen).Build()
-	i2 := ingredients.NewIngredientBuilder().WithName("b").WithCategory(categories.Vegetables).Build()
-	i3 := ingredients.NewIngredientBuilder().WithName("a").WithCategory(categories.SeedsNutsAndDriedFruits).Build()
+func testGettingIngredients(t *testing.T, r *ingredient.IngredientRepository) {
+	i1 := ingredient.NewIngredientBuilder().WithName("c").WithCategory(category.Frozen).Build()
+	i2 := ingredient.NewIngredientBuilder().WithName("b").WithCategory(category.Vegetables).Build()
+	i3 := ingredient.NewIngredientBuilder().WithName("a").WithCategory(category.SeedsNutsAndDriedFruits).Build()
 
 	err := r.Add(i1)
 	assert.NoError(t, err)
@@ -80,14 +79,14 @@ func testGettingIngredients(t *testing.T, r *ingredients.IngredientRepository) {
 	assert.EqualExportedValues(t, i1, i[2])
 }
 
-func testGettingZeroIngredients(t *testing.T, r *ingredients.IngredientRepository) {
+func testGettingZeroIngredients(t *testing.T, r *ingredient.IngredientRepository) {
 	i, err := r.Get()
 	assert.NoError(t, err)
 	assert.Len(t, i, 0)
 }
 
-func testGettingIngredientByName(t *testing.T, r *ingredients.IngredientRepository) {
-	i := ingredients.NewIngredientBuilder().WithName("test name").WithCategory(categories.Frozen).Build()
+func testGettingIngredientByName(t *testing.T, r *ingredient.IngredientRepository) {
+	i := ingredient.NewIngredientBuilder().WithName("test name").WithCategory(category.Frozen).Build()
 
 	err := r.Add(i)
 	assert.NoError(t, err)

@@ -1,4 +1,4 @@
-package shops
+package shop
 
 import (
 	"context"

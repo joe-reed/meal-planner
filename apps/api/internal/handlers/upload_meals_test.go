@@ -3,29 +3,28 @@ package handlers_test
 import (
 	"bytes"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/require"
 )
 
 func TestUploadingMeals(t *testing.T) {
-	repo := meals.NewFakeMealRepository()
-	ingredientRepo := ingredients.NewFakeIngredientRepository()
+	repo := meal.NewFakeMealRepository()
+	ingredientRepo := ingredient.NewFakeIngredientRepository()
 
-	err := ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Abc Name").WithId("abc").Build())
+	err := ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Abc Name").WithId("abc").Build())
 	require.NoError(t, err)
 
-	err = ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Def Name").WithId("def").Build())
+	err = ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Def Name").WithId("def").Build())
 	require.NoError(t, err)
 
-	err = ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Ghi Name").WithId("ghi").Build())
+	err = ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Ghi Name").WithId("ghi").Build())
 	require.NoError(t, err)
 
 	e := echo.New()
@@ -63,21 +62,21 @@ func TestUploadingMeals(t *testing.T) {
 
 	require.Equal(t, m[0].Name, "bar")
 	require.Len(t, m[0].MealIngredients, 2)
-	require.Equal(t, []meals.MealIngredient{
-		*meals.NewMealIngredient("def").WithQuantity(400, meals.Gram),
-		*meals.NewMealIngredient("ghi").WithQuantity(6, meals.Tbsp),
+	require.Equal(t, []meal.MealIngredient{
+		*meal.NewMealIngredient("def").WithQuantity(400, meal.Gram),
+		*meal.NewMealIngredient("ghi").WithQuantity(6, meal.Tbsp),
 	}, m[0].MealIngredients)
 
 	require.Equal(t, m[1].Name, "foo")
 	require.Len(t, m[1].MealIngredients, 2)
-	require.Equal(t, []meals.MealIngredient{
-		*meals.NewMealIngredient("abc").WithQuantity(300, meals.Gram),
-		*meals.NewMealIngredient("def").WithQuantity(5, meals.Tbsp),
+	require.Equal(t, []meal.MealIngredient{
+		*meal.NewMealIngredient("abc").WithQuantity(300, meal.Gram),
+		*meal.NewMealIngredient("def").WithQuantity(5, meal.Tbsp),
 	}, m[1].MealIngredients)
 }
 
 func TestIngredientsNotExisting(t *testing.T) {
-	repo := meals.NewFakeMealRepository()
+	repo := meal.NewFakeMealRepository()
 
 	e := echo.New()
 	body := &bytes.Buffer{}
@@ -99,7 +98,7 @@ func TestIngredientsNotExisting(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(ingredients.NewFakeIngredientRepository(), repo)}
+	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(ingredient.NewFakeIngredientRepository(), repo)}
 
 	err = h.UploadMeals(c)
 
@@ -115,18 +114,18 @@ func TestIngredientsNotExisting(t *testing.T) {
 }
 
 func TestMealAlreadyExisting(t *testing.T) {
-	ingredientRepo := ingredients.NewFakeIngredientRepository()
+	ingredientRepo := ingredient.NewFakeIngredientRepository()
 
-	err := ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Abc Name").WithId("abc").Build())
+	err := ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Abc Name").WithId("abc").Build())
 	require.NoError(t, err)
 
-	err = ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Def Name").WithId("def").Build())
+	err = ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Def Name").WithId("def").Build())
 	require.NoError(t, err)
 
-	err = ingredientRepo.Add(ingredients.NewIngredientBuilder().WithName("Ghi Name").WithId("ghi").Build())
+	err = ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Ghi Name").WithId("ghi").Build())
 	require.NoError(t, err)
 
-	repo := meals.NewFakeMealRepository()
+	repo := meal.NewFakeMealRepository()
 
 	e := echo.New()
 	body := &bytes.Buffer{}
@@ -136,7 +135,7 @@ func TestMealAlreadyExisting(t *testing.T) {
 	require.NoError(t, err)
 
 	err = repo.Save(
-		meals.NewMealBuilder().WithName("bar").Build(),
+		meal.NewMealBuilder().WithName("bar").Build(),
 	)
 	require.NoError(t, err)
 

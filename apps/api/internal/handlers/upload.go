@@ -3,7 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -37,7 +37,7 @@ func (h *UploadHandler) UploadMeals(c echo.Context) error {
 		var ingredientsNotFound *application.IngredientsNotFound
 		if errors.As(err, &ingredientsNotFound) {
 			return c.JSON(http.StatusBadRequest, struct {
-				NotFoundIngredients []ingredients.IngredientName `json:"notFoundIngredients"`
+				NotFoundIngredients []ingredient.IngredientName `json:"notFoundIngredients"`
 			}{ingredientsNotFound.NotFoundIngredients})
 		}
 	}

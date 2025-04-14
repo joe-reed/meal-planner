@@ -1,4 +1,4 @@
-package shops
+package shop
 
 type Created struct {
 	Id int

@@ -3,7 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -33,14 +33,14 @@ func (h *MealsHandler) FindMeal(c echo.Context) error {
 }
 
 func (h *MealsHandler) AddMeal(c echo.Context) error {
-	body := new(meals.Meal)
+	body := new(meal.Meal)
 	if err := c.Bind(body); err != nil {
 		return err
 	}
 
 	mealIngredients := body.MealIngredients
 	if mealIngredients == nil {
-		mealIngredients = make([]meals.MealIngredient, 0)
+		mealIngredients = make([]meal.MealIngredient, 0)
 	}
 
 	m, err := h.Application.AddMeal(
@@ -65,7 +65,7 @@ func (h *MealsHandler) AddMeal(c echo.Context) error {
 func (h *MealsHandler) AddIngredientToMeal(c echo.Context) error {
 	mealId := c.Param("mealId")
 
-	ingredient := meals.NewMealIngredient("")
+	ingredient := meal.NewMealIngredient("")
 	if err := c.Bind(&ingredient); err != nil {
 		return err
 	}

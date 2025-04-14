@@ -2,8 +2,8 @@ package handlers_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/categories"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/category"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"net/http"
 	"net/http/httptest"
@@ -15,7 +15,7 @@ import (
 )
 
 func TestAddingIngredient(t *testing.T) {
-	repo := ingredients.NewFakeIngredientRepository()
+	repo := ingredient.NewFakeIngredientRepository()
 
 	e := echo.New()
 	req := httptest.NewRequest("POST", "/ingredients", strings.NewReader(`{"id": "123","name":"foo","category":"Fruit"}`))
@@ -30,6 +30,6 @@ func TestAddingIngredient(t *testing.T) {
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusAccepted, rec.Code)
 		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"category\":\"Fruit\"}\n", rec.Body.String())
-		assert.EqualExportedValues(t, &ingredients.Ingredient{Id: "123", Name: "foo", Category: categories.Fruit}, m[0])
+		assert.EqualExportedValues(t, &ingredient.Ingredient{Id: "123", Name: "foo", Category: category.Fruit}, m[0])
 	}
 }

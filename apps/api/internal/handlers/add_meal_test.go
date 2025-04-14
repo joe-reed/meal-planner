@@ -2,19 +2,18 @@ package handlers_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAddingMeal(t *testing.T) {
-	repo := meals.NewFakeMealRepository()
+	repo := meal.NewFakeMealRepository()
 
 	e := echo.New()
 	req := httptest.NewRequest("POST", "/meals", strings.NewReader(`{"id": "123","name":"foo"}`))
@@ -29,13 +28,13 @@ func TestAddingMeal(t *testing.T) {
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"ingredients\":[]}\n", rec.Body.String())
-		assert.EqualExportedValues(t, &meals.Meal{Id: "123", Name: "foo", MealIngredients: make([]meals.MealIngredient, 0)}, m[0])
+		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", MealIngredients: make([]meal.MealIngredient, 0)}, m[0])
 	}
 }
 
 func TestAddingDuplicateMeal(t *testing.T) {
-	repo := meals.NewFakeMealRepository()
-	err := repo.Save(meals.NewMealBuilder().WithName("foo").Build())
+	repo := meal.NewFakeMealRepository()
+	err := repo.Save(meal.NewMealBuilder().WithName("foo").Build())
 
 	assert.NoError(t, err)
 

@@ -2,10 +2,9 @@ package handlers
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
-	"net/http"
-
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 type IngredientsHandler struct {
@@ -23,7 +22,7 @@ func (h *IngredientsHandler) GetIngredients(c echo.Context) error {
 }
 
 func (h *IngredientsHandler) AddIngredient(c echo.Context) error {
-	body := new(ingredients.Ingredient)
+	body := new(ingredient.Ingredient)
 	if err := c.Bind(body); err != nil {
 		return err
 	}

@@ -1,15 +1,15 @@
 package application
 
 import (
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"log/slog"
 )
 
 type MealApplication struct {
-	r *meals.MealRepository
+	r *meal.MealRepository
 }
 
-func NewMealApplication(r *meals.MealRepository) *MealApplication {
+func NewMealApplication(r *meal.MealRepository) *MealApplication {
 	return &MealApplication{r: r}
 }
 
@@ -21,7 +21,7 @@ func (*MealAlreadyExists) Error() string {
 	return "meal already exists"
 }
 
-func (a *MealApplication) AddMeal(id string, name string, mealIngredients []meals.MealIngredient) (*meals.Meal, error) {
+func (a *MealApplication) AddMeal(id string, name string, mealIngredients []meal.MealIngredient) (*meal.Meal, error) {
 	existingMeal, err := a.r.FindByName(name)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func (a *MealApplication) AddMeal(id string, name string, mealIngredients []meal
 		}
 	}
 
-	m, err := meals.NewMeal(id, name, mealIngredients)
+	m, err := meal.NewMeal(id, name, mealIngredients)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (a *MealApplication) AddMeal(id string, name string, mealIngredients []meal
 	return m, nil
 }
 
-func (a *MealApplication) BulkAddMeals(meals []*meals.Meal) ([]*meals.Meal, error) {
+func (a *MealApplication) BulkAddMeals(meals []*meal.Meal) ([]*meal.Meal, error) {
 	for _, m := range meals {
 		if err := a.r.Save(m); err != nil {
 			return nil, err
@@ -58,7 +58,7 @@ func (a *MealApplication) BulkAddMeals(meals []*meals.Meal) ([]*meals.Meal, erro
 	return meals, nil
 }
 
-func (a *MealApplication) GetMeals() ([]*meals.Meal, error) {
+func (a *MealApplication) GetMeals() ([]*meal.Meal, error) {
 	m, err := a.r.Get()
 
 	if err != nil {
@@ -68,7 +68,7 @@ func (a *MealApplication) GetMeals() ([]*meals.Meal, error) {
 	return m, nil
 }
 
-func (a *MealApplication) FindMeal(id string) (*meals.Meal, error) {
+func (a *MealApplication) FindMeal(id string) (*meal.Meal, error) {
 	m, err := a.r.Find(id)
 
 	if err != nil {
@@ -78,7 +78,7 @@ func (a *MealApplication) FindMeal(id string) (*meals.Meal, error) {
 	return m, nil
 }
 
-func (a *MealApplication) AddIngredientToMeal(mealId string, mealIngredient meals.MealIngredient) (*meals.Meal, error) {
+func (a *MealApplication) AddIngredientToMeal(mealId string, mealIngredient meal.MealIngredient) (*meal.Meal, error) {
 	meal, err := a.r.Find(mealId)
 	if err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (a *MealApplication) AddIngredientToMeal(mealId string, mealIngredient meal
 	return meal, nil
 }
 
-func (a *MealApplication) RemoveIngredientFromMeal(mealId string, ingredientId string) (*meals.Meal, error) {
+func (a *MealApplication) RemoveIngredientFromMeal(mealId string, ingredientId string) (*meal.Meal, error) {
 	meal, err := a.r.Find(mealId)
 	if err != nil {
 		return nil, err

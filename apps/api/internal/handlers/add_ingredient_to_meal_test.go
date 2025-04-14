@@ -2,21 +2,20 @@ package handlers_test
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAddingIngredientToMeal(t *testing.T) {
-	repo := meals.NewFakeMealRepository()
+	repo := meal.NewFakeMealRepository()
 
-	err := repo.Save(meals.NewMealBuilder().WithId("123").Build())
+	err := repo.Save(meal.NewMealBuilder().WithId("123").Build())
 	assert.NoError(t, err)
 
 	e := echo.New()
@@ -32,14 +31,14 @@ func TestAddingIngredientToMeal(t *testing.T) {
 		m, err := repo.Find("123")
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, []meals.MealIngredient{{IngredientId: "ing-1", Quantity: meals.Quantity{Amount: 3, Unit: meals.Cup}}}, m.MealIngredients)
+		assert.Equal(t, []meal.MealIngredient{{IngredientId: "ing-1", Quantity: meal.Quantity{Amount: 3, Unit: meal.Cup}}}, m.MealIngredients)
 	}
 }
 
 func TestAddingIngredientToMealWithoutQuantity(t *testing.T) {
-	repo := meals.NewFakeMealRepository()
+	repo := meal.NewFakeMealRepository()
 
-	err := repo.Save(meals.NewMealBuilder().WithId("123").Build())
+	err := repo.Save(meal.NewMealBuilder().WithId("123").Build())
 	assert.NoError(t, err)
 
 	e := echo.New()
@@ -55,6 +54,6 @@ func TestAddingIngredientToMealWithoutQuantity(t *testing.T) {
 		m, err := repo.Find("123")
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, []meals.MealIngredient{{IngredientId: "ing-1", Quantity: meals.Quantity{Amount: 1, Unit: meals.Number}}}, m.MealIngredients)
+		assert.Equal(t, []meal.MealIngredient{{IngredientId: "ing-1", Quantity: meal.Quantity{Amount: 1, Unit: meal.Number}}}, m.MealIngredients)
 	}
 }

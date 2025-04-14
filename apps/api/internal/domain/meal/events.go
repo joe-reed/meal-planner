@@ -1,4 +1,4 @@
-package meals
+package meal
 
 type Created struct {
 	Id              string

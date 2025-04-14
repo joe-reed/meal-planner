@@ -7,10 +7,10 @@ import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/database"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/basket"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredients"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meals"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shopping_list"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shops"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shop"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shoppinglist"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"github.com/labstack/echo/v4"
 	"strconv"
@@ -44,7 +44,7 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	p, output := shopping_list.CreateShoppingListProjection(es)
+	p, output := shoppinglist.CreateShoppingListProjection(es)
 
 	result := p.RunToEnd(context.TODO())
 
@@ -119,7 +119,7 @@ func addBasketRoutes(e *echo.Echo, db *sql.DB, subscribe func(func(string))) {
 }
 
 func addMealRoutes(e *echo.Echo, db *sql.DB) {
-	mealRepo, err := meals.NewSqliteMealRepository(db)
+	mealRepo, err := meal.NewSqliteMealRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
@@ -137,13 +137,13 @@ func addMealRoutes(e *echo.Echo, db *sql.DB) {
 }
 
 func addUploadRoutes(e *echo.Echo, db *sql.DB) {
-	mealRepo, err := meals.NewSqliteMealRepository(db)
+	mealRepo, err := meal.NewSqliteMealRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
 	}
 
-	ingredientRepo, err := ingredients.NewSqliteIngredientRepository(db)
+	ingredientRepo, err := ingredient.NewSqliteIngredientRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
@@ -157,7 +157,7 @@ func addUploadRoutes(e *echo.Echo, db *sql.DB) {
 }
 
 func addShopRoutes(e *echo.Echo, db *sql.DB, publisher func(string)) {
-	r, err := shops.NewSqliteShopRepository(db)
+	r, err := shop.NewSqliteShopRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
@@ -172,7 +172,7 @@ func addShopRoutes(e *echo.Echo, db *sql.DB, publisher func(string)) {
 }
 
 func addIngredientRoutes(e *echo.Echo, db *sql.DB) {
-	r, err := ingredients.NewSqliteIngredientRepository(db)
+	r, err := ingredient.NewSqliteIngredientRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
