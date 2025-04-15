@@ -23,8 +23,15 @@ func (h *IngredientsHandler) GetIngredients(c echo.Context) error {
 
 func (h *IngredientsHandler) AddIngredient(c echo.Context) error {
 	body := new(ingredient.Ingredient)
+
 	if err := c.Bind(body); err != nil {
-		return err
+		return c.JSON(
+			http.StatusBadRequest,
+			struct {
+				Error string `json:"error"`
+			}{
+				Error: "Invalid request body",
+			})
 	}
 
 	i, err := h.Application.AddIngredient(body.Id, body.Name, body.Category)

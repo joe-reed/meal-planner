@@ -50,6 +50,9 @@ export async function createIngredient(body: string) {
     headers,
     body,
   });
+  if (!response.ok) {
+    return { error: await response.text(), ingredient: null };
+  }
   return response.json();
 }
 

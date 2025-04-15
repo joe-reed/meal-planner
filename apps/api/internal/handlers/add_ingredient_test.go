@@ -33,3 +33,21 @@ func TestAddingIngredient(t *testing.T) {
 		assert.EqualExportedValues(t, &ingredient.Ingredient{Id: "123", Name: "foo", Category: category.Fruit}, m[0])
 	}
 }
+
+func TestAddingIngredientWithEmptyCategory(t *testing.T) {
+	repo := ingredient.NewFakeIngredientRepository()
+
+	e := echo.New()
+	req := httptest.NewRequest("POST", "/ingredients", strings.NewReader(`{"id": "123","name":"foo","category":""}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	h := &handlers.IngredientsHandler{Application: application.NewIngredientApplication(repo)}
+
+	if assert.NoError(t, h.AddIngredient(c)) {
+		m, err := repo.Get()
+		assert.NoError(t, err)
+		assert.Len(t, m, 0)
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+	}
+}

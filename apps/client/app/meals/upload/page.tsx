@@ -87,21 +87,28 @@ function AddIngredientForm({
   const { data: categories } = useCategories();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   return (
     <form
       className={clsx("flex items-center", className)}
       onSubmit={async (e) => {
         e.preventDefault();
+        setHasError(false);
 
         const formData = new FormData(e.target as HTMLFormElement);
         const name = formData.get("name") as string;
         const category = formData.get("category") as string;
 
-        await mutateAsync({
+        const { error } = await mutateAsync({
           name,
           category,
         });
+
+        if (error) {
+          setHasError(true);
+          return;
+        }
 
         setIsSubmitted(true);
       }}
@@ -116,7 +123,13 @@ function AddIngredientForm({
           <Select
             name="category"
             aria-label="Ingredient category"
-            className="mr-3 rounded-md border bg-white py-1 px-2 leading-none"
+            className={clsx(
+              "mr-3 rounded-md border bg-white py-1 px-2 leading-none",
+              {
+                "border-red-500 text-red-900": hasError,
+              },
+            )}
+            onChange={() => setHasError(false)}
           >
             <option value="">Select a category</option>
             {categories?.map((category) => (
