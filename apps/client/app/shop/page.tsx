@@ -73,7 +73,7 @@ export default function ShopPage() {
             </p>
           ) : (
             <p className="text-center">
-              All ingredients are in basket. Use the button above to show all
+              All ingredients are in basket. Use the button to show all
               ingredients.
             </p>
           )
