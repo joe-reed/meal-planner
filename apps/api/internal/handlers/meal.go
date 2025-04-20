@@ -46,6 +46,7 @@ func (h *MealsHandler) AddMeal(c echo.Context) error {
 	m, err := h.Application.AddMeal(
 		body.Id,
 		body.Name,
+		body.Url,
 		mealIngredients,
 	)
 

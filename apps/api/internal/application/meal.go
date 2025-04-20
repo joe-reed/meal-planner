@@ -21,7 +21,7 @@ func (*MealAlreadyExists) Error() string {
 	return "meal already exists"
 }
 
-func (a *MealApplication) AddMeal(id string, name string, mealIngredients []meal.MealIngredient) (*meal.Meal, error) {
+func (a *MealApplication) AddMeal(id string, name string, url string, mealIngredients []meal.MealIngredient) (*meal.Meal, error) {
 	existingMeal, err := a.r.FindByName(name)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func (a *MealApplication) AddMeal(id string, name string, mealIngredients []meal
 		}
 	}
 
-	m, err := meal.NewMeal(id, name, mealIngredients)
+	m, err := meal.NewMeal(id, name, url, mealIngredients)
 	if err != nil {
 		return nil, err
 	}

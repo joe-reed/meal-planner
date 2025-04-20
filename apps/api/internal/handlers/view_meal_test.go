@@ -30,7 +30,7 @@ func TestViewingMeal(t *testing.T) {
 
 	if assert.NoError(t, h.FindMeal(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[{"id":"ing-123","quantity":{"amount":1,"unit":"Number"}}]}`+"\n", m.Id), rec.Body.String())
+		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","url":"","ingredients":[{"id":"ing-123","quantity":{"amount":1,"unit":"Number"}}]}`+"\n", m.Id), rec.Body.String())
 	}
 }
 
@@ -52,6 +52,6 @@ func TestViewingMealWithNoIngredients(t *testing.T) {
 
 	if assert.NoError(t, h.FindMeal(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","ingredients":[]}`+"\n", m.Id), rec.Body.String())
+		assert.Equal(t, fmt.Sprintf(`{"id":"%s","name":"Burritos","url":"","ingredients":[]}`+"\n", m.Id), rec.Body.String())
 	}
 }

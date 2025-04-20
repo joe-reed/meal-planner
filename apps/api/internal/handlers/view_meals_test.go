@@ -34,6 +34,6 @@ func TestViewingMeals(t *testing.T) {
 
 	if assert.NoError(t, h.GetMeals(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, fmt.Sprintf(`[{"id":"%s","name":"Burritos","ingredients":[]},{"id":"%s","name":"Shepherd's pie","ingredients":[]},{"id":"%s","name":"Tacos","ingredients":[]}]`+"\n", meal1.Id, meal2.Id, meal3.Id), rec.Body.String())
+		assert.Equal(t, fmt.Sprintf(`[{"id":"%s","name":"Burritos","url":"","ingredients":[]},{"id":"%s","name":"Shepherd's pie","url":"","ingredients":[]},{"id":"%s","name":"Tacos","url":"","ingredients":[]}]`+"\n", meal1.Id, meal2.Id, meal3.Id), rec.Body.String())
 	}
 }

@@ -3,6 +3,7 @@ package meal
 type Created struct {
 	Id              string
 	Name            string
+	Url             string
 	MealIngredients []MealIngredient
 }
 
