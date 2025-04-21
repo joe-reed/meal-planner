@@ -4,7 +4,7 @@ import { createMeal } from "../actions";
 
 export function useCreateMeal() {
   return useMutation({
-    mutationFn: (meal: { name: string }) =>
+    mutationFn: (meal: { name: string; url: string }) =>
       createMeal(JSON.stringify({ ...meal, id: uuid() })),
   });
 }

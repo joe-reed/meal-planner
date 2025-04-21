@@ -98,10 +98,21 @@ export default function MealPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="mb-4 flex items-center">
+      <div className="mb-2 flex items-center">
         <BackButton className="mr-3" destination="/" />
         <h1 className="text-lg font-bold">{meal.name}</h1>
       </div>
+      {meal.url === "" ? (
+        <span className="mb-2" />
+      ) : (
+        <a
+          href={meal.url.includes("http") ? meal.url : `https://${meal.url}`}
+          className="text:blue-500 mb-4 hover:underline"
+          target="_blank"
+        >
+          {meal.url}
+        </a>
+      )}
       <h2 className="mb-2 font-bold">Ingredients</h2>
       {(meal.ingredients === null || meal.ingredients.length === 0) && (
         <p className="mb-2">

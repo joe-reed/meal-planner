@@ -1,6 +1,7 @@
 export type Meal = {
   id: string;
   name: string;
+  url: string;
   ingredients: MealIngredient[];
 };
 
