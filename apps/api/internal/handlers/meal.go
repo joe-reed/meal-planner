@@ -71,22 +71,38 @@ func (h *MealsHandler) AddIngredientToMeal(c echo.Context) error {
 		return err
 	}
 
-	meal, err := h.Application.AddIngredientToMeal(mealId, *ingredient)
+	m, err := h.Application.AddIngredientToMeal(mealId, *ingredient)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, meal)
+	return c.JSON(http.StatusOK, m)
 }
 
 func (h *MealsHandler) RemoveIngredientFromMeal(c echo.Context) error {
 	mealId := c.Param("mealId")
 	ingredientId := c.Param("ingredientId")
 
-	meal, err := h.Application.RemoveIngredientFromMeal(mealId, ingredientId)
+	m, err := h.Application.RemoveIngredientFromMeal(mealId, ingredientId)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, meal)
+	return c.JSON(http.StatusOK, m)
+}
+
+func (h *MealsHandler) UpdateMeal(c echo.Context) error {
+	mealId := c.Param("mealId")
+
+	body := new(meal.Meal)
+	if err := c.Bind(body); err != nil {
+		return err
+	}
+
+	m, err := h.Application.UpdateMeal(mealId, body)
+	if err != nil {
+		return errors.New("error updating meal: " + err.Error())
+	}
+
+	return c.JSON(http.StatusOK, m)
 }

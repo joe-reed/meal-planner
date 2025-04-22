@@ -31,11 +31,13 @@ func (m *Meal) Transition(event eventsourcing.Event) {
 			}
 		}
 		m.MealIngredients = ingredients
+	case *UrlUpdated:
+		m.Url = e.Url
 	}
 }
 
 func (m *Meal) Register(r aggregate.RegisterFunc) {
-	r(&Created{}, &IngredientAdded{}, &IngredientRemoved{})
+	r(&Created{}, &IngredientAdded{}, &IngredientRemoved{}, &UrlUpdated{})
 }
 
 func NewMeal(id string, name string, url string, mealIngredients []MealIngredient) (*Meal, error) {
@@ -55,6 +57,10 @@ func (m *Meal) AddIngredient(ingredient MealIngredient) {
 
 func (m *Meal) RemoveIngredient(id string) {
 	aggregate.TrackChange(m, &IngredientRemoved{Id: id})
+}
+
+func (m *Meal) UpdateUrl(url string) {
+	aggregate.TrackChange(m, &UrlUpdated{Url: url})
 }
 
 type Quantity struct {

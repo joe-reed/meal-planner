@@ -134,6 +134,7 @@ func addMealRoutes(e *echo.Echo, db *sql.DB) {
 	e.POST("/meals", handler.AddMeal)
 	e.POST("/meals/:mealId/ingredients", handler.AddIngredientToMeal)
 	e.DELETE("/meals/:mealId/ingredients/:ingredientId", handler.RemoveIngredientFromMeal)
+	e.PATCH("/meals/:mealId", handler.UpdateMeal)
 }
 
 func addUploadRoutes(e *echo.Echo, db *sql.DB) {

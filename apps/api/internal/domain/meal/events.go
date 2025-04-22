@@ -14,3 +14,7 @@ type IngredientAdded struct {
 type IngredientRemoved struct {
 	Id string
 }
+
+type UrlUpdated struct {
+	Url string
+}

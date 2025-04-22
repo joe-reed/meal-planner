@@ -1,6 +1,7 @@
 package application
 
 import (
+	"errors"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"log/slog"
 )
@@ -100,6 +101,22 @@ func (a *MealApplication) RemoveIngredientFromMeal(mealId string, ingredientId s
 	}
 
 	m.RemoveIngredient(ingredientId)
+
+	if err := a.r.Save(m); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+func (a *MealApplication) UpdateMeal(mealId string, body *meal.Meal) (*meal.Meal, error) {
+	m, err := a.r.Find(mealId)
+	if err != nil {
+		return nil, errors.New("error finding meal: " + err.Error())
+	}
+
+	// todo: check if URL is empty - allow updating url and/or name
+	m.UpdateUrl(body.Url)
 
 	if err := a.r.Save(m); err != nil {
 		return nil, err

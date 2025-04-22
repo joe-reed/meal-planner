@@ -37,6 +37,7 @@ func runSuite(t *testing.T, factory func() *meal.MealRepository, teardown func()
 		{"getting all meals without ingredients", testGettingMealsWithoutIngredients},
 		{"finding a meal", testFindingMeal},
 		{"saving a meal", testSavingMeal},
+		{"updating a meal's url", testUpdatingMealUrl},
 	}
 
 	for _, test := range tests {
@@ -123,4 +124,19 @@ func testSavingMeal(t *testing.T, r *meal.MealRepository) {
 	assert.NoError(t, err)
 	assert.EqualExportedValues(t, m, found)
 	assert.Equal(t, []meal.MealIngredient{*meal.NewMealIngredient("a"), *meal.NewMealIngredient("b")}, found.MealIngredients)
+}
+
+func testUpdatingMealUrl(t *testing.T, r *meal.MealRepository) {
+	m := meal.NewMealBuilder().AddIngredient(*meal.NewMealIngredient("a")).WithName("a").Build()
+	err := r.Save(m)
+	assert.NoError(t, err)
+
+	m.UpdateUrl("https://test.localhost")
+
+	err = r.Save(m)
+	assert.NoError(t, err)
+
+	found, err := r.Find(m.Id)
+	assert.NoError(t, err)
+	assert.EqualExportedValues(t, m, found)
 }
