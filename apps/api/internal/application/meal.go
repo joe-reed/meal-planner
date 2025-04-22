@@ -79,31 +79,31 @@ func (a *MealApplication) FindMeal(id string) (*meal.Meal, error) {
 }
 
 func (a *MealApplication) AddIngredientToMeal(mealId string, mealIngredient meal.MealIngredient) (*meal.Meal, error) {
-	meal, err := a.r.Find(mealId)
+	m, err := a.r.Find(mealId)
 	if err != nil {
 		return nil, err
 	}
 
-	meal.AddIngredient(mealIngredient)
+	m.AddIngredient(mealIngredient)
 
-	if err := a.r.Save(meal); err != nil {
+	if err := a.r.Save(m); err != nil {
 		return nil, err
 	}
 
-	return meal, nil
+	return m, nil
 }
 
 func (a *MealApplication) RemoveIngredientFromMeal(mealId string, ingredientId string) (*meal.Meal, error) {
-	meal, err := a.r.Find(mealId)
+	m, err := a.r.Find(mealId)
 	if err != nil {
 		return nil, err
 	}
 
-	meal.RemoveIngredient(ingredientId)
+	m.RemoveIngredient(ingredientId)
 
-	if err := a.r.Save(meal); err != nil {
+	if err := a.r.Save(m); err != nil {
 		return nil, err
 	}
 
-	return meal, nil
+	return m, nil
 }
