@@ -70,6 +70,20 @@ export async function createMeal(body: string) {
   return { error: null, meal: await response.json() };
 }
 
+export async function updateMeal(mealId: string, body: string) {
+  const response = await fetch(`${process.env.API_BASE_URL}/meals/${mealId}`, {
+    method: "PATCH",
+    headers,
+    body,
+  });
+
+  if (!response.ok) {
+    return { error: await response.text(), meal: null };
+  }
+
+  return { error: null, meal: await response.json() };
+}
+
 export async function fetchCurrentShop() {
   const response = await fetch(`${process.env.API_BASE_URL}/shops/current`);
   if (!response.ok) {

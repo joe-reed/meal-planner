@@ -9,3 +9,4 @@ export * from "./useRemoveMealFromCurrentShop";
 export * from "./useStartShop";
 export * from "./useCreateIngredient";
 export * from "./useUploadMeals";
+export * from "./useUpdateMeal";

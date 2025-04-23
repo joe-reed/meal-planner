@@ -23,6 +23,8 @@ import { useAddIngredientToMeal } from "../../../queries/useAddIngredientToMeal"
 import { Modal } from "../../../components/Modal";
 import { useCategories } from "../../../queries/useCategories";
 import { Unit } from "../../../components/Unit";
+import { useUpdateMeal } from "../../../queries";
+import clsx from "clsx";
 
 type PendingIngredient = {
   id: string;
@@ -102,17 +104,7 @@ export default function MealPage() {
         <BackButton className="mr-3" destination="/" />
         <h1 className="text-lg font-bold">{meal.name}</h1>
       </div>
-      {meal.url === "" ? (
-        <span className="mb-2" />
-      ) : (
-        <a
-          href={meal.url.includes("http") ? meal.url : `https://${meal.url}`}
-          className="text:blue-500 mb-4 hover:underline"
-          target="_blank"
-        >
-          {meal.url}
-        </a>
-      )}
+      <Url meal={meal} className="mb-4 self-start" />
       <h2 className="mb-2 font-bold">Ingredients</h2>
       {(meal.ingredients === null || meal.ingredients.length === 0) && (
         <p className="mb-2">
@@ -393,5 +385,61 @@ function AddNewIngredientModal({
         )}
       />
     </>
+  );
+}
+
+function Url({ meal, className }: { meal: Meal; className?: string }) {
+  const { mutate: updateMeal } = useUpdateMeal(meal.id);
+
+  const [url, setUrl] = useState(meal.url);
+  const [isEditing, setIsEditing] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    updateMeal({ ...meal, url });
+    setIsEditing(false);
+  }
+
+  if (meal.url === "" && !isEditing) {
+    return (
+      <button
+        onClick={() => setIsEditing(true)}
+        className={clsx("flex items-center hover:underline", className)}
+      >
+        <span className="mr-1">➕</span>
+        <span>Add URL</span>
+      </button>
+    );
+  }
+
+  return isEditing ? (
+    <form
+      onSubmit={handleSubmit}
+      className={clsx("flex w-full items-center", className)}
+    >
+      <button onClick={handleSubmit} className="mr-2">
+        💾
+      </button>
+      <input
+        type="text"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        className="-mt-1 w-full rounded-md border py-1 px-2 leading-none"
+        autoFocus
+      />
+    </form>
+  ) : (
+    <div className={clsx("flex items-center", className)}>
+      <button onClick={() => setIsEditing(true)} className="mr-4">
+        ✏️
+      </button>
+      <a
+        href={meal.url.includes("http") ? meal.url : `https://${meal.url}`}
+        className="text-blue-600 hover:underline"
+        target="_blank"
+      >
+        {meal.url}
+      </a>
+    </div>
   );
 }
