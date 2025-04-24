@@ -51,7 +51,6 @@ export default function CreateMealPage() {
           <input
             type="text"
             name="url"
-            required
             className="rounded-md border py-1 px-2 leading-none"
           />
         </label>
