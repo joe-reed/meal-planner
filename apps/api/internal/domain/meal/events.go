@@ -15,6 +15,10 @@ type IngredientRemoved struct {
 	Id string
 }
 
+type NameUpdated struct {
+	Name string
+}
+
 type UrlUpdated struct {
 	Url string
 }

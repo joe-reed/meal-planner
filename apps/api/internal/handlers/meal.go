@@ -94,12 +94,12 @@ func (h *MealsHandler) RemoveIngredientFromMeal(c echo.Context) error {
 func (h *MealsHandler) UpdateMeal(c echo.Context) error {
 	mealId := c.Param("mealId")
 
-	body := new(meal.Meal)
+	body := new(application.PartialMeal)
 	if err := c.Bind(body); err != nil {
 		return err
 	}
 
-	m, err := h.Application.UpdateMeal(mealId, body)
+	m, err := h.Application.UpdateMeal(mealId, *body)
 	if err != nil {
 		return errors.New("error updating meal: " + err.Error())
 	}

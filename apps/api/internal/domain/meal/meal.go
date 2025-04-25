@@ -31,13 +31,15 @@ func (m *Meal) Transition(event eventsourcing.Event) {
 			}
 		}
 		m.MealIngredients = ingredients
+	case *NameUpdated:
+		m.Name = e.Name
 	case *UrlUpdated:
 		m.Url = e.Url
 	}
 }
 
 func (m *Meal) Register(r aggregate.RegisterFunc) {
-	r(&Created{}, &IngredientAdded{}, &IngredientRemoved{}, &UrlUpdated{})
+	r(&Created{}, &IngredientAdded{}, &IngredientRemoved{}, &NameUpdated{}, &UrlUpdated{})
 }
 
 func NewMeal(id string, name string, url string, mealIngredients []MealIngredient) (*Meal, error) {
@@ -57,6 +59,10 @@ func (m *Meal) AddIngredient(ingredient MealIngredient) {
 
 func (m *Meal) RemoveIngredient(id string) {
 	aggregate.TrackChange(m, &IngredientRemoved{Id: id})
+}
+
+func (m *Meal) UpdateName(name string) {
+	aggregate.TrackChange(m, &NameUpdated{Name: name})
 }
 
 func (m *Meal) UpdateUrl(url string) {
@@ -96,6 +102,11 @@ func NewMealBuilder() *MealBuilder {
 
 func (b *MealBuilder) WithName(name string) *MealBuilder {
 	b.name = name
+	return b
+}
+
+func (b *MealBuilder) WithUrl(url string) *MealBuilder {
+	b.url = url
 	return b
 }
 
