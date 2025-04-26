@@ -102,7 +102,7 @@ export default function MealPage() {
     <div className="flex flex-col">
       <div className="mb-2 flex items-center">
         <BackButton className="mr-3" destination="/" />
-        <h1 className="text-lg font-bold">{meal.name}</h1>
+        <Name meal={meal} />
       </div>
       <Url meal={meal} className="mb-4 self-start" />
       <h2 className="mb-2 font-bold">Ingredients</h2>
@@ -430,7 +430,7 @@ function Url({ meal, className }: { meal: Meal; className?: string }) {
     </form>
   ) : (
     <div className={clsx("flex items-center", className)}>
-      <button onClick={() => setIsEditing(true)} className="mr-4">
+      <button onClick={() => setIsEditing(true)} className="mr-2 text-xs">
         ✏️
       </button>
       <a
@@ -440,6 +440,44 @@ function Url({ meal, className }: { meal: Meal; className?: string }) {
       >
         {meal.url}
       </a>
+    </div>
+  );
+}
+
+function Name({ meal, className }: { meal: Meal; className?: string }) {
+  const { mutate: updateMeal } = useUpdateMeal(meal.id);
+
+  const [name, setName] = useState(meal.name);
+  const [isEditing, setIsEditing] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    updateMeal({ ...meal, name });
+    setIsEditing(false);
+  }
+
+  return isEditing ? (
+    <form
+      onSubmit={handleSubmit}
+      className={clsx("flex w-full items-center", className)}
+    >
+      <button onClick={handleSubmit} className="mr-2">
+        💾
+      </button>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="-mt-1 w-full rounded-md border py-1 px-2 leading-none"
+        autoFocus
+      />
+    </form>
+  ) : (
+    <div className={clsx("flex", className)}>
+      <button onClick={() => setIsEditing(true)} className="mr-2 text-xs">
+        ✏️
+      </button>
+      <h1 className="text-lg font-bold">{meal.name}</h1>
     </div>
   );
 }

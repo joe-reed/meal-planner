@@ -5,7 +5,7 @@ export function useUpdateMeal(mealId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: { url: string }) =>
+    mutationFn: (body: { url: string } | { name: string }) =>
       updateMeal(mealId, JSON.stringify(body)),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [`meals/${mealId}`] });
