@@ -15,8 +15,76 @@ export default function ShopPage() {
 
   const [showItemsInBasket, setShowItemsInBasket] = React.useState(false);
 
+  const [canUndo, setCanUndo] = React.useState(false);
+  const [undoTimeout, setUndoTimeout] = React.useState<NodeJS.Timeout | null>(
+    null,
+  );
+  // todo: keep stack of actions
+  const [lastAction, setLastAction] = React.useState<{
+    action: string;
+    ingredientId: string;
+  } | null>(null);
+
   function toggleShowItemsInBasket() {
     setShowItemsInBasket(!showItemsInBasket);
+  }
+
+  const { shopId, shoppingList: shoppingListData } = shoppingListQuery.data || {
+    shopId: "0",
+    shoppingList: {},
+  };
+
+  function useUndo() {
+    const { mutate: addItemToBasket } = useAddItemToBasket(shopId);
+    const { mutate: removeItemFromBasket } = useRemoveItemFromBasket(shopId);
+
+    return function undo() {
+      if (!lastAction) return;
+
+      if (lastAction.action === "add") {
+        removeItemFromBasket(lastAction.ingredientId);
+      } else if (lastAction.action === "remove") {
+        addItemToBasket({ ingredientId: lastAction.ingredientId });
+      }
+      setCanUndo(false);
+      setLastAction(null);
+    };
+  }
+
+  const undo = useUndo();
+
+  function onAddToBasket(ingredient: Ingredient) {
+    setLastAction({
+      action: "add",
+      ingredientId: ingredient.id,
+    });
+    setCanUndo(true);
+    if (undoTimeout) {
+      clearTimeout(undoTimeout);
+    }
+    const timeout = setTimeout(() => {
+      setCanUndo(false);
+      setLastAction(null);
+    }, 5000);
+
+    setUndoTimeout(timeout);
+  }
+
+  function onRemoveFromBasket(ingredient: Ingredient) {
+    setLastAction({
+      action: "remove",
+      ingredientId: ingredient.id,
+    });
+    setCanUndo(true);
+    if (undoTimeout) {
+      clearTimeout(undoTimeout);
+    }
+    const timeout = setTimeout(() => {
+      setCanUndo(false);
+      setLastAction(null);
+    }, 5000);
+
+    setUndoTimeout(timeout);
   }
 
   if (shoppingListQuery.isInitialLoading) {
@@ -27,10 +95,6 @@ export default function ShopPage() {
     return <p>Error: {shoppingListQuery.error.message}</p>;
   }
 
-  const { shopId, shoppingList: shoppingListData } = shoppingListQuery.data || {
-    shopId: "0",
-    shoppingList: {},
-  };
   const shoppingList = Object.values(shoppingListData);
 
   const filteredIngredients = shoppingList.filter(
@@ -59,11 +123,18 @@ export default function ShopPage() {
             <BackButton className="mr-3" destination="/" />
             <h1 className="text-lg font-bold">Current shop</h1>
           </div>
-          <ShowIngredientsButton
-            showItemsInBasket={showItemsInBasket}
-            toggleShowItemsInBasket={toggleShowItemsInBasket}
-            className="hidden sm:block"
-          />
+          <div className="flex items-center space-x-2">
+            {canUndo && (
+              <button className="button" onClick={undo}>
+                Undo
+              </button>
+            )}
+            <ShowIngredientsButton
+              showItemsInBasket={showItemsInBasket}
+              toggleShowItemsInBasket={toggleShowItemsInBasket}
+              className="hidden sm:block"
+            />
+          </div>
         </div>
 
         {filteredIngredients.length === 0 ? (
@@ -90,6 +161,8 @@ export default function ShopPage() {
                     key={ingredient.id}
                     ingredient={ingredient}
                     shopId={shopId}
+                    onAddToBasket={onAddToBasket}
+                    onRemoveFromBasket={onRemoveFromBasket}
                   />
                 ))}
               </ul>
@@ -103,6 +176,8 @@ export default function ShopPage() {
 function IngredientListItem({
   ingredient,
   shopId,
+  onAddToBasket,
+  onRemoveFromBasket,
 }: {
   ingredient: Ingredient & {
     mealCount: number;
@@ -110,6 +185,8 @@ function IngredientListItem({
     quantities: { unit: string; amount: number }[];
   };
   shopId: string;
+  onAddToBasket: (ingredient: Ingredient) => void;
+  onRemoveFromBasket: (ingredient: Ingredient) => void;
 }) {
   const { mutate: addItemToBasket } = useAddItemToBasket(shopId);
   const { mutate: removeItemFromBasket } = useRemoveItemFromBasket(shopId);
@@ -129,8 +206,10 @@ function IngredientListItem({
           onChange={() => {
             if (ingredient.isInBasket) {
               removeItemFromBasket(ingredient.id);
+              onRemoveFromBasket(ingredient);
             } else {
               addItemToBasket({ ingredientId: ingredient.id });
+              onAddToBasket(ingredient);
             }
           }}
         />
