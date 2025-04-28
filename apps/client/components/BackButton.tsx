@@ -1,20 +1,16 @@
-import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import Link from "next/link";
 
 export default function BackButton({
-  className,
   destination,
+  className,
 }: {
+  destination: string;
   className?: string;
-  destination?: string;
 }) {
-  const { back, push } = useRouter();
-
-  const onClick = destination ? () => push(destination) : () => back();
-
   return (
-    <button onClick={onClick} className={clsx(className, "text-3xl")}>
+    <Link href={destination} className={clsx(className, "text-3xl")}>
       🔙
-    </button>
+    </Link>
   );
 }
