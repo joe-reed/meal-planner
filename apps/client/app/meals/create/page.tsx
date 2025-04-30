@@ -12,8 +12,9 @@ export default function CreateMealPage() {
 
   return (
     <div>
-      <div className="mb-4">
-        <BackButton destination="/" />
+      <div className="mb-4 flex items-center">
+        <BackButton className="mr-3" destination="/" />
+        <h1 className="text-lg font-bold">Create meal</h1>
       </div>
 
       <form
