@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"github.com/labstack/echo/v4"
@@ -37,6 +38,14 @@ func (h *IngredientsHandler) AddIngredient(c echo.Context) error {
 	i, err := h.Application.AddIngredient(body.Id, body.Name, body.Category)
 
 	if err != nil {
+		var validationError *application.ValidationError
+		if errors.As(err, &validationError) {
+			return c.JSON(http.StatusBadRequest, struct {
+				Error string `json:"error"`
+			}{
+				Error: validationError.Error(),
+			})
+		}
 		return err
 	}
 

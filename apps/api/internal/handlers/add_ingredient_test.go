@@ -51,3 +51,39 @@ func TestAddingIngredientWithEmptyCategory(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
 }
+
+func TestAddingIngredientWithEmptyName(t *testing.T) {
+	repo := ingredient.NewFakeIngredientRepository()
+
+	e := echo.New()
+	req := httptest.NewRequest("POST", "/ingredients", strings.NewReader(`{"id": "123","name":"","category":"Fruit"}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	h := &handlers.IngredientsHandler{Application: application.NewIngredientApplication(repo)}
+
+	if assert.NoError(t, h.AddIngredient(c)) {
+		m, err := repo.Get()
+		assert.NoError(t, err)
+		assert.Len(t, m, 0)
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+	}
+}
+
+func TestAddingIngredientWithEmptyId(t *testing.T) {
+	repo := ingredient.NewFakeIngredientRepository()
+
+	e := echo.New()
+	req := httptest.NewRequest("POST", "/ingredients", strings.NewReader(`{"id": "","name":"foo","category":"Fruit"}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	h := &handlers.IngredientsHandler{Application: application.NewIngredientApplication(repo)}
+
+	if assert.NoError(t, h.AddIngredient(c)) {
+		m, err := repo.Get()
+		assert.NoError(t, err)
+		assert.Len(t, m, 0)
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+	}
+}

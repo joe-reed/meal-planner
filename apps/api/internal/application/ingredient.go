@@ -14,7 +14,26 @@ func NewIngredientApplication(r *ingredient.IngredientRepository) *IngredientApp
 	return &IngredientApplication{r: r}
 }
 
+type ValidationError struct {
+	Field   string
+	Message string
+}
+
+func (e *ValidationError) Error() string {
+	return e.Message
+}
+
 func (a *IngredientApplication) AddIngredient(id string, name ingredient.IngredientName, category category.CategoryName) (*ingredient.Ingredient, error) {
+	err := validateId(id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = validateName(name)
+	if err != nil {
+		return nil, err
+	}
+
 	i, err := ingredient.NewIngredient(id, name, category)
 	if err != nil {
 		return nil, err
@@ -27,6 +46,27 @@ func (a *IngredientApplication) AddIngredient(id string, name ingredient.Ingredi
 	}
 
 	return i, nil
+}
+
+// todo: reduce duplication, standardise validation or use library
+func validateId(id string) error {
+	if id == "" {
+		return &ValidationError{
+			Field:   "id",
+			Message: "id cannot be empty",
+		}
+	}
+	return nil
+}
+
+func validateName(name ingredient.IngredientName) error {
+	if name == "" {
+		return &ValidationError{
+			Field:   "name",
+			Message: "name cannot be empty",
+		}
+	}
+	return nil
 }
 
 func (a *IngredientApplication) GetIngredients() ([]*ingredient.Ingredient, error) {
