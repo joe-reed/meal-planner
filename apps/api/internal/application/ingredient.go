@@ -29,7 +29,7 @@ func (a *IngredientApplication) AddIngredient(id string, name ingredient.Ingredi
 		return nil, err
 	}
 
-	err = validateName(name)
+	err = validateName(name.String())
 	if err != nil {
 		return nil, err
 	}
@@ -50,20 +50,18 @@ func (a *IngredientApplication) AddIngredient(id string, name ingredient.Ingredi
 
 // todo: reduce duplication, standardise validation or use library
 func validateId(id string) error {
-	if id == "" {
-		return &ValidationError{
-			Field:   "id",
-			Message: "id cannot be empty",
-		}
-	}
-	return nil
+	return validateNotEmpty("id", id)
 }
 
-func validateName(name ingredient.IngredientName) error {
-	if name == "" {
+func validateName(name string) error {
+	return validateNotEmpty("name", name)
+}
+
+func validateNotEmpty(field string, value string) error {
+	if value == "" {
 		return &ValidationError{
-			Field:   "name",
-			Message: "name cannot be empty",
+			Field:   field,
+			Message: field + "cannot be empty",
 		}
 	}
 	return nil

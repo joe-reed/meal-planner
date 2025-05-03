@@ -58,6 +58,17 @@ func (h *MealsHandler) AddMeal(c echo.Context) error {
 				MealName string `json:"mealName"`
 			}{mealAlreadyExists.Error(), mealAlreadyExists.MealName})
 		}
+
+		var validationError *application.ValidationError
+		if errors.As(err, &validationError) {
+			return c.JSON(http.StatusBadRequest, struct {
+				Error string `json:"error"`
+			}{
+				Error: validationError.Error(),
+			})
+		}
+
+		return err
 	}
 
 	return c.JSON(http.StatusCreated, m)

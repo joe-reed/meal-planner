@@ -28,6 +28,16 @@ type PartialMeal struct {
 }
 
 func (a *MealApplication) AddMeal(id string, name string, url string, mealIngredients []meal.MealIngredient) (*meal.Meal, error) {
+	err := validateId(id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = validateName(name)
+	if err != nil {
+		return nil, err
+	}
+
 	existingMeal, err := a.r.FindByName(name)
 
 	if err != nil {

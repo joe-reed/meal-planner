@@ -72,3 +72,39 @@ func TestAddingDuplicateMeal(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
 }
+
+func TestAddingMealWithEmptyId(t *testing.T) {
+	repo := meal.NewFakeMealRepository()
+
+	e := echo.New()
+	req := httptest.NewRequest("POST", "/meals", strings.NewReader(`{"id": "","name":"foo"}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
+
+	if assert.NoError(t, h.AddMeal(c)) {
+		m, err := repo.Get()
+		assert.NoError(t, err)
+		assert.Len(t, m, 0)
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+	}
+}
+
+func TestAddingMealWithEmptyName(t *testing.T) {
+	repo := meal.NewFakeMealRepository()
+
+	e := echo.New()
+	req := httptest.NewRequest("POST", "/meals", strings.NewReader(`{"id": "123","name":""}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
+
+	if assert.NoError(t, h.AddMeal(c)) {
+		m, err := repo.Get()
+		assert.NoError(t, err)
+		assert.Len(t, m, 0)
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+	}
+}
