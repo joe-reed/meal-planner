@@ -13,17 +13,23 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type IngredientRepository struct {
+type IngredientRepository interface {
+	Add(i *Ingredient) error
+	Get() ([]*Ingredient, error)
+	GetByName(name IngredientName) (*Ingredient, error)
+}
+
+type EventSourcedIngredientRepository struct {
 	es  core.EventStore
 	all func() (core.Iterator, error)
 }
 
-func NewIngredientRepository(es core.EventStore, all func() (core.Iterator, error)) *IngredientRepository {
+func NewIngredientRepository(es core.EventStore, all func() (core.Iterator, error)) *EventSourcedIngredientRepository {
 	aggregate.Register(&Ingredient{})
-	return &IngredientRepository{es, all}
+	return &EventSourcedIngredientRepository{es, all}
 }
 
-func NewSqliteIngredientRepository(db *sql.DB) (*IngredientRepository, error) {
+func NewSqliteIngredientRepository(db *sql.DB) (*EventSourcedIngredientRepository, error) {
 	es := sqlStore.Open(db)
 
 	return NewIngredientRepository(es, func() (core.Iterator, error) {
@@ -31,7 +37,7 @@ func NewSqliteIngredientRepository(db *sql.DB) (*IngredientRepository, error) {
 	}), nil
 }
 
-func NewFakeIngredientRepository() *IngredientRepository {
+func NewFakeIngredientRepository() *EventSourcedIngredientRepository {
 	es := memory.Create()
 
 	return NewIngredientRepository(es, func() (core.Iterator, error) {
@@ -39,11 +45,11 @@ func NewFakeIngredientRepository() *IngredientRepository {
 	})
 }
 
-func (r IngredientRepository) Add(i *Ingredient) error {
+func (r EventSourcedIngredientRepository) Add(i *Ingredient) error {
 	return aggregate.Save(r.es, i)
 }
 
-func (r IngredientRepository) Get() ([]*Ingredient, error) {
+func (r EventSourcedIngredientRepository) Get() ([]*Ingredient, error) {
 	ingredientMap := map[string]*Ingredient{}
 
 	p := eventsourcing.NewProjection(
@@ -83,7 +89,7 @@ func (r IngredientRepository) Get() ([]*Ingredient, error) {
 	return ingredients, nil
 }
 
-func (r IngredientRepository) GetByName(name IngredientName) (*Ingredient, error) {
+func (r EventSourcedIngredientRepository) GetByName(name IngredientName) (*Ingredient, error) {
 	ingredients, err := r.Get()
 
 	if err != nil {

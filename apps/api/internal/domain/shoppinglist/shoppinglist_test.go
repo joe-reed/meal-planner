@@ -20,7 +20,7 @@ import (
 
 type ShoppingListSuite struct {
 	suite.Suite
-	ingredientRepository *ingredient.IngredientRepository
+	ingredientRepository *ingredient.EventSourcedIngredientRepository
 	shopRepository       *shop.ShopRepository
 	mealRepository       *meal.MealRepository
 	basketRepository     *basket.BasketRepository

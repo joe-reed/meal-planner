@@ -7,10 +7,10 @@ import (
 )
 
 type IngredientApplication struct {
-	r *ingredient.IngredientRepository
+	r ingredient.IngredientRepository
 }
 
-func NewIngredientApplication(r *ingredient.IngredientRepository) *IngredientApplication {
+func NewIngredientApplication(r ingredient.IngredientRepository) *IngredientApplication {
 	return &IngredientApplication{r: r}
 }
 

@@ -10,13 +10,13 @@ import (
 )
 
 func TestFakeIngredientRepository(t *testing.T) {
-	runSuite(t, func() *ingredient.IngredientRepository {
+	runSuite(t, func() *ingredient.EventSourcedIngredientRepository {
 		return ingredient.NewFakeIngredientRepository()
 	}, func() {})
 }
 
 func TestSqliteIngredientRepository(t *testing.T) {
-	runSuite(t, func() *ingredient.IngredientRepository {
+	runSuite(t, func() *ingredient.EventSourcedIngredientRepository {
 		db, err := database.CreateDatabase("test.db")
 		assert.NoError(t, err)
 		r, err := ingredient.NewSqliteIngredientRepository(db)
@@ -28,10 +28,10 @@ func TestSqliteIngredientRepository(t *testing.T) {
 	})
 }
 
-func runSuite(t *testing.T, factory func() *ingredient.IngredientRepository, teardown func()) {
+func runSuite(t *testing.T, factory func() *ingredient.EventSourcedIngredientRepository, teardown func()) {
 	tests := []struct {
 		title string
-		run   func(t *testing.T, r *ingredient.IngredientRepository)
+		run   func(t *testing.T, r *ingredient.EventSourcedIngredientRepository)
 	}{
 		{"adding an ingredient", testAddingIngredient},
 		{"getting all ingredients", testGettingIngredients},
@@ -47,7 +47,7 @@ func runSuite(t *testing.T, factory func() *ingredient.IngredientRepository, tea
 	}
 }
 
-func testAddingIngredient(t *testing.T, r *ingredient.IngredientRepository) {
+func testAddingIngredient(t *testing.T, r *ingredient.EventSourcedIngredientRepository) {
 	expected := ingredient.NewIngredientBuilder().Build()
 	err := r.Add(expected)
 	assert.NoError(t, err)
@@ -59,7 +59,7 @@ func testAddingIngredient(t *testing.T, r *ingredient.IngredientRepository) {
 	assert.EqualExportedValues(t, expected, actual[0])
 }
 
-func testGettingIngredients(t *testing.T, r *ingredient.IngredientRepository) {
+func testGettingIngredients(t *testing.T, r *ingredient.EventSourcedIngredientRepository) {
 	i1 := ingredient.NewIngredientBuilder().WithName("c").WithCategory(category.Frozen).Build()
 	i2 := ingredient.NewIngredientBuilder().WithName("b").WithCategory(category.Vegetables).Build()
 	i3 := ingredient.NewIngredientBuilder().WithName("a").WithCategory(category.SeedsNutsAndDriedFruits).Build()
@@ -79,13 +79,13 @@ func testGettingIngredients(t *testing.T, r *ingredient.IngredientRepository) {
 	assert.EqualExportedValues(t, i1, i[2])
 }
 
-func testGettingZeroIngredients(t *testing.T, r *ingredient.IngredientRepository) {
+func testGettingZeroIngredients(t *testing.T, r *ingredient.EventSourcedIngredientRepository) {
 	i, err := r.Get()
 	assert.NoError(t, err)
 	assert.Len(t, i, 0)
 }
 
-func testGettingIngredientByName(t *testing.T, r *ingredient.IngredientRepository) {
+func testGettingIngredientByName(t *testing.T, r *ingredient.EventSourcedIngredientRepository) {
 	i := ingredient.NewIngredientBuilder().WithName("test name").WithCategory(category.Frozen).Build()
 
 	err := r.Add(i)
