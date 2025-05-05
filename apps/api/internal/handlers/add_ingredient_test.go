@@ -89,20 +89,20 @@ func TestAddingIngredientWithEmptyId(t *testing.T) {
 	}
 }
 
-type RepoWithError struct{}
+type IngredientRepoWithError struct{}
 
-func (r RepoWithError) Add(i *ingredient.Ingredient) error {
+func (r IngredientRepoWithError) Add(i *ingredient.Ingredient) error {
 	return errors.New("error")
 }
-func (r RepoWithError) Get() ([]*ingredient.Ingredient, error) {
+func (r IngredientRepoWithError) Get() ([]*ingredient.Ingredient, error) {
 	return nil, errors.New("error")
 }
-func (r RepoWithError) GetByName(name ingredient.IngredientName) (*ingredient.Ingredient, error) {
+func (r IngredientRepoWithError) GetByName(name ingredient.IngredientName) (*ingredient.Ingredient, error) {
 	return nil, errors.New("error")
 }
 
-func TestHandlingUnknownError(t *testing.T) {
-	repo := RepoWithError{}
+func TestAddingIngredientWithUnknownError(t *testing.T) {
+	repo := IngredientRepoWithError{}
 
 	e := echo.New()
 	req := httptest.NewRequest("POST", "/ingredients", strings.NewReader(`{"id": "123","name":"foo","category":"Fruit"}`))

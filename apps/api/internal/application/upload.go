@@ -14,10 +14,10 @@ import (
 
 type UploadMealsApplication struct {
 	IngredientRepository *ingredient.EventSourcedIngredientRepository
-	MealRepository       *meal.MealRepository
+	MealRepository       *meal.EventSourcedMealRepository
 }
 
-func NewUploadMealsApplication(ingredientRepository *ingredient.EventSourcedIngredientRepository, mealRepository *meal.MealRepository) *UploadMealsApplication {
+func NewUploadMealsApplication(ingredientRepository *ingredient.EventSourcedIngredientRepository, mealRepository *meal.EventSourcedMealRepository) *UploadMealsApplication {
 	return &UploadMealsApplication{
 		IngredientRepository: ingredientRepository,
 		MealRepository:       mealRepository,

@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"errors"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
@@ -107,4 +108,32 @@ func TestAddingMealWithEmptyName(t *testing.T) {
 		assert.Len(t, m, 0)
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
+}
+
+type MealRepoWithError struct{}
+
+func (r MealRepoWithError) Get() ([]*meal.Meal, error) {
+	return nil, errors.New("error")
+}
+func (r MealRepoWithError) Find(id string) (*meal.Meal, error) {
+	return nil, errors.New("error")
+}
+func (r MealRepoWithError) Save(m *meal.Meal) error {
+	return errors.New("error")
+}
+func (r MealRepoWithError) FindByName(name string) (*meal.Meal, error) {
+	return nil, errors.New("error")
+}
+
+func TestAddingMealWithUnknownError(t *testing.T) {
+	repo := MealRepoWithError{}
+
+	e := echo.New()
+	req := httptest.NewRequest("POST", "/meals", strings.NewReader(`{"id": "123","name":"foo"}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	h := &handlers.MealsHandler{Application: application.NewMealApplication(repo)}
+
+	assert.Error(t, h.AddMeal(c), "error")
 }

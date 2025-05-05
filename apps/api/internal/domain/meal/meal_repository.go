@@ -12,18 +12,25 @@ import (
 	"sort"
 )
 
-type MealRepository struct {
+type MealRepository interface {
+	Get() ([]*Meal, error)
+	Find(id string) (*Meal, error)
+	Save(m *Meal) error
+	FindByName(name string) (*Meal, error)
+}
+
+type EventSourcedMealRepository struct {
 	es  core.EventStore
 	all func() (core.Iterator, error)
 }
 
-func NewMealRepository(es core.EventStore, all func() (core.Iterator, error)) *MealRepository {
+func NewMealRepository(es core.EventStore, all func() (core.Iterator, error)) *EventSourcedMealRepository {
 	aggregate.Register(&Meal{})
-	r := &MealRepository{es, all}
+	r := &EventSourcedMealRepository{es, all}
 	return r
 }
 
-func NewSqliteMealRepository(db *sql.DB) (*MealRepository, error) {
+func NewSqliteMealRepository(db *sql.DB) (*EventSourcedMealRepository, error) {
 	es := sqlStore.Open(db)
 
 	return NewMealRepository(es, func() (core.Iterator, error) {
@@ -31,7 +38,7 @@ func NewSqliteMealRepository(db *sql.DB) (*MealRepository, error) {
 	}), nil
 }
 
-func NewFakeMealRepository() *MealRepository {
+func NewFakeMealRepository() *EventSourcedMealRepository {
 	es := memory.Create()
 
 	return NewMealRepository(es, func() (core.Iterator, error) {
@@ -39,7 +46,7 @@ func NewFakeMealRepository() *MealRepository {
 	})
 }
 
-func (r MealRepository) Get() ([]*Meal, error) {
+func (r EventSourcedMealRepository) Get() ([]*Meal, error) {
 	mealMap := map[string]*Meal{}
 
 	p := eventsourcing.NewProjection(
@@ -80,7 +87,7 @@ func (r MealRepository) Get() ([]*Meal, error) {
 	return meals, nil
 }
 
-func (r MealRepository) Find(id string) (*Meal, error) {
+func (r EventSourcedMealRepository) Find(id string) (*Meal, error) {
 	m := &Meal{}
 	err := aggregate.Load(context.Background(), r.es, id, m)
 	if err != nil {
@@ -90,11 +97,11 @@ func (r MealRepository) Find(id string) (*Meal, error) {
 	return m, nil
 }
 
-func (r MealRepository) Save(m *Meal) error {
+func (r EventSourcedMealRepository) Save(m *Meal) error {
 	return aggregate.Save(r.es, m)
 }
 
-func (r MealRepository) FindByName(name string) (*Meal, error) {
+func (r EventSourcedMealRepository) FindByName(name string) (*Meal, error) {
 	meals, err := r.Get()
 
 	if err != nil {

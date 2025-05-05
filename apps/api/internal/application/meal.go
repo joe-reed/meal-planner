@@ -7,10 +7,10 @@ import (
 )
 
 type MealApplication struct {
-	r *meal.MealRepository
+	r meal.MealRepository
 }
 
-func NewMealApplication(r *meal.MealRepository) *MealApplication {
+func NewMealApplication(r meal.MealRepository) *MealApplication {
 	return &MealApplication{r: r}
 }
 

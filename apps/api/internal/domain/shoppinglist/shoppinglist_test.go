@@ -22,7 +22,7 @@ type ShoppingListSuite struct {
 	suite.Suite
 	ingredientRepository *ingredient.EventSourcedIngredientRepository
 	shopRepository       *shop.ShopRepository
-	mealRepository       *meal.MealRepository
+	mealRepository       *meal.EventSourcedMealRepository
 	basketRepository     *basket.BasketRepository
 	db                   *sql.DB
 	es                   *sqlStore.SQL
