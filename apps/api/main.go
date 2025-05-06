@@ -17,7 +17,8 @@ import (
 	"strings"
 )
 
-type EventSubscriber func(func(string))
+type EventSubscriber func(EventPublisher)
+type EventPublisher func(string)
 
 func main() {
 	e := echo.New()
@@ -65,20 +66,20 @@ func main() {
 	e.Logger.Fatal(e.Start(":1323"))
 }
 
-func setupEvents() (func(string), func(func(string))) {
+func setupEvents() (EventPublisher, EventSubscriber) {
 	messageChannel := make(chan string)
 
 	return getPublisher(messageChannel), getSubscribe(messageChannel)
 }
 
-func getPublisher(messageChannel chan string) func(string) {
+func getPublisher(messageChannel chan string) EventPublisher {
 	return func(message string) {
 		messageChannel <- message
 	}
 }
 
-func getSubscribe(messageChannel chan string) func(func(string)) {
-	return func(f func(string)) {
+func getSubscribe(messageChannel chan string) EventSubscriber {
+	return func(f EventPublisher) {
 		go func() {
 			for {
 				f(<-messageChannel)
@@ -87,7 +88,7 @@ func getSubscribe(messageChannel chan string) func(func(string)) {
 	}
 }
 
-func addBasketRoutes(e *echo.Echo, db *sql.DB, subscribe func(func(string))) {
+func addBasketRoutes(e *echo.Echo, db *sql.DB, subscribe EventSubscriber) {
 	r, err := basket.NewSqliteBasketRepository(db)
 
 	if err != nil {
@@ -157,7 +158,7 @@ func addUploadRoutes(e *echo.Echo, db *sql.DB) {
 	e.POST("/meals/upload", handler.UploadMeals)
 }
 
-func addShopRoutes(e *echo.Echo, db *sql.DB, publisher func(string)) {
+func addShopRoutes(e *echo.Echo, db *sql.DB, publisher EventPublisher) {
 	r, err := shop.NewSqliteShopRepository(db)
 
 	if err != nil {
@@ -186,7 +187,9 @@ func addIngredientRoutes(e *echo.Echo, db *sql.DB) {
 }
 
 func addCategoryRoutes(e *echo.Echo) {
-	handler := handlers.CategoriesHandler{}
+	handler := handlers.CategoriesHandler{
+		Application: application.NewCategoryApplication(),
+	}
 
 	e.GET("/categories", handler.GetCategories)
 }
