@@ -6,13 +6,13 @@ import (
 	"github.com/hallgren/eventsourcing/core"
 	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/basket"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shop"
 )
 
 type ShopIngredient struct {
-	ingredient.Ingredient
+	product.Product
 	MealCount  int             `json:"mealCount"`
 	IsInBasket bool            `json:"isInBasket"`
 	Quantities []meal.Quantity `json:"quantities"`
@@ -26,7 +26,7 @@ type ShoppingListProjectionOutput struct {
 func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, ShoppingListProjectionOutput) {
 	shoppingList := map[string]ShopIngredient{}
 	s := map[string]string{}
-	ings := map[string]ingredient.Ingredient{}
+	prods := map[string]product.Product{}
 	ms := map[string]*meal.Meal{}
 	shopId := new(int)
 
@@ -36,10 +36,10 @@ func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, 
 		return es.All(start, 10)
 	}, func(ev eventsourcing.Event) error {
 		switch event := ev.Data().(type) {
-		case *ingredient.Created:
-			ing := ingredient.Ingredient{}
-			ing.Transition(ev)
-			ings[event.Id] = ing
+		case *product.Created:
+			prod := product.Product{}
+			prod.Transition(ev)
+			prods[event.Id] = prod
 		case *meal.Created:
 			m := meal.Meal{}
 			m.Transition(ev)
@@ -69,7 +69,7 @@ func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, 
 					shopIngredient.Quantities = append(shopIngredient.Quantities, i.Quantity)
 					shoppingList[i.IngredientId] = shopIngredient
 				} else {
-					shoppingList[i.IngredientId] = ShopIngredient{Ingredient: ings[i.IngredientId], MealCount: 1, Quantities: []meal.Quantity{i.Quantity}}
+					shoppingList[i.IngredientId] = ShopIngredient{Product: prods[i.IngredientId], MealCount: 1, Quantities: []meal.Quantity{i.Quantity}}
 				}
 			}
 		case *shop.MealRemoved:
@@ -98,7 +98,7 @@ func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, 
 				shopIngredient.Quantities = append(shopIngredient.Quantities, event.Ingredient.Quantity)
 				shoppingList[event.Ingredient.IngredientId] = shopIngredient
 			} else {
-				shoppingList[event.Ingredient.IngredientId] = ShopIngredient{Ingredient: ings[event.Ingredient.IngredientId], MealCount: 1, Quantities: []meal.Quantity{event.Ingredient.Quantity}}
+				shoppingList[event.Ingredient.IngredientId] = ShopIngredient{Product: prods[event.Ingredient.IngredientId], MealCount: 1, Quantities: []meal.Quantity{event.Ingredient.Quantity}}
 			}
 		case *meal.IngredientRemoved:
 			m := ms[ev.AggregateID()]

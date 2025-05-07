@@ -1,4 +1,4 @@
-package ingredient
+package product
 
 import "github.com/joe-reed/meal-planner/apps/api/internal/domain/category"
 

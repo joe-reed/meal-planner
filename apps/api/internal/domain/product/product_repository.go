@@ -1,4 +1,4 @@
-package ingredient
+package product
 
 import (
 	"database/sql"
@@ -13,55 +13,55 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type IngredientRepository interface {
-	Add(i *Ingredient) error
-	Get() ([]*Ingredient, error)
-	GetByName(name IngredientName) (*Ingredient, error)
+type ProductRepository interface {
+	Add(i *Product) error
+	Get() ([]*Product, error)
+	GetByName(name ProductName) (*Product, error)
 }
 
-type EventSourcedIngredientRepository struct {
+type EventSourcedProductRepository struct {
 	es  core.EventStore
 	all func() (core.Iterator, error)
 }
 
-func NewIngredientRepository(es core.EventStore, all func() (core.Iterator, error)) *EventSourcedIngredientRepository {
-	aggregate.Register(&Ingredient{})
-	return &EventSourcedIngredientRepository{es, all}
+func NewProductRepository(es core.EventStore, all func() (core.Iterator, error)) *EventSourcedProductRepository {
+	aggregate.Register(&Product{})
+	return &EventSourcedProductRepository{es, all}
 }
 
-func NewSqliteIngredientRepository(db *sql.DB) (*EventSourcedIngredientRepository, error) {
+func NewSqliteProductRepository(db *sql.DB) (*EventSourcedProductRepository, error) {
 	es := sqlStore.Open(db)
 
-	return NewIngredientRepository(es, func() (core.Iterator, error) {
+	return NewProductRepository(es, func() (core.Iterator, error) {
 		return es.All(0, 10000)
 	}), nil
 }
 
-func NewFakeIngredientRepository() *EventSourcedIngredientRepository {
+func NewFakeProductRepository() *EventSourcedProductRepository {
 	es := memory.Create()
 
-	return NewIngredientRepository(es, func() (core.Iterator, error) {
+	return NewProductRepository(es, func() (core.Iterator, error) {
 		return es.All(0, 10000)()
 	})
 }
 
-func (r EventSourcedIngredientRepository) Add(i *Ingredient) error {
+func (r EventSourcedProductRepository) Add(i *Product) error {
 	return aggregate.Save(r.es, i)
 }
 
-func (r EventSourcedIngredientRepository) Get() ([]*Ingredient, error) {
-	ingredientMap := map[string]*Ingredient{}
+func (r EventSourcedProductRepository) Get() ([]*Product, error) {
+	ingredientMap := map[string]*Product{}
 
 	p := eventsourcing.NewProjection(
 		r.all,
 		func(e eventsourcing.Event) error {
-			if e.AggregateType() != "Ingredient" {
+			if e.AggregateType() != "Product" {
 				return nil
 			}
 
 			ingredient, ok := ingredientMap[e.AggregateID()]
 			if !ok {
-				ingredient = &Ingredient{}
+				ingredient = &Product{}
 				ingredientMap[e.AggregateID()] = ingredient
 			}
 
@@ -77,7 +77,7 @@ func (r EventSourcedIngredientRepository) Get() ([]*Ingredient, error) {
 		return nil, result.Error
 	}
 
-	ingredients := make([]*Ingredient, 0, len(ingredientMap))
+	ingredients := make([]*Product, 0, len(ingredientMap))
 	for _, in := range ingredientMap {
 		ingredients = append(ingredients, in)
 	}
@@ -89,7 +89,7 @@ func (r EventSourcedIngredientRepository) Get() ([]*Ingredient, error) {
 	return ingredients, nil
 }
 
-func (r EventSourcedIngredientRepository) GetByName(name IngredientName) (*Ingredient, error) {
+func (r EventSourcedProductRepository) GetByName(name ProductName) (*Product, error) {
 	ingredients, err := r.Get()
 
 	if err != nil {

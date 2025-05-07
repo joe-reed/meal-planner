@@ -2,16 +2,16 @@ package application
 
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/category"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
 	"log/slog"
 )
 
-type IngredientApplication struct {
-	r ingredient.IngredientRepository
+type ProductApplication struct {
+	r product.ProductRepository
 }
 
-func NewIngredientApplication(r ingredient.IngredientRepository) *IngredientApplication {
-	return &IngredientApplication{r: r}
+func NewProductApplication(r product.ProductRepository) *ProductApplication {
+	return &ProductApplication{r: r}
 }
 
 type ValidationError struct {
@@ -23,7 +23,7 @@ func (e *ValidationError) Error() string {
 	return e.Message
 }
 
-func (a *IngredientApplication) AddIngredient(id string, name ingredient.IngredientName, category category.CategoryName) (*ingredient.Ingredient, error) {
+func (a *ProductApplication) AddProduct(id string, name product.ProductName, category category.CategoryName) (*product.Product, error) {
 	err := validateId(id)
 	if err != nil {
 		return nil, err
@@ -34,12 +34,12 @@ func (a *IngredientApplication) AddIngredient(id string, name ingredient.Ingredi
 		return nil, err
 	}
 
-	i, err := ingredient.NewIngredient(id, name, category)
+	i, err := product.NewProduct(id, name, category)
 	if err != nil {
 		return nil, err
 	}
 
-	slog.Debug("Adding ingredient", "ingredient", i)
+	slog.Debug("Adding product", "product", i)
 
 	if err := a.r.Add(i); err != nil {
 		return i, err
@@ -67,7 +67,7 @@ func validateNotEmpty(field string, value string) error {
 	return nil
 }
 
-func (a *IngredientApplication) GetIngredients() ([]*ingredient.Ingredient, error) {
+func (a *ProductApplication) GetProducts() ([]*product.Product, error) {
 	ings, err := a.r.Get()
 
 	if err != nil {

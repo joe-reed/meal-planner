@@ -3,8 +3,8 @@ package handlers_test
 import (
 	"bytes"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
@@ -16,15 +16,15 @@ import (
 
 func TestUploadingMeals(t *testing.T) {
 	repo := meal.NewFakeMealRepository()
-	ingredientRepo := ingredient.NewFakeIngredientRepository()
+	productRepo := product.NewFakeProductRepository()
 
-	err := ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Abc Name").WithId("abc").Build())
+	err := productRepo.Add(product.NewProductBuilder().WithName("Abc Name").WithId("abc").Build())
 	require.NoError(t, err)
 
-	err = ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Def Name").WithId("def").Build())
+	err = productRepo.Add(product.NewProductBuilder().WithName("Def Name").WithId("def").Build())
 	require.NoError(t, err)
 
-	err = ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Ghi Name").WithId("ghi").Build())
+	err = productRepo.Add(product.NewProductBuilder().WithName("Ghi Name").WithId("ghi").Build())
 	require.NoError(t, err)
 
 	e := echo.New()
@@ -34,7 +34,7 @@ func TestUploadingMeals(t *testing.T) {
 	part, err := w.CreateFormFile("meals", "meals.csv")
 	require.NoError(t, err)
 
-	_, err = part.Write([]byte("name,ingredient,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
+	_, err = part.Write([]byte("name,product,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
 	require.NoError(t, err)
 
 	err = w.Close()
@@ -47,7 +47,7 @@ func TestUploadingMeals(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(ingredientRepo, repo)}
+	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(productRepo, repo)}
 
 	err = h.UploadMeals(c)
 
@@ -75,7 +75,7 @@ func TestUploadingMeals(t *testing.T) {
 	}, m[1].MealIngredients)
 }
 
-func TestIngredientsNotExisting(t *testing.T) {
+func TestProductsNotExisting(t *testing.T) {
 	repo := meal.NewFakeMealRepository()
 
 	e := echo.New()
@@ -85,7 +85,7 @@ func TestIngredientsNotExisting(t *testing.T) {
 	part, err := w.CreateFormFile("meals", "meals.csv")
 	require.NoError(t, err)
 
-	_, err = part.Write([]byte("name,ingredient,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
+	_, err = part.Write([]byte("name,product,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
 	require.NoError(t, err)
 
 	err = w.Close()
@@ -98,7 +98,7 @@ func TestIngredientsNotExisting(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(ingredient.NewFakeIngredientRepository(), repo)}
+	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(product.NewFakeProductRepository(), repo)}
 
 	err = h.UploadMeals(c)
 
@@ -114,15 +114,15 @@ func TestIngredientsNotExisting(t *testing.T) {
 }
 
 func TestMealAlreadyExisting(t *testing.T) {
-	ingredientRepo := ingredient.NewFakeIngredientRepository()
+	productRepo := product.NewFakeProductRepository()
 
-	err := ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Abc Name").WithId("abc").Build())
+	err := productRepo.Add(product.NewProductBuilder().WithName("Abc Name").WithId("abc").Build())
 	require.NoError(t, err)
 
-	err = ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Def Name").WithId("def").Build())
+	err = productRepo.Add(product.NewProductBuilder().WithName("Def Name").WithId("def").Build())
 	require.NoError(t, err)
 
-	err = ingredientRepo.Add(ingredient.NewIngredientBuilder().WithName("Ghi Name").WithId("ghi").Build())
+	err = productRepo.Add(product.NewProductBuilder().WithName("Ghi Name").WithId("ghi").Build())
 	require.NoError(t, err)
 
 	repo := meal.NewFakeMealRepository()
@@ -139,7 +139,7 @@ func TestMealAlreadyExisting(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	_, err = part.Write([]byte("name,ingredient,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
+	_, err = part.Write([]byte("name,product,amount,unit\nfoo,Abc Name,300,Gram\nfoo,Def Name,5,Tbsp\nbar,Def Name,400,Gram\nbar,Ghi Name,6,Tbsp"))
 	require.NoError(t, err)
 
 	err = w.Close()
@@ -152,7 +152,7 @@ func TestMealAlreadyExisting(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(ingredientRepo, repo)}
+	h := &handlers.UploadHandler{Application: application.NewUploadMealsApplication(productRepo, repo)}
 
 	err = h.UploadMeals(c)
 

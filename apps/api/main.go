@@ -7,8 +7,8 @@ import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/database"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/basket"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shop"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shoppinglist"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
@@ -37,7 +37,7 @@ func main() {
 	addMealRoutes(e, db)
 	addUploadRoutes(e, db)
 	addShopRoutes(e, db, publisher)
-	addIngredientRoutes(e, db)
+	addProductRoutes(e, db)
 	addCategoryRoutes(e)
 	addBasketRoutes(e, db, subscribe)
 
@@ -145,14 +145,14 @@ func addUploadRoutes(e *echo.Echo, db *sql.DB) {
 		e.Logger.Fatal(e)
 	}
 
-	ingredientRepo, err := ingredient.NewSqliteIngredientRepository(db)
+	productRepo, err := product.NewSqliteProductRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
 	}
 
 	handler := handlers.UploadHandler{
-		Application: application.NewUploadMealsApplication(ingredientRepo, mealRepo),
+		Application: application.NewUploadMealsApplication(productRepo, mealRepo),
 	}
 
 	e.POST("/meals/upload", handler.UploadMeals)
@@ -173,17 +173,18 @@ func addShopRoutes(e *echo.Echo, db *sql.DB, publisher EventPublisher) {
 	e.POST("/shops", handler.StartShop)
 }
 
-func addIngredientRoutes(e *echo.Echo, db *sql.DB) {
-	r, err := ingredient.NewSqliteIngredientRepository(db)
+func addProductRoutes(e *echo.Echo, db *sql.DB) {
+	r, err := product.NewSqliteProductRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
 	}
 
-	handler := handlers.IngredientsHandler{Application: application.NewIngredientApplication(r)}
+	handler := handlers.ProductHandler{Application: application.NewProductApplication(r)}
 
-	e.GET("/ingredients", handler.GetIngredients)
-	e.POST("/ingredients", handler.AddIngredient)
+	// todo: update routes here and in client
+	e.GET("/ingredients", handler.GetProducts)
+	e.POST("/ingredients", handler.AddProduct)
 }
 
 func addCategoryRoutes(e *echo.Echo) {

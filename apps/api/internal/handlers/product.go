@@ -3,27 +3,27 @@ package handlers
 import (
 	"errors"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
-type IngredientsHandler struct {
-	Application *application.IngredientApplication
+type ProductHandler struct {
+	Application *application.ProductApplication
 }
 
-func (h *IngredientsHandler) GetIngredients(c echo.Context) error {
-	ings, err := h.Application.GetIngredients()
+func (h *ProductHandler) GetProducts(c echo.Context) error {
+	products, err := h.Application.GetProducts()
 
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, ings)
+	return c.JSON(http.StatusOK, products)
 }
 
-func (h *IngredientsHandler) AddIngredient(c echo.Context) error {
-	body := new(ingredient.Ingredient)
+func (h *ProductHandler) AddProduct(c echo.Context) error {
+	body := new(product.Product)
 
 	if err := c.Bind(body); err != nil {
 		return c.JSON(
@@ -35,7 +35,7 @@ func (h *IngredientsHandler) AddIngredient(c echo.Context) error {
 			})
 	}
 
-	i, err := h.Application.AddIngredient(body.Id, body.Name, body.Category)
+	product, err := h.Application.AddProduct(body.Id, body.Name, body.Category)
 
 	if err != nil {
 		var validationError *application.ValidationError
@@ -49,5 +49,5 @@ func (h *IngredientsHandler) AddIngredient(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusAccepted, i)
+	return c.JSON(http.StatusAccepted, product)
 }

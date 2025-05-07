@@ -5,43 +5,43 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"github.com/joe-reed/meal-planner/apps/api/internal/domain/ingredient"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
 	"io"
 	"log/slog"
 	"strconv"
 )
 
 type UploadMealsApplication struct {
-	IngredientRepository *ingredient.EventSourcedIngredientRepository
-	MealRepository       *meal.EventSourcedMealRepository
+	ProductRepository *product.EventSourcedProductRepository
+	MealRepository    *meal.EventSourcedMealRepository
 }
 
-func NewUploadMealsApplication(ingredientRepository *ingredient.EventSourcedIngredientRepository, mealRepository *meal.EventSourcedMealRepository) *UploadMealsApplication {
+func NewUploadMealsApplication(productRepository *product.EventSourcedProductRepository, mealRepository *meal.EventSourcedMealRepository) *UploadMealsApplication {
 	return &UploadMealsApplication{
-		IngredientRepository: ingredientRepository,
-		MealRepository:       mealRepository,
+		ProductRepository: productRepository,
+		MealRepository:    mealRepository,
 	}
 }
 
-type IngredientsNotFound struct {
-	NotFoundIngredients []ingredient.IngredientName
+type ProductsNotFound struct {
+	NotFoundProducts []product.ProductName
 }
 
-func (*IngredientsNotFound) Error() string {
-	return "ingredients not found"
+func (*ProductsNotFound) Error() string {
+	return "products not found"
 }
 
 func (a *UploadMealsApplication) UploadMeals(src io.Reader) error {
-	ms, notFoundIngredients, err := a.parseMeals(src)
+	ms, notFoundProducts, err := a.parseMeals(src)
 
 	if err != nil {
 		return err
 	}
 
-	if len(notFoundIngredients) > 0 {
-		return &IngredientsNotFound{
-			NotFoundIngredients: notFoundIngredients,
+	if len(notFoundProducts) > 0 {
+		return &ProductsNotFound{
+			NotFoundProducts: notFoundProducts,
 		}
 	}
 
@@ -66,7 +66,7 @@ func (a *UploadMealsApplication) UploadMeals(src io.Reader) error {
 	return nil
 }
 
-func (a *UploadMealsApplication) parseMeals(src io.Reader) (meals []*meal.Meal, notFoundIngredients []ingredient.IngredientName, err error) {
+func (a *UploadMealsApplication) parseMeals(src io.Reader) (meals []*meal.Meal, notFoundProducts []product.ProductName, err error) {
 	var buf bytes.Buffer
 	_, err = buf.ReadFrom(src)
 
@@ -85,7 +85,7 @@ func (a *UploadMealsApplication) parseMeals(src io.Reader) (meals []*meal.Meal, 
 
 	for i, record := range records {
 		if i == 0 {
-			if record[0] != "name" || record[1] != "ingredient" || record[2] != "amount" || record[3] != "unit" {
+			if record[0] != "name" || record[1] != "product" || record[2] != "amount" || record[3] != "unit" {
 				return nil, nil, errors.New("invalid csv header")
 			}
 
@@ -106,7 +106,7 @@ func (a *UploadMealsApplication) parseMeals(src io.Reader) (meals []*meal.Meal, 
 			m = meal.NewMealBuilder().WithName(mealName).Build()
 		}
 
-		ingredientName, err := ingredient.NewIngredientName(record[1])
+		productName, err := product.NewProductName(record[1])
 
 		if err != nil {
 			return nil, nil, err
@@ -124,10 +124,10 @@ func (a *UploadMealsApplication) parseMeals(src io.Reader) (meals []*meal.Meal, 
 			return nil, nil, fmt.Errorf("invalid unit: %s", record[3])
 		}
 
-		i, err := a.IngredientRepository.GetByName(ingredientName)
+		i, err := a.ProductRepository.GetByName(productName)
 
 		if err != nil {
-			notFoundIngredients = append(notFoundIngredients, ingredientName)
+			notFoundProducts = append(notFoundProducts, productName)
 			continue
 		}
 
@@ -138,5 +138,5 @@ func (a *UploadMealsApplication) parseMeals(src io.Reader) (meals []*meal.Meal, 
 		meals = append(meals, m)
 	}
 
-	return meals, notFoundIngredients, nil
+	return meals, notFoundProducts, nil
 }
