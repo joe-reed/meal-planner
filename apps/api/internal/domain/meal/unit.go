@@ -18,6 +18,7 @@ const (
 	Bunch
 	Pack
 	Tin
+	Handful
 )
 
 func UnitFromString(s string) (Unit, bool) {
