@@ -3,8 +3,8 @@
 import { useParams } from "next/navigation";
 import { z } from "zod";
 import {
-  useCreateIngredient,
-  useIngredients,
+  useCreateProduct,
+  useProducts,
   useMeal,
   useRemoveIngredientFromMeal,
 } from "../../../queries";
@@ -18,7 +18,7 @@ import {
   Select,
 } from "@headlessui/react";
 import React, { Ref, useRef, useState } from "react";
-import { Ingredient, Meal } from "../../../types";
+import { Product, Meal } from "../../../types";
 import { useAddIngredientToMeal } from "../../../queries/useAddIngredientToMeal";
 import { Modal } from "../../../components/Modal";
 import { useCategories } from "../../../queries/useCategories";
@@ -36,28 +36,27 @@ export default function MealPage() {
   const id = params?.id;
 
   const mealQuery = useMeal(id as string);
-  const ingredientsQuery = useIngredients();
+  const productsQuery = useProducts();
   const { mutate: addIngredientToMeal } = useAddIngredientToMeal(id as string);
   const { mutate: removeIngredientFromMeal } = useRemoveIngredientFromMeal(
     id as string,
   );
 
   const meal = mealQuery.data as Meal;
-  const ingredients = ingredientsQuery.data as Ingredient[];
+  const products = productsQuery.data as Product[];
 
   const [pendingIngredient, setPendingIngredient] =
     useState<PendingIngredient | null>(null);
 
   const [ingredientSearchQuery, setIngredientSearchQuery] = useState("");
 
-  const [isAddIngredientModalOpen, setIsAddIngredientModalOpen] =
-    useState(false);
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
 
   const numberInputRef = useRef<HTMLInputElement>(null);
 
   const ingredientSearchInputRef = useRef<HTMLInputElement>(null);
 
-  function selectIngredient(ingredient: Ingredient) {
+  function selectIngredient(ingredient: Product) {
     setPendingIngredient({
       id: ingredient.id,
       quantity: { amount: "", unit: "Number" },
@@ -86,11 +85,11 @@ export default function MealPage() {
     ingredientSearchInputRef.current?.select();
   }
 
-  if ([mealQuery, ingredientsQuery].some((query) => query.isInitialLoading)) {
+  if ([mealQuery, productsQuery].some((query) => query.isInitialLoading)) {
     return <p>Loading...</p>;
   }
 
-  const queryWithError = [mealQuery, ingredientsQuery].find(
+  const queryWithError = [mealQuery, productsQuery].find(
     (query) => query.isError,
   );
 
@@ -114,7 +113,7 @@ export default function MealPage() {
       <ul className="mb-6">
         {meal.ingredients.map((ingredient) => (
           <li key={ingredient.id} className="flex justify-between md:w-1/2">
-            <span>{ingredients.find((i) => i.id === ingredient.id)?.name}</span>
+            <span>{products.find((i) => i.id === ingredient.id)?.name}</span>
             <span>
               <span>
                 {ingredient.quantity.amount}
@@ -136,9 +135,8 @@ export default function MealPage() {
           <div className="mb-10 flex items-center justify-between space-x-3">
             <div className="whitespace-nowrap">
               {
-                ingredients.find(
-                  (ingredient) => ingredient.id === pendingIngredient.id,
-                )?.name
+                products.find((product) => product.id === pendingIngredient.id)
+                  ?.name
               }
             </div>
             <div className="flex space-x-1">
@@ -201,25 +199,24 @@ export default function MealPage() {
           </div>
         )}
         <div className="flex items-center">
-          <SearchableSelect<Ingredient>
-            options={ingredients.filter(
-              (ingredient) =>
-                !meal.ingredients.some((i) => i.id === ingredient.id),
+          <SearchableSelect<Product>
+            options={products.filter(
+              (product) => !meal.ingredients.some((i) => i.id === product.id),
             )}
             onSelect={selectIngredient}
             onInputChange={(query) => setIngredientSearchQuery(query)}
             inputRef={ingredientSearchInputRef}
           />
           <button
-            onClick={() => setIsAddIngredientModalOpen(true)}
+            onClick={() => setIsAddProductModalOpen(true)}
             className="ml-2 whitespace-nowrap underline"
           >
             Add new ingredient
           </button>
-          <AddNewIngredientModal
+          <AddNewProductModal
             text={ingredientSearchQuery}
-            isOpen={isAddIngredientModalOpen}
-            setIsOpen={setIsAddIngredientModalOpen}
+            isOpen={isAddProductModalOpen}
+            setIsOpen={setIsAddProductModalOpen}
             onAdd={selectIngredient}
           />
         </div>
@@ -302,7 +299,7 @@ function SearchableSelect<T extends Option>({
   );
 }
 
-function AddNewIngredientModal({
+function AddNewProductModal({
   text,
   isOpen,
   setIsOpen,
@@ -311,9 +308,9 @@ function AddNewIngredientModal({
   text: string;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  onAdd: (ingredient: Ingredient) => void;
+  onAdd: (ingredient: Product) => void;
 }) {
-  const { mutateAsync } = useCreateIngredient();
+  const { mutateAsync } = useCreateProduct();
 
   const { data: categories } = useCategories();
 
@@ -322,7 +319,7 @@ function AddNewIngredientModal({
       <Modal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        title="Add new ingredient"
+        title="Add new product"
         body={(close) => (
           <div className="flex justify-between">
             <form
@@ -359,7 +356,7 @@ function AddNewIngredientModal({
                 <span>Category</span>
                 <Select
                   name="category"
-                  aria-label="Ingredient category"
+                  aria-label="Product category"
                   className="rounded-md border bg-white py-1 px-2 leading-none"
                 >
                   <option value="">Select a category</option>

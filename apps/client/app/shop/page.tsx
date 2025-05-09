@@ -1,6 +1,6 @@
 "use client";
 
-import { Ingredient } from "../../types";
+import { Product } from "../../types";
 import React from "react";
 import BackButton from "../../components/BackButton";
 import clsx from "clsx";
@@ -53,7 +53,7 @@ export default function ShopPage() {
 
   const undo = useUndo();
 
-  function onAddToBasket(ingredient: Ingredient) {
+  function onAddToBasket(ingredient: Product) {
     setLastAction({
       action: "add",
       ingredientId: ingredient.id,
@@ -70,7 +70,7 @@ export default function ShopPage() {
     setUndoTimeout(timeout);
   }
 
-  function onRemoveFromBasket(ingredient: Ingredient) {
+  function onRemoveFromBasket(ingredient: Product) {
     setLastAction({
       action: "remove",
       ingredientId: ingredient.id,
@@ -103,7 +103,7 @@ export default function ShopPage() {
 
   const categorisedIngredients = Object.groupBy<
     string,
-    Ingredient & {
+    Product & {
       mealCount: number;
       isInBasket: boolean;
       quantities: { unit: string; amount: number }[];
@@ -179,14 +179,14 @@ function IngredientListItem({
   onAddToBasket,
   onRemoveFromBasket,
 }: {
-  ingredient: Ingredient & {
+  ingredient: Product & {
     mealCount: number;
     isInBasket: boolean;
     quantities: { unit: string; amount: number }[];
   };
   shopId: string;
-  onAddToBasket: (ingredient: Ingredient) => void;
-  onRemoveFromBasket: (ingredient: Ingredient) => void;
+  onAddToBasket: (ingredient: Product) => void;
+  onRemoveFromBasket: (ingredient: Product) => void;
 }) {
   const { mutate: addItemToBasket } = useAddItemToBasket(shopId);
   const { mutate: removeItemFromBasket } = useRemoveItemFromBasket(shopId);

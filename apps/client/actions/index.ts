@@ -44,14 +44,14 @@ export async function fetchCategories() {
   return response.json();
 }
 
-export async function createIngredient(body: string) {
-  const response = await fetch(`${process.env.API_BASE_URL}/ingredients`, {
+export async function createProduct(body: string) {
+  const response = await fetch(`${process.env.API_BASE_URL}/products`, {
     method: "POST",
     headers,
     body,
   });
   if (!response.ok) {
-    return { error: await response.text(), ingredient: null };
+    return { error: await response.text(), product: null };
   }
   return response.json();
 }
@@ -92,10 +92,10 @@ export async function fetchCurrentShop() {
   return response.json();
 }
 
-export async function fetchIngredients() {
-  const response = await fetch(`${process.env.API_BASE_URL}/ingredients`);
+export async function fetchProducts() {
+  const response = await fetch(`${process.env.API_BASE_URL}/products`);
   if (!response.ok) {
-    throw new Error("Error fetching ingredients");
+    throw new Error("Error fetching products");
   }
   return response.json();
 }

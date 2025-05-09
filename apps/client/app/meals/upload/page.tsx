@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCreateIngredient, useUploadMeals } from "../../../queries";
+import { useCreateProduct, useUploadMeals } from "../../../queries";
 import BackButton from "../../../components/BackButton";
 import React, { useState } from "react";
 import { Select } from "@headlessui/react";
@@ -83,7 +83,7 @@ function AddIngredientForm({
   name: string;
   className: string;
 }) {
-  const { mutateAsync } = useCreateIngredient();
+  const { mutateAsync } = useCreateProduct();
   const { data: categories } = useCategories();
 
   const [isSubmitted, setIsSubmitted] = useState(false);

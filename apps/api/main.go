@@ -182,9 +182,8 @@ func addProductRoutes(e *echo.Echo, db *sql.DB) {
 
 	handler := handlers.ProductHandler{Application: application.NewProductApplication(r)}
 
-	// todo: update routes here and in client
-	e.GET("/ingredients", handler.GetProducts)
-	e.POST("/ingredients", handler.AddProduct)
+	e.GET("/products", handler.GetProducts)
+	e.POST("/products", handler.AddProduct)
 }
 
 func addCategoryRoutes(e *echo.Echo) {
