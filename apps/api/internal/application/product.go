@@ -68,11 +68,11 @@ func validateNotEmpty(field string, value string) error {
 }
 
 func (a *ProductApplication) GetProducts() ([]*product.Product, error) {
-	ings, err := a.r.Get()
+	ps, err := a.r.Get()
 
 	if err != nil {
 		return nil, err
 	}
 
-	return ings, nil
+	return ps, nil
 }

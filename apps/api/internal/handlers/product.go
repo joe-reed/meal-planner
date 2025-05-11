@@ -35,7 +35,7 @@ func (h *ProductHandler) AddProduct(c echo.Context) error {
 			})
 	}
 
-	product, err := h.Application.AddProduct(body.Id, body.Name, body.Category)
+	p, err := h.Application.AddProduct(body.Id, body.Name, body.Category)
 
 	if err != nil {
 		var validationError *application.ValidationError
@@ -49,5 +49,5 @@ func (h *ProductHandler) AddProduct(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusAccepted, product)
+	return c.JSON(http.StatusAccepted, p)
 }

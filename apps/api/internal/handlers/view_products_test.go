@@ -13,16 +13,16 @@ import (
 )
 
 func TestViewingProducts(t *testing.T) {
-	i1 := product.NewProductBuilder().WithName("Chicken").WithCategory(category.Meat).WithId("8a378ac5-e0d5-405a-8cb5-f03cc1d92d8b").Build()
-	i2 := product.NewProductBuilder().WithName("Ice Cream").WithCategory(category.Frozen).WithId("ad11289f-b2b0-4195-ba89-63d92ccc64d7").Build()
-	i3 := product.NewProductBuilder().WithName("Carrot").WithCategory(category.Vegetables).WithId("57b5d842-eda3-4368-a496-21956de5e254").Build()
+	p1 := product.NewProductBuilder().WithName("Chicken").WithCategory(category.Meat).WithId("8a378ac5-e0d5-405a-8cb5-f03cc1d92d8b").Build()
+	p2 := product.NewProductBuilder().WithName("Ice Cream").WithCategory(category.Frozen).WithId("ad11289f-b2b0-4195-ba89-63d92ccc64d7").Build()
+	p3 := product.NewProductBuilder().WithName("Carrot").WithCategory(category.Vegetables).WithId("57b5d842-eda3-4368-a496-21956de5e254").Build()
 
 	repo := product.NewFakeProductRepository()
-	err := repo.Add(i1)
+	err := repo.Add(p1)
 	assert.NoError(t, err)
-	err = repo.Add(i2)
+	err = repo.Add(p2)
 	assert.NoError(t, err)
-	err = repo.Add(i3)
+	err = repo.Add(p3)
 	assert.NoError(t, err)
 
 	e := echo.New()

@@ -91,7 +91,7 @@ func TestAddingProductWithEmptyId(t *testing.T) {
 
 type ProductRepoWithError struct{}
 
-func (r ProductRepoWithError) Add(i *product.Product) error {
+func (r ProductRepoWithError) Add(p *product.Product) error {
 	return errors.New("error")
 }
 func (r ProductRepoWithError) Get() ([]*product.Product, error) {

@@ -50,7 +50,7 @@ func (r EventSourcedProductRepository) Add(i *Product) error {
 }
 
 func (r EventSourcedProductRepository) Get() ([]*Product, error) {
-	ingredientMap := map[string]*Product{}
+	productMap := map[string]*Product{}
 
 	p := eventsourcing.NewProjection(
 		r.all,
@@ -59,13 +59,13 @@ func (r EventSourcedProductRepository) Get() ([]*Product, error) {
 				return nil
 			}
 
-			ingredient, ok := ingredientMap[e.AggregateID()]
+			p, ok := productMap[e.AggregateID()]
 			if !ok {
-				ingredient = &Product{}
-				ingredientMap[e.AggregateID()] = ingredient
+				p = &Product{}
+				productMap[e.AggregateID()] = p
 			}
 
-			ingredient.Transition(e)
+			p.Transition(e)
 
 			return nil
 		})
@@ -77,30 +77,30 @@ func (r EventSourcedProductRepository) Get() ([]*Product, error) {
 		return nil, result.Error
 	}
 
-	ingredients := make([]*Product, 0, len(ingredientMap))
-	for _, in := range ingredientMap {
-		ingredients = append(ingredients, in)
+	products := make([]*Product, 0, len(productMap))
+	for _, in := range productMap {
+		products = append(products, in)
 	}
 
-	sort.Slice(ingredients, func(i, j int) bool {
-		return ingredients[i].Name < ingredients[j].Name
+	sort.Slice(products, func(i, j int) bool {
+		return products[i].Name < products[j].Name
 	})
 
-	return ingredients, nil
+	return products, nil
 }
 
 func (r EventSourcedProductRepository) GetByName(name ProductName) (*Product, error) {
-	ingredients, err := r.Get()
+	products, err := r.Get()
 
 	if err != nil {
 		return nil, err
 	}
 
-	for _, i := range ingredients {
+	for _, i := range products {
 		if i.Name == name {
 			return i, nil
 		}
 	}
 
-	return nil, fmt.Errorf("ingredient %s not found", name)
+	return nil, fmt.Errorf("product %s not found", name)
 }
