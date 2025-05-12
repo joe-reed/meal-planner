@@ -38,16 +38,16 @@ func (h *MealsHandler) AddMeal(c echo.Context) error {
 		return err
 	}
 
-	mealIngredients := body.MealIngredients
-	if mealIngredients == nil {
-		mealIngredients = make([]meal.MealIngredient, 0)
+	ingredients := body.Ingredients
+	if ingredients == nil {
+		ingredients = make([]meal.Ingredient, 0)
 	}
 
 	m, err := h.Application.AddMeal(
 		body.Id,
 		body.Name,
 		body.Url,
-		mealIngredients,
+		ingredients,
 	)
 
 	if err != nil {
@@ -77,7 +77,7 @@ func (h *MealsHandler) AddMeal(c echo.Context) error {
 func (h *MealsHandler) AddIngredientToMeal(c echo.Context) error {
 	mealId := c.Param("mealId")
 
-	ingredient := meal.NewMealIngredient("")
+	ingredient := meal.NewIngredient("")
 	if err := c.Bind(&ingredient); err != nil {
 		return err
 	}

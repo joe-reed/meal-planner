@@ -131,7 +131,7 @@ func (a *UploadMealsApplication) parseMeals(src io.Reader) (meals []*meal.Meal, 
 			continue
 		}
 
-		m.AddIngredient(*meal.NewMealIngredient(i.Id).WithQuantity(amount, unit))
+		m.AddIngredient(*meal.NewIngredient(i.Id).WithQuantity(amount, unit))
 	}
 
 	if m != nil {

@@ -59,7 +59,7 @@ func (r EventSourcedMealRepository) Get() ([]*Meal, error) {
 			meal, ok := mealMap[e.AggregateID()]
 			if !ok {
 				meal = &Meal{}
-				meal.MealIngredients = []MealIngredient{}
+				meal.Ingredients = []Ingredient{}
 				mealMap[e.AggregateID()] = meal
 			}
 

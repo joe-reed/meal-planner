@@ -31,7 +31,7 @@ func TestAddingIngredientToMeal(t *testing.T) {
 		m, err := repo.Find("123")
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, []meal.MealIngredient{{IngredientId: "ing-1", Quantity: meal.Quantity{Amount: 3, Unit: meal.Cup}}}, m.MealIngredients)
+		assert.Equal(t, []meal.Ingredient{{IngredientId: "ing-1", Quantity: meal.Quantity{Amount: 3, Unit: meal.Cup}}}, m.Ingredients)
 	}
 }
 
@@ -54,6 +54,6 @@ func TestAddingIngredientToMealWithoutQuantity(t *testing.T) {
 		m, err := repo.Find("123")
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, []meal.MealIngredient{{IngredientId: "ing-1", Quantity: meal.Quantity{Amount: 1, Unit: meal.Number}}}, m.MealIngredients)
+		assert.Equal(t, []meal.Ingredient{{IngredientId: "ing-1", Quantity: meal.Quantity{Amount: 1, Unit: meal.Number}}}, m.Ingredients)
 	}
 }

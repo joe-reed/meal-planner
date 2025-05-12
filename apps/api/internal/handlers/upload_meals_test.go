@@ -61,18 +61,18 @@ func TestUploadingMeals(t *testing.T) {
 	require.Len(t, m, 2)
 
 	require.Equal(t, m[0].Name, "bar")
-	require.Len(t, m[0].MealIngredients, 2)
-	require.Equal(t, []meal.MealIngredient{
-		*meal.NewMealIngredient("def").WithQuantity(400, meal.Gram),
-		*meal.NewMealIngredient("ghi").WithQuantity(6, meal.Tbsp),
-	}, m[0].MealIngredients)
+	require.Len(t, m[0].Ingredients, 2)
+	require.Equal(t, []meal.Ingredient{
+		*meal.NewIngredient("def").WithQuantity(400, meal.Gram),
+		*meal.NewIngredient("ghi").WithQuantity(6, meal.Tbsp),
+	}, m[0].Ingredients)
 
 	require.Equal(t, m[1].Name, "foo")
-	require.Len(t, m[1].MealIngredients, 2)
-	require.Equal(t, []meal.MealIngredient{
-		*meal.NewMealIngredient("abc").WithQuantity(300, meal.Gram),
-		*meal.NewMealIngredient("def").WithQuantity(5, meal.Tbsp),
-	}, m[1].MealIngredients)
+	require.Len(t, m[1].Ingredients, 2)
+	require.Equal(t, []meal.Ingredient{
+		*meal.NewIngredient("abc").WithQuantity(300, meal.Gram),
+		*meal.NewIngredient("def").WithQuantity(5, meal.Tbsp),
+	}, m[1].Ingredients)
 }
 
 func TestProductsNotExisting(t *testing.T) {

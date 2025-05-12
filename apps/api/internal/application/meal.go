@@ -27,7 +27,7 @@ type PartialMeal struct {
 	Url  *string `json:"url"`
 }
 
-func (a *MealApplication) AddMeal(id string, name string, url string, mealIngredients []meal.MealIngredient) (*meal.Meal, error) {
+func (a *MealApplication) AddMeal(id string, name string, url string, ingredients []meal.Ingredient) (*meal.Meal, error) {
 	err := validateId(id)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (a *MealApplication) AddMeal(id string, name string, url string, mealIngred
 		}
 	}
 
-	m, err := meal.NewMeal(id, name, url, mealIngredients)
+	m, err := meal.NewMeal(id, name, url, ingredients)
 	if err != nil {
 		return nil, err
 	}
@@ -94,13 +94,13 @@ func (a *MealApplication) FindMeal(id string) (*meal.Meal, error) {
 	return m, nil
 }
 
-func (a *MealApplication) AddIngredientToMeal(mealId string, mealIngredient meal.MealIngredient) (*meal.Meal, error) {
+func (a *MealApplication) AddIngredientToMeal(mealId string, i meal.Ingredient) (*meal.Meal, error) {
 	m, err := a.r.Find(mealId)
 	if err != nil {
 		return nil, err
 	}
 
-	m.AddIngredient(mealIngredient)
+	m.AddIngredient(i)
 
 	if err := a.r.Save(m); err != nil {
 		return nil, err

@@ -1,14 +1,14 @@
 package meal
 
 type Created struct {
-	Id              string
-	Name            string
-	Url             string
-	MealIngredients []MealIngredient
+	Id          string
+	Name        string
+	Url         string
+	Ingredients []Ingredient
 }
 
 type IngredientAdded struct {
-	Ingredient MealIngredient
+	Ingredient Ingredient
 }
 
 type IngredientRemoved struct {

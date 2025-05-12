@@ -49,7 +49,7 @@ func (suite *ShoppingListSuite) TearDownTest() {
 func (suite *ShoppingListSuite) TestAddingMealToShop() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	m := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	m := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	s, _ := suite.addShop()
 
@@ -70,13 +70,13 @@ func (suite *ShoppingListSuite) TestAddingTwoMealsWithSameIngredient() {
 	productB := suite.addProduct("ing-b", "Ing B", category.Bakery)
 	productC := suite.addProduct("ing-c", "Ing C", category.Dairy)
 
-	meal1 := suite.addMeal([]meal.MealIngredient{
-		*meal.NewMealIngredient(productA.Id).WithQuantity(2, meal.Tbsp),
-		*meal.NewMealIngredient(productB.Id).WithQuantity(100, meal.Ml),
+	meal1 := suite.addMeal([]meal.Ingredient{
+		*meal.NewIngredient(productA.Id).WithQuantity(2, meal.Tbsp),
+		*meal.NewIngredient(productB.Id).WithQuantity(100, meal.Ml),
 	})
-	meal2 := suite.addMeal([]meal.MealIngredient{
-		*meal.NewMealIngredient(productB.Id).WithQuantity(50, meal.Gram),
-		*meal.NewMealIngredient(productC.Id).WithQuantity(1, meal.Litre),
+	meal2 := suite.addMeal([]meal.Ingredient{
+		*meal.NewIngredient(productB.Id).WithQuantity(50, meal.Gram),
+		*meal.NewIngredient(productC.Id).WithQuantity(1, meal.Litre),
 	})
 
 	s, _ := suite.addShop()
@@ -101,8 +101,8 @@ func (suite *ShoppingListSuite) TestRemovingMeal() {
 	productB := suite.addProduct("ing-b", "Ing B", category.Bakery)
 	productC := suite.addProduct("ing-c", "Ing C", category.Dairy)
 
-	meal1 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id), *meal.NewMealIngredient(productB.Id)})
-	meal2 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productB.Id), *meal.NewMealIngredient(productC.Id)})
+	meal1 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id), *meal.NewIngredient(productB.Id)})
+	meal2 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productB.Id), *meal.NewIngredient(productC.Id)})
 
 	s, _ := suite.addShop()
 
@@ -124,7 +124,7 @@ func (suite *ShoppingListSuite) TestRemovingMeal() {
 func (suite *ShoppingListSuite) TestAddingIngredientToMealBeforeAddingToShop() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	m := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	m := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	s, _ := suite.addShop()
 
@@ -148,7 +148,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMealBeforeAddingToShop() {
 func (suite *ShoppingListSuite) TestAddingIngredientToMealInShop() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	m := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	m := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	s, _ := suite.addShop()
 
@@ -174,8 +174,8 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMoreThanOneMealInShop() {
 	productB := suite.addProduct("ing-b", "Ing B", category.Bakery)
 	productC := suite.addProduct("ing-c", "Ing C", category.Dairy)
 
-	meal1 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
-	meal2 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productB.Id)})
+	meal1 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
+	meal2 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productB.Id)})
 
 	s, _ := suite.addShop()
 
@@ -200,7 +200,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMoreThanOneMealInShop() {
 func (suite *ShoppingListSuite) TestAddingIngredientToMealNotInShop() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	meal1 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	meal1 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	suite.addShop()
 
@@ -217,7 +217,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMealNotInShop() {
 func (suite *ShoppingListSuite) TestAddingIngredientToMealRemovedFromShop() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	meal1 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	meal1 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	s, _ := suite.addShop()
 
@@ -240,7 +240,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 	productC := suite.addProduct("ing-c", "Ing C", category.Dairy)
 
 	tests := map[string]struct {
-		initialMeals [][]meal.MealIngredient
+		initialMeals [][]meal.Ingredient
 		removals     []struct {
 			mealIndex  int
 			ingredient *product.Product
@@ -248,14 +248,14 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 		expectedOutput map[string]shoppinglist.ShopIngredient
 	}{
 		"removing ingredients from a meal": {
-			initialMeals: [][]meal.MealIngredient{
+			initialMeals: [][]meal.Ingredient{
 				{
-					*meal.NewMealIngredient(productA.Id).WithQuantity(10, meal.Lb),
-					*meal.NewMealIngredient(productB.Id).WithQuantity(5, meal.Kg),
+					*meal.NewIngredient(productA.Id).WithQuantity(10, meal.Lb),
+					*meal.NewIngredient(productB.Id).WithQuantity(5, meal.Kg),
 				},
 				{
-					*meal.NewMealIngredient(productB.Id).WithQuantity(15, meal.Bunch),
-					*meal.NewMealIngredient(productC.Id).WithQuantity(1, meal.Pack),
+					*meal.NewIngredient(productB.Id).WithQuantity(15, meal.Bunch),
+					*meal.NewIngredient(productC.Id).WithQuantity(1, meal.Pack),
 				},
 			},
 			removals: []struct {
@@ -271,12 +271,12 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 			},
 		},
 		"removing ingredient with same quantity from one of two meals": {
-			initialMeals: [][]meal.MealIngredient{
+			initialMeals: [][]meal.Ingredient{
 				{
-					*meal.NewMealIngredient(productA.Id).WithQuantity(10, meal.Lb),
+					*meal.NewIngredient(productA.Id).WithQuantity(10, meal.Lb),
 				},
 				{
-					*meal.NewMealIngredient(productA.Id).WithQuantity(10, meal.Lb),
+					*meal.NewIngredient(productA.Id).WithQuantity(10, meal.Lb),
 				},
 			},
 			removals: []struct {
@@ -320,7 +320,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 func (suite *ShoppingListSuite) TestRemovingIngredientFromMealBeforeAddingToShop() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	m := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	m := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	s, _ := suite.addShop()
 
@@ -340,8 +340,8 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealBeforeAddingToShop
 func (suite *ShoppingListSuite) TestRemovingIngredientFromMealNotInShop() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	meal1 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
-	meal2 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	meal1 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
+	meal2 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	s, _ := suite.addShop()
 
@@ -363,8 +363,8 @@ func (suite *ShoppingListSuite) TestStartingNewShop() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 	productB := suite.addProduct("ing-b", "Ing B", category.AlcoholicDrinks)
 
-	meal1 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
-	meal2 := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productB.Id)})
+	meal1 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
+	meal2 := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productB.Id)})
 
 	shop1, _ := suite.addShop()
 
@@ -387,7 +387,7 @@ func (suite *ShoppingListSuite) TestStartingNewShop() {
 func (suite *ShoppingListSuite) TestAddingIngredientToBasket() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	m := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	m := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	s, b := suite.addShop()
 
@@ -408,7 +408,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToBasket() {
 func (suite *ShoppingListSuite) TestRemovingIngredientFromBasket() {
 	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
 
-	m := suite.addMeal([]meal.MealIngredient{*meal.NewMealIngredient(productA.Id)})
+	m := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
 
 	s, b := suite.addShop()
 
@@ -449,15 +449,15 @@ func (suite *ShoppingListSuite) runProjection() shoppinglist.ShoppingListProject
 }
 
 func (suite *ShoppingListSuite) addIngredientToMeal(m *meal.Meal, product *product.Product) {
-	m.AddIngredient(*meal.NewMealIngredient(product.Id))
+	m.AddIngredient(*meal.NewIngredient(product.Id))
 
 	err := suite.mealRepository.Save(m)
 	assert.NoError(suite.T(), err)
 }
 
-func (suite *ShoppingListSuite) addMeal(mealIngredients []meal.MealIngredient) *meal.Meal {
+func (suite *ShoppingListSuite) addMeal(ingredients []meal.Ingredient) *meal.Meal {
 	id := strconv.Itoa(gofakeit.Number(100, 999))
-	m := meal.NewMealBuilder().WithName("Meal " + id).WithId(id).AddIngredients(mealIngredients).Build()
+	m := meal.NewMealBuilder().WithName("Meal " + id).WithId(id).AddIngredients(ingredients).Build()
 
 	err := suite.mealRepository.Save(m)
 	assert.NoError(suite.T(), err)

@@ -29,7 +29,7 @@ func TestAddingMeal(t *testing.T) {
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"url\":\"\",\"ingredients\":[]}\n", rec.Body.String())
-		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", MealIngredients: make([]meal.MealIngredient, 0)}, m[0])
+		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", Ingredients: make([]meal.Ingredient, 0)}, m[0])
 	}
 }
 
@@ -49,7 +49,7 @@ func TestAddingMealWithWithUrl(t *testing.T) {
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusCreated, rec.Code)
 		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"url\":\"https://example.com\",\"ingredients\":[]}\n", rec.Body.String())
-		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", Url: "https://example.com", MealIngredients: make([]meal.MealIngredient, 0)}, m[0])
+		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", Url: "https://example.com", Ingredients: make([]meal.Ingredient, 0)}, m[0])
 	}
 }
 

@@ -62,7 +62,7 @@ func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, 
 			}
 		case *shop.MealAdded:
 			s[event.Meal.MealId] = event.Meal.MealId
-			for _, i := range ms[event.Meal.MealId].MealIngredients {
+			for _, i := range ms[event.Meal.MealId].Ingredients {
 				shopIngredient, ok := shoppingList[i.IngredientId]
 				if ok {
 					shopIngredient.MealCount++
@@ -74,7 +74,7 @@ func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, 
 			}
 		case *shop.MealRemoved:
 			delete(s, event.Id)
-			for _, i := range ms[event.Id].MealIngredients {
+			for _, i := range ms[event.Id].Ingredients {
 				shopIngredient, ok := shoppingList[i.IngredientId]
 				if ok {
 					shopIngredient.MealCount--
@@ -103,7 +103,7 @@ func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, 
 		case *meal.IngredientRemoved:
 			m := ms[ev.AggregateID()]
 
-			quantity, err := findQuantity(m.MealIngredients, event.Id)
+			quantity, err := findQuantity(m.Ingredients, event.Id)
 
 			if err != nil {
 				return err
@@ -136,8 +136,8 @@ func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, 
 	return p, ShoppingListProjectionOutput{shopId, &shoppingList}
 }
 
-func findQuantity(mealIngredients []meal.MealIngredient, ingredientId string) (*meal.Quantity, error) {
-	for _, i := range mealIngredients {
+func findQuantity(ingredients []meal.Ingredient, ingredientId string) (*meal.Quantity, error) {
+	for _, i := range ingredients {
 		if i.IngredientId == ingredientId {
 			return &i.Quantity, nil
 		}

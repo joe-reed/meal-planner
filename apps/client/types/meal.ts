@@ -2,10 +2,10 @@ export type Meal = {
   id: string;
   name: string;
   url: string;
-  ingredients: MealIngredient[];
+  ingredients: Ingredient[];
 };
 
-export type MealIngredient = {
+export type Ingredient = {
   id: string;
   quantity: {
     amount: number;

@@ -35,7 +35,7 @@ func TestUpdatingMealName(t *testing.T) {
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, "{\"id\":\"123\",\"name\":\"bar\",\"url\":\"foo.localhost\",\"ingredients\":[]}\n", rec.Body.String())
-		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "bar", Url: "foo.localhost", MealIngredients: make([]meal.MealIngredient, 0)}, m[0])
+		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "bar", Url: "foo.localhost", Ingredients: make([]meal.Ingredient, 0)}, m[0])
 	}
 }
 
@@ -62,7 +62,7 @@ func TestUpdatingMealUrl(t *testing.T) {
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"url\":\"https://test.localhost\",\"ingredients\":[]}\n", rec.Body.String())
-		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", Url: "https://test.localhost", MealIngredients: make([]meal.MealIngredient, 0)}, m[0])
+		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", Url: "https://test.localhost", Ingredients: make([]meal.Ingredient, 0)}, m[0])
 	}
 }
 
@@ -89,7 +89,7 @@ func TestUpdatingMealUrlToBeEmpty(t *testing.T) {
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, "{\"id\":\"123\",\"name\":\"foo\",\"url\":\"\",\"ingredients\":[]}\n", rec.Body.String())
-		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", Url: "", MealIngredients: make([]meal.MealIngredient, 0)}, m[0])
+		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "foo", Url: "", Ingredients: make([]meal.Ingredient, 0)}, m[0])
 	}
 }
 
@@ -116,6 +116,6 @@ func TestUpdatingMealWithUrlAndName(t *testing.T) {
 		assert.Len(t, m, 1)
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, "{\"id\":\"123\",\"name\":\"bar\",\"url\":\"https://bar.localhost\",\"ingredients\":[]}\n", rec.Body.String())
-		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "bar", Url: "https://bar.localhost", MealIngredients: make([]meal.MealIngredient, 0)}, m[0])
+		assert.EqualExportedValues(t, &meal.Meal{Id: "123", Name: "bar", Url: "https://bar.localhost", Ingredients: make([]meal.Ingredient, 0)}, m[0])
 	}
 }

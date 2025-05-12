@@ -13,7 +13,7 @@ import (
 )
 
 func TestViewingMeal(t *testing.T) {
-	m := meal.NewMealBuilder().WithName("Burritos").AddIngredient(*meal.NewMealIngredient("ing-123")).Build()
+	m := meal.NewMealBuilder().WithName("Burritos").AddIngredient(*meal.NewIngredient("ing-123")).Build()
 
 	repo := meal.NewFakeMealRepository()
 	err := repo.Save(m)

@@ -61,9 +61,9 @@ func testAddingMeal(t *testing.T, r *meal.EventSourcedMealRepository) {
 }
 
 func testGettingMeals(t *testing.T, r *meal.EventSourcedMealRepository) {
-	m1 := meal.NewMealBuilder().AddIngredient(meal.MealIngredient{IngredientId: "c"}).WithName("c").Build()
-	m2 := meal.NewMealBuilder().AddIngredient(meal.MealIngredient{IngredientId: "b"}).WithName("b").Build()
-	m3 := meal.NewMealBuilder().AddIngredient(meal.MealIngredient{IngredientId: "a"}).WithName("a").Build()
+	m1 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{IngredientId: "c"}).WithName("c").Build()
+	m2 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{IngredientId: "b"}).WithName("b").Build()
+	m3 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{IngredientId: "a"}).WithName("a").Build()
 
 	err := r.Save(m1)
 	assert.NoError(t, err)
@@ -101,7 +101,7 @@ func testGettingMealsWithoutIngredients(t *testing.T, r *meal.EventSourcedMealRe
 }
 
 func testFindingMeal(t *testing.T, r *meal.EventSourcedMealRepository) {
-	m := meal.NewMealBuilder().AddIngredient(*meal.NewMealIngredient("a")).WithName("a").Build()
+	m := meal.NewMealBuilder().AddIngredient(*meal.NewIngredient("a")).WithName("a").Build()
 	err := r.Save(m)
 	assert.NoError(t, err)
 
@@ -112,22 +112,22 @@ func testFindingMeal(t *testing.T, r *meal.EventSourcedMealRepository) {
 }
 
 func testSavingMeal(t *testing.T, r *meal.EventSourcedMealRepository) {
-	m := meal.NewMealBuilder().AddIngredient(*meal.NewMealIngredient("a")).WithName("a").Build()
+	m := meal.NewMealBuilder().AddIngredient(*meal.NewIngredient("a")).WithName("a").Build()
 	err := r.Save(m)
 	assert.NoError(t, err)
 
-	m.AddIngredient(*meal.NewMealIngredient("b"))
+	m.AddIngredient(*meal.NewIngredient("b"))
 	err = r.Save(m)
 	assert.NoError(t, err)
 
 	found, err := r.Find(m.Id)
 	assert.NoError(t, err)
 	assert.EqualExportedValues(t, m, found)
-	assert.Equal(t, []meal.MealIngredient{*meal.NewMealIngredient("a"), *meal.NewMealIngredient("b")}, found.MealIngredients)
+	assert.Equal(t, []meal.Ingredient{*meal.NewIngredient("a"), *meal.NewIngredient("b")}, found.Ingredients)
 }
 
 func testUpdatingMealUrl(t *testing.T, r *meal.EventSourcedMealRepository) {
-	m := meal.NewMealBuilder().AddIngredient(*meal.NewMealIngredient("a")).WithName("a").Build()
+	m := meal.NewMealBuilder().AddIngredient(*meal.NewIngredient("a")).WithName("a").Build()
 	err := r.Save(m)
 	assert.NoError(t, err)
 

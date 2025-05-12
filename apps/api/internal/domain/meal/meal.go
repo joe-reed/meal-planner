@@ -8,10 +8,10 @@ import (
 
 type Meal struct {
 	aggregate.Root
-	Id              string           `json:"id"`
-	Name            string           `json:"name"`
-	Url             string           `json:"url"`
-	MealIngredients []MealIngredient `json:"ingredients"`
+	Id          string       `json:"id"`
+	Name        string       `json:"name"`
+	Url         string       `json:"url"`
+	Ingredients []Ingredient `json:"ingredients"`
 }
 
 func (m *Meal) Transition(event eventsourcing.Event) {
@@ -20,17 +20,17 @@ func (m *Meal) Transition(event eventsourcing.Event) {
 		m.Id = e.Id
 		m.Name = e.Name
 		m.Url = e.Url
-		m.MealIngredients = e.MealIngredients
+		m.Ingredients = e.Ingredients
 	case *IngredientAdded:
-		m.MealIngredients = append(m.MealIngredients, e.Ingredient)
+		m.Ingredients = append(m.Ingredients, e.Ingredient)
 	case *IngredientRemoved:
-		ingredients := []MealIngredient{}
-		for _, ingredient := range m.MealIngredients {
+		ingredients := []Ingredient{}
+		for _, ingredient := range m.Ingredients {
 			if ingredient.IngredientId != e.Id {
 				ingredients = append(ingredients, ingredient)
 			}
 		}
-		m.MealIngredients = ingredients
+		m.Ingredients = ingredients
 	case *NameUpdated:
 		m.Name = e.Name
 	case *UrlUpdated:
@@ -42,18 +42,18 @@ func (m *Meal) Register(r aggregate.RegisterFunc) {
 	r(&Created{}, &IngredientAdded{}, &IngredientRemoved{}, &NameUpdated{}, &UrlUpdated{})
 }
 
-func NewMeal(id string, name string, url string, mealIngredients []MealIngredient) (*Meal, error) {
+func NewMeal(id string, name string, url string, ingredients []Ingredient) (*Meal, error) {
 	m := &Meal{}
 	err := m.SetID(id)
 	if err != nil {
 		return nil, err
 	}
-	aggregate.TrackChange(m, &Created{Id: id, Name: name, Url: url, MealIngredients: mealIngredients})
+	aggregate.TrackChange(m, &Created{Id: id, Name: name, Url: url, Ingredients: ingredients})
 
 	return m, nil
 }
 
-func (m *Meal) AddIngredient(ingredient MealIngredient) {
+func (m *Meal) AddIngredient(ingredient Ingredient) {
 	aggregate.TrackChange(m, &IngredientAdded{Ingredient: ingredient})
 }
 
@@ -74,30 +74,30 @@ type Quantity struct {
 	Unit   Unit `json:"unit"`
 }
 
-type MealIngredient struct {
+type Ingredient struct {
 	IngredientId string   `json:"id"`
 	Quantity     Quantity `json:"quantity"`
 }
 
-func NewMealIngredient(id string) *MealIngredient {
-	return &MealIngredient{IngredientId: id, Quantity: Quantity{1, Number}}
+func NewIngredient(id string) *Ingredient {
+	return &Ingredient{IngredientId: id, Quantity: Quantity{1, Number}}
 }
 
-func (m *MealIngredient) WithQuantity(amount int, unit Unit) *MealIngredient {
+func (m *Ingredient) WithQuantity(amount int, unit Unit) *Ingredient {
 	m.Quantity = Quantity{amount, unit}
 
 	return m
 }
 
 type MealBuilder struct {
-	id              string
-	name            string
-	url             string
-	mealIngredients []MealIngredient
+	id          string
+	name        string
+	url         string
+	Ingredients []Ingredient
 }
 
 func NewMealBuilder() *MealBuilder {
-	return &MealBuilder{"", "", "", []MealIngredient{}}
+	return &MealBuilder{"", "", "", []Ingredient{}}
 }
 
 func (b *MealBuilder) WithName(name string) *MealBuilder {
@@ -110,12 +110,12 @@ func (b *MealBuilder) WithUrl(url string) *MealBuilder {
 	return b
 }
 
-func (b *MealBuilder) AddIngredient(i MealIngredient) *MealBuilder {
-	b.mealIngredients = append(b.mealIngredients, i)
+func (b *MealBuilder) AddIngredient(i Ingredient) *MealBuilder {
+	b.Ingredients = append(b.Ingredients, i)
 	return b
 }
 
-func (b *MealBuilder) AddIngredients(i []MealIngredient) *MealBuilder {
+func (b *MealBuilder) AddIngredients(i []Ingredient) *MealBuilder {
 	for _, ingredient := range i {
 		b.AddIngredient(ingredient)
 	}
@@ -129,7 +129,7 @@ func (b *MealBuilder) Build() *Meal {
 		id = b.id
 	}
 
-	meal, err := NewMeal(id, b.name, b.url, b.mealIngredients)
+	meal, err := NewMeal(id, b.name, b.url, b.Ingredients)
 	if err != nil {
 		return nil
 	}
