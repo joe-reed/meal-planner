@@ -17,6 +17,7 @@ type ProductRepository interface {
 	Add(i *Product) error
 	Get() ([]*Product, error)
 	GetByName(name ProductName) (*Product, error)
+	FindByName(name ProductName) (*Product, error)
 }
 
 type EventSourcedProductRepository struct {
@@ -90,6 +91,20 @@ func (r EventSourcedProductRepository) Get() ([]*Product, error) {
 }
 
 func (r EventSourcedProductRepository) GetByName(name ProductName) (*Product, error) {
+	p, err := r.FindByName(name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if p == nil {
+		return nil, fmt.Errorf("product %s not found", name)
+	}
+
+	return p, nil
+}
+
+func (r EventSourcedProductRepository) FindByName(name ProductName) (*Product, error) {
 	products, err := r.Get()
 
 	if err != nil {
@@ -102,5 +117,5 @@ func (r EventSourcedProductRepository) GetByName(name ProductName) (*Product, er
 		}
 	}
 
-	return nil, fmt.Errorf("product %s not found", name)
+	return nil, nil
 }

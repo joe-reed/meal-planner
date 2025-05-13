@@ -35,6 +35,27 @@ func TestAddingProduct(t *testing.T) {
 	}
 }
 
+func TestAddingProductWithDuplicateName(t *testing.T) {
+	repo := product.NewFakeProductRepository()
+	err := repo.Add(product.NewProductBuilder().WithName("foo").WithId("123").Build())
+
+	assert.NoError(t, err)
+
+	e := echo.New()
+	req := httptest.NewRequest("POST", "/products", strings.NewReader(`{"id": "456","name":"foo","category":"Fruit"}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	h := &handlers.ProductHandler{Application: application.NewProductApplication(repo)}
+
+	if assert.NoError(t, h.AddProduct(c)) {
+		m, err := repo.Get()
+		assert.NoError(t, err)
+		assert.Len(t, m, 1)
+		assert.Equal(t, http.StatusConflict, rec.Code)
+	}
+}
+
 func TestAddingProductWithEmptyCategory(t *testing.T) {
 	repo := product.NewFakeProductRepository()
 
@@ -98,6 +119,9 @@ func (r ProductRepoWithError) Get() ([]*product.Product, error) {
 	return nil, errors.New("error")
 }
 func (r ProductRepoWithError) GetByName(name product.ProductName) (*product.Product, error) {
+	return nil, errors.New("error")
+}
+func (r ProductRepoWithError) FindByName(name product.ProductName) (*product.Product, error) {
 	return nil, errors.New("error")
 }
 

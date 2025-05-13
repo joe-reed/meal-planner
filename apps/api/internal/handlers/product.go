@@ -46,6 +46,17 @@ func (h *ProductHandler) AddProduct(c echo.Context) error {
 				Error: validationError.Error(),
 			})
 		}
+
+		var productAlreadyExists *application.ProductAlreadyExists
+		if errors.As(err, &productAlreadyExists) {
+			return c.JSON(http.StatusConflict, struct {
+				Error       string `json:"error"`
+				ProductName string `json:"productName"`
+			}{
+				Error:       productAlreadyExists.Error(),
+				ProductName: productAlreadyExists.ProductName,
+			})
+		}
 		return err
 	}
 

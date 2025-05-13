@@ -37,6 +37,7 @@ func runSuite(t *testing.T, factory func() *product.EventSourcedProductRepositor
 		{"getting all products", testGettingProducts},
 		{"getting empty list of products", testGettingZeroProducts},
 		{"getting product by name", testGettingProductByName},
+		{"finding product by name", testFindingProductByName},
 	}
 
 	for _, test := range tests {
@@ -86,12 +87,33 @@ func testGettingZeroProducts(t *testing.T, r *product.EventSourcedProductReposit
 }
 
 func testGettingProductByName(t *testing.T, r *product.EventSourcedProductRepository) {
+	found, err := r.GetByName("test name")
+
+	assert.Error(t, err)
+	assert.Nil(t, found)
+
 	i := product.NewProductBuilder().WithName("test name").WithCategory(category.Frozen).Build()
 
-	err := r.Add(i)
+	err = r.Add(i)
 	assert.NoError(t, err)
 
-	found, err := r.GetByName("test name")
+	found, err = r.GetByName("test name")
+	assert.NoError(t, err)
+	assert.EqualExportedValues(t, found, i)
+}
+
+func testFindingProductByName(t *testing.T, r *product.EventSourcedProductRepository) {
+	found, err := r.FindByName("test name")
+
+	assert.NoError(t, err)
+	assert.Nil(t, found)
+
+	i := product.NewProductBuilder().WithName("test name").WithCategory(category.Frozen).Build()
+
+	err = r.Add(i)
+	assert.NoError(t, err)
+
+	found, err = r.FindByName("test name")
 	assert.NoError(t, err)
 	assert.EqualExportedValues(t, found, i)
 }

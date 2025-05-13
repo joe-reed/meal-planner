@@ -23,6 +23,14 @@ func (e *ValidationError) Error() string {
 	return e.Message
 }
 
+type ProductAlreadyExists struct {
+	ProductName string
+}
+
+func (*ProductAlreadyExists) Error() string {
+	return "product already exists"
+}
+
 func (a *ProductApplication) AddProduct(id string, name product.ProductName, category category.CategoryName) (*product.Product, error) {
 	err := validateId(id)
 	if err != nil {
@@ -32,6 +40,17 @@ func (a *ProductApplication) AddProduct(id string, name product.ProductName, cat
 	err = validateName(name.String())
 	if err != nil {
 		return nil, err
+	}
+
+	existingProduct, err := a.r.FindByName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if existingProduct != nil {
+		return nil, &ProductAlreadyExists{
+			ProductName: name.String(),
+		}
 	}
 
 	i, err := product.NewProduct(id, name, category)
