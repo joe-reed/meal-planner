@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/quantity"
 	"io"
 	"log/slog"
 	"strconv"
@@ -118,7 +119,7 @@ func (a *UploadMealsApplication) parseMeals(src io.Reader) (meals []*meal.Meal, 
 			return nil, nil, err
 		}
 
-		unit, ok := meal.UnitFromString(record[3])
+		unit, ok := quantity.UnitFromString(record[3])
 
 		if !ok {
 			return nil, nil, fmt.Errorf("invalid unit: %s", record[3])

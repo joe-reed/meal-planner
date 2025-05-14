@@ -5,6 +5,7 @@ import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/quantity"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
@@ -63,15 +64,15 @@ func TestUploadingMeals(t *testing.T) {
 	require.Equal(t, m[0].Name, "bar")
 	require.Len(t, m[0].Ingredients, 2)
 	require.Equal(t, []meal.Ingredient{
-		*meal.NewIngredient("def").WithQuantity(400, meal.Gram),
-		*meal.NewIngredient("ghi").WithQuantity(6, meal.Tbsp),
+		*meal.NewIngredient("def").WithQuantity(400, quantity.Gram),
+		*meal.NewIngredient("ghi").WithQuantity(6, quantity.Tbsp),
 	}, m[0].Ingredients)
 
 	require.Equal(t, m[1].Name, "foo")
 	require.Len(t, m[1].Ingredients, 2)
 	require.Equal(t, []meal.Ingredient{
-		*meal.NewIngredient("abc").WithQuantity(300, meal.Gram),
-		*meal.NewIngredient("def").WithQuantity(5, meal.Tbsp),
+		*meal.NewIngredient("abc").WithQuantity(300, quantity.Gram),
+		*meal.NewIngredient("def").WithQuantity(5, quantity.Tbsp),
 	}, m[1].Ingredients)
 }
 

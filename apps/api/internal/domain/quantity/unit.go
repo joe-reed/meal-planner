@@ -1,4 +1,4 @@
-package meal
+package quantity
 
 type Unit int
 

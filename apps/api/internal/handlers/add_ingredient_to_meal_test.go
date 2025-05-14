@@ -3,6 +3,7 @@ package handlers_test
 import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/quantity"
 	"github.com/joe-reed/meal-planner/apps/api/internal/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -31,7 +32,7 @@ func TestAddingIngredientToMeal(t *testing.T) {
 		m, err := repo.Find("123")
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, []meal.Ingredient{{IngredientId: "ing-1", Quantity: meal.Quantity{Amount: 3, Unit: meal.Cup}}}, m.Ingredients)
+		assert.Equal(t, []meal.Ingredient{{IngredientId: "ing-1", Quantity: quantity.Quantity{Amount: 3, Unit: quantity.Cup}}}, m.Ingredients)
 	}
 }
 
@@ -54,6 +55,6 @@ func TestAddingIngredientToMealWithoutQuantity(t *testing.T) {
 		m, err := repo.Find("123")
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, []meal.Ingredient{{IngredientId: "ing-1", Quantity: meal.Quantity{Amount: 1, Unit: meal.Number}}}, m.Ingredients)
+		assert.Equal(t, []meal.Ingredient{{IngredientId: "ing-1", Quantity: quantity.Quantity{Amount: 1, Unit: quantity.Number}}}, m.Ingredients)
 	}
 }

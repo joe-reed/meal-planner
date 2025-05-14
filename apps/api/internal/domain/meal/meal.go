@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hallgren/eventsourcing"
 	"github.com/hallgren/eventsourcing/aggregate"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/quantity"
 )
 
 type Meal struct {
@@ -69,22 +70,17 @@ func (m *Meal) UpdateUrl(url string) {
 	aggregate.TrackChange(m, &UrlUpdated{Url: url})
 }
 
-type Quantity struct {
-	Amount int  `json:"amount"`
-	Unit   Unit `json:"unit"`
-}
-
 type Ingredient struct {
-	IngredientId string   `json:"id"`
-	Quantity     Quantity `json:"quantity"`
+	IngredientId string            `json:"id"`
+	Quantity     quantity.Quantity `json:"quantity"`
 }
 
 func NewIngredient(id string) *Ingredient {
-	return &Ingredient{IngredientId: id, Quantity: Quantity{1, Number}}
+	return &Ingredient{IngredientId: id, Quantity: quantity.Quantity{1, quantity.Number}}
 }
 
-func (m *Ingredient) WithQuantity(amount int, unit Unit) *Ingredient {
-	m.Quantity = Quantity{amount, unit}
+func (m *Ingredient) WithQuantity(amount int, unit quantity.Unit) *Ingredient {
+	m.Quantity = quantity.Quantity{amount, unit}
 
 	return m
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/category"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/meal"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/quantity"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shop"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/shoppinglist"
 	"github.com/stretchr/testify/assert"
@@ -59,7 +60,7 @@ func (suite *ShoppingListSuite) TestAddingMealToShop() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -71,12 +72,12 @@ func (suite *ShoppingListSuite) TestAddingTwoMealsWithSameIngredient() {
 	productC := suite.addProduct("ing-c", "Ing C", category.Dairy)
 
 	meal1 := suite.addMeal([]meal.Ingredient{
-		*meal.NewIngredient(productA.Id).WithQuantity(2, meal.Tbsp),
-		*meal.NewIngredient(productB.Id).WithQuantity(100, meal.Ml),
+		*meal.NewIngredient(productA.Id).WithQuantity(2, quantity.Tbsp),
+		*meal.NewIngredient(productB.Id).WithQuantity(100, quantity.Ml),
 	})
 	meal2 := suite.addMeal([]meal.Ingredient{
-		*meal.NewIngredient(productB.Id).WithQuantity(50, meal.Gram),
-		*meal.NewIngredient(productC.Id).WithQuantity(1, meal.Litre),
+		*meal.NewIngredient(productB.Id).WithQuantity(50, quantity.Gram),
+		*meal.NewIngredient(productC.Id).WithQuantity(1, quantity.Litre),
 	})
 
 	s, _ := suite.addShop()
@@ -88,9 +89,9 @@ func (suite *ShoppingListSuite) TestAddingTwoMealsWithSameIngredient() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 2, Unit: meal.Tbsp}}},
-			productB.Id: {Product: *productB, MealCount: 2, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 100, Unit: meal.Ml}, {Amount: 50, Unit: meal.Gram}}},
-			productC.Id: {Product: *productC, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Litre}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 2, Unit: quantity.Tbsp}}},
+			productB.Id: {Product: *productB, MealCount: 2, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 100, Unit: quantity.Ml}, {Amount: 50, Unit: quantity.Gram}}},
+			productC.Id: {Product: *productC, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Litre}}},
 		},
 		*output.ShoppingList,
 	)
@@ -114,8 +115,8 @@ func (suite *ShoppingListSuite) TestRemovingMeal() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
-			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
+			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -138,8 +139,8 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMealBeforeAddingToShop() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
-			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
+			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -162,8 +163,8 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMealInShop() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
-			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
+			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -189,9 +190,9 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMoreThanOneMealInShop() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
-			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
-			productC.Id: {Product: *productC, MealCount: 2, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}, {Amount: 1, Unit: meal.Number}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
+			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
+			productC.Id: {Product: *productC, MealCount: 2, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}, {Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -250,12 +251,12 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 		"removing ingredients from a meal": {
 			initialMeals: [][]meal.Ingredient{
 				{
-					*meal.NewIngredient(productA.Id).WithQuantity(10, meal.Lb),
-					*meal.NewIngredient(productB.Id).WithQuantity(5, meal.Kg),
+					*meal.NewIngredient(productA.Id).WithQuantity(10, quantity.Lb),
+					*meal.NewIngredient(productB.Id).WithQuantity(5, quantity.Kg),
 				},
 				{
-					*meal.NewIngredient(productB.Id).WithQuantity(15, meal.Bunch),
-					*meal.NewIngredient(productC.Id).WithQuantity(1, meal.Pack),
+					*meal.NewIngredient(productB.Id).WithQuantity(15, quantity.Bunch),
+					*meal.NewIngredient(productC.Id).WithQuantity(1, quantity.Pack),
 				},
 			},
 			removals: []struct {
@@ -266,17 +267,17 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 				{mealIndex: 0, ingredient: productB},
 			},
 			expectedOutput: map[string]shoppinglist.ShopIngredient{
-				productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 15, Unit: meal.Bunch}}},
-				productC.Id: {Product: *productC, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Pack}}},
+				productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 15, Unit: quantity.Bunch}}},
+				productC.Id: {Product: *productC, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Pack}}},
 			},
 		},
 		"removing ingredient with same quantity from one of two meals": {
 			initialMeals: [][]meal.Ingredient{
 				{
-					*meal.NewIngredient(productA.Id).WithQuantity(10, meal.Lb),
+					*meal.NewIngredient(productA.Id).WithQuantity(10, quantity.Lb),
 				},
 				{
-					*meal.NewIngredient(productA.Id).WithQuantity(10, meal.Lb),
+					*meal.NewIngredient(productA.Id).WithQuantity(10, quantity.Lb),
 				},
 			},
 			removals: []struct {
@@ -286,7 +287,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 				{mealIndex: 0, ingredient: productA},
 			},
 			expectedOutput: map[string]shoppinglist.ShopIngredient{
-				productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 10, Unit: meal.Lb}}},
+				productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 10, Unit: quantity.Lb}}},
 			},
 		},
 	}
@@ -353,7 +354,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealNotInShop() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -378,7 +379,7 @@ func (suite *ShoppingListSuite) TestStartingNewShop() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
+			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -399,7 +400,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToBasket() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: true, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: true, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -422,7 +423,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromBasket() {
 
 	assert.EqualExportedValues(suite.T(),
 		map[string]shoppinglist.ShopIngredient{
-			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []meal.Quantity{{Amount: 1, Unit: meal.Number}}},
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
