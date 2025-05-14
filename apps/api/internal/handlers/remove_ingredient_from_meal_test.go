@@ -16,8 +16,8 @@ func TestRemovingIngredientFromMeal(t *testing.T) {
 
 	err := repo.Save(meal.NewMealBuilder().
 		WithId("123").
-		AddIngredient(meal.Ingredient{IngredientId: "ing-1"}).
-		AddIngredient(meal.Ingredient{IngredientId: "ing-2"}).
+		AddIngredient(meal.Ingredient{ProductId: "ing-1"}).
+		AddIngredient(meal.Ingredient{ProductId: "ing-2"}).
 		Build())
 
 	assert.NoError(t, err)
@@ -36,7 +36,7 @@ func TestRemovingIngredientFromMeal(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Len(t, m.Ingredients, 1)
-		assert.Equal(t, []meal.Ingredient{{IngredientId: "ing-2"}}, m.Ingredients)
+		assert.Equal(t, []meal.Ingredient{{ProductId: "ing-2"}}, m.Ingredients)
 	}
 }
 
@@ -45,7 +45,7 @@ func TestRemovingAllIngredientsFromMeal(t *testing.T) {
 
 	err := repo.Save(meal.NewMealBuilder().
 		WithId("123").
-		AddIngredient(meal.Ingredient{IngredientId: "ing-1"}).
+		AddIngredient(meal.Ingredient{ProductId: "ing-1"}).
 		Build())
 
 	assert.NoError(t, err)

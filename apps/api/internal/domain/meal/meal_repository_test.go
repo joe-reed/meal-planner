@@ -61,9 +61,9 @@ func testAddingMeal(t *testing.T, r *meal.EventSourcedMealRepository) {
 }
 
 func testGettingMeals(t *testing.T, r *meal.EventSourcedMealRepository) {
-	m1 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{IngredientId: "c"}).WithName("c").Build()
-	m2 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{IngredientId: "b"}).WithName("b").Build()
-	m3 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{IngredientId: "a"}).WithName("a").Build()
+	m1 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{ProductId: "c"}).WithName("c").Build()
+	m2 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{ProductId: "b"}).WithName("b").Build()
+	m3 := meal.NewMealBuilder().AddIngredient(meal.Ingredient{ProductId: "a"}).WithName("a").Build()
 
 	err := r.Save(m1)
 	assert.NoError(t, err)

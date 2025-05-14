@@ -27,7 +27,7 @@ func (m *Meal) Transition(event eventsourcing.Event) {
 	case *IngredientRemoved:
 		ingredients := []Ingredient{}
 		for _, ingredient := range m.Ingredients {
-			if ingredient.IngredientId != e.Id {
+			if ingredient.ProductId != e.Id {
 				ingredients = append(ingredients, ingredient)
 			}
 		}
@@ -71,12 +71,12 @@ func (m *Meal) UpdateUrl(url string) {
 }
 
 type Ingredient struct {
-	IngredientId string            `json:"id"`
-	Quantity     quantity.Quantity `json:"quantity"`
+	ProductId string            `json:"id"`
+	Quantity  quantity.Quantity `json:"quantity"`
 }
 
 func NewIngredient(id string) *Ingredient {
-	return &Ingredient{IngredientId: id, Quantity: quantity.Quantity{1, quantity.Number}}
+	return &Ingredient{ProductId: id, Quantity: quantity.Quantity{1, quantity.Number}}
 }
 
 func (m *Ingredient) WithQuantity(amount int, unit quantity.Unit) *Ingredient {
