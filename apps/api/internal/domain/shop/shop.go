@@ -3,6 +3,7 @@ package shop
 import (
 	"github.com/hallgren/eventsourcing"
 	"github.com/hallgren/eventsourcing/aggregate"
+	"github.com/joe-reed/meal-planner/apps/api/internal/domain/quantity"
 	"strconv"
 )
 
@@ -10,10 +11,16 @@ type Shop struct {
 	aggregate.Root
 	Id    int         `json:"id"`
 	Meals []*ShopMeal `json:"meals"`
+	Items []*Item     `json:"items"`
 }
 
 type ShopMeal struct {
 	MealId string `json:"id"`
+}
+
+type Item struct {
+	ProductId string            `json:"productId"`
+	Quantity  quantity.Quantity `json:"quantity"`
 }
 
 func (s *Shop) Transition(event eventsourcing.Event) {
@@ -21,6 +28,7 @@ func (s *Shop) Transition(event eventsourcing.Event) {
 	case *Created:
 		s.Id = e.Id
 		s.Meals = []*ShopMeal{}
+		s.Items = []*Item{}
 	case *MealAdded:
 		s.Meals = append(s.Meals, &ShopMeal{MealId: e.Meal.MealId})
 	case *MealRemoved:
@@ -37,11 +45,13 @@ func (s *Shop) Transition(event eventsourcing.Event) {
 			meals = append(meals, &ShopMeal{MealId: meal.MealId})
 		}
 		s.Meals = meals
+	case *ItemAdded:
+		s.Items = append(s.Items, e.Item)
 	}
 }
 
 func (s *Shop) Register(r aggregate.RegisterFunc) {
-	r(&Created{}, &MealAdded{}, &MealRemoved{}, &MealsSet{})
+	r(&Created{}, &MealAdded{}, &MealRemoved{}, &MealsSet{}, &ItemAdded{})
 }
 
 func NewShop(id int) (*Shop, error) {
@@ -70,4 +80,8 @@ func (s *Shop) SetMeals(m []*ShopMeal) *Shop {
 
 func (s *Shop) RemoveMeal(id string) {
 	aggregate.TrackChange(s, &MealRemoved{Id: id})
+}
+
+func (s *Shop) AddItem(item *Item) {
+	aggregate.TrackChange(s, &ItemAdded{Item: item})
 }

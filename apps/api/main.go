@@ -171,6 +171,7 @@ func addShopRoutes(e *echo.Echo, db *sql.DB, publisher EventPublisher) {
 	e.POST("/shops/current/meals", handler.AddMealToCurrentShop)
 	e.DELETE("/shops/current/meals/:mealId", handler.RemoveMealFromCurrentShop)
 	e.POST("/shops", handler.StartShop)
+	e.POST("/shops/current/items", handler.AddItemToCurrentShop)
 }
 
 func addProductRoutes(e *echo.Echo, db *sql.DB) {

@@ -55,3 +55,18 @@ func (h *ShopsHandler) RemoveMealFromCurrentShop(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, s)
 }
+
+func (h *ShopsHandler) AddItemToCurrentShop(c echo.Context) error {
+	item := new(shop.Item)
+	if err := c.Bind(item); err != nil {
+		return err
+	}
+
+	s, err := h.Application.AddItemToCurrentShop(item)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, s)
+}

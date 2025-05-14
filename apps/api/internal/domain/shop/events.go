@@ -15,3 +15,7 @@ type MealRemoved struct {
 type MealsSet struct {
 	Meals []*ShopMeal
 }
+
+type ItemAdded struct {
+	Item *Item
+}

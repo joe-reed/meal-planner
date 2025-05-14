@@ -36,7 +36,7 @@ func TestGettingCurrentShop(t *testing.T) {
 
 	if assert.NoError(t, h.CurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, `{"id":2,"meals":[{"id":"123"},{"id":"456"}]}`+"\n", rec.Body.String())
+		assert.Equal(t, `{"id":2,"meals":[{"id":"123"},{"id":"456"}],"items":[]}`+"\n", rec.Body.String())
 	}
 }
 
@@ -57,6 +57,6 @@ func TestGettingCurrentShopWithNoMeals(t *testing.T) {
 
 	if assert.NoError(t, h.CurrentShop(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.Equal(t, `{"id":1,"meals":[]}`+"\n", rec.Body.String())
+		assert.Equal(t, `{"id":1,"meals":[],"items":[]}`+"\n", rec.Body.String())
 	}
 }
