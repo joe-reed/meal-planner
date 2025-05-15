@@ -10,3 +10,4 @@ export * from "./useStartShop";
 export * from "./useCreateProduct";
 export * from "./useUploadMeals";
 export * from "./useUpdateMeal";
+export * from "./useAddItemToCurrentShop";
