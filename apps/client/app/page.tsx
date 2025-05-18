@@ -7,11 +7,15 @@ import {
   useMeals,
   useRemoveMealFromCurrentShop,
   useStartShop,
+  useAddItemToCurrentShop,
+  useProducts,
 } from "../queries";
-import { Meal, Shop } from "../types";
+import { Meal, Product, Shop } from "../types";
 import React, { PropsWithChildren } from "react";
 import { Modal } from "../components/Modal";
 import clsx from "clsx";
+import { ItemSelect } from "../components/ItemSelect";
+import { Unit } from "../components/Unit";
 
 export default function HomePage() {
   const mealsQuery = useMeals();
@@ -54,8 +58,8 @@ export default function HomePage() {
           </Link>
         </span>
       </div>
-      <section className="mb-8 flex flex-wrap justify-between">
-        <div className="mx-auto w-full xl:w-2/3">
+      <section className="mb-8">
+        <div className="w-full">
           <CurrentShop meals={meals} currentShop={currentShop} />
         </div>
       </section>
@@ -110,6 +114,16 @@ function CurrentShop({
   meals: Meal[];
   currentShop: Shop | null;
 }) {
+  const { data: products, isError, isInitialLoading } = useProducts();
+
+  if (isInitialLoading) {
+    return <p>Loading products...</p>;
+  }
+
+  if (isError) {
+    return <p>Error loading products</p>;
+  }
+
   return (
     <>
       {currentShop ? (
@@ -121,16 +135,42 @@ function CurrentShop({
             </h3>
             <NewShopButton className="button" />
           </div>
-          <ul className="flex flex-col space-y-1">
-            {currentShop.meals.map((meal) => (
-              <li key={meal.id} className="flex w-full justify-between">
-                <MealLink meal={meals.find((m) => m.id == meal.id) as Meal} />
-                <RemoveMealFromShopButton mealId={meal.id}>
-                  <span className="text-xs">❌</span>
-                </RemoveMealFromShopButton>
-              </li>
-            ))}
-          </ul>
+          <div className="flex w-full space-x-8">
+            <ul className="flex w-1/2 flex-col space-y-1">
+              {currentShop.meals.map((meal) => (
+                <li key={meal.id} className="flex w-full justify-between">
+                  <MealLink meal={meals.find((m) => m.id == meal.id) as Meal} />
+                  <RemoveMealFromShopButton mealId={meal.id}>
+                    <span className="text-xs">❌</span>
+                  </RemoveMealFromShopButton>
+                </li>
+              ))}
+            </ul>
+
+            <div className="w-full">
+              <ul className="mb-3 flex flex-col">
+                {currentShop.items.map((item) => (
+                  <li
+                    key={item.productId}
+                    className="flex w-full justify-between"
+                  >
+                    <span>
+                      {products.find((i) => i.id === item.productId)?.name}
+                    </span>
+                    <span>
+                      {item.quantity.amount}
+                      <Unit quantity={item.quantity} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <AddItemToShop
+                products={products}
+                productIdsToExclude={currentShop.items.map((i) => i.productId)}
+              />
+            </div>
+          </div>
         </>
       ) : (
         <div>
@@ -225,5 +265,23 @@ function MealLink({ meal }: { meal: Meal }) {
     <Link href={`/meals/${meal.id}`} className="hover:underline">
       {meal.name}
     </Link>
+  );
+}
+
+function AddItemToShop({
+  products,
+  productIdsToExclude,
+}: {
+  products: Product[];
+  productIdsToExclude: string[];
+}) {
+  const { mutate: addItemToShop } = useAddItemToCurrentShop();
+
+  return (
+    <ItemSelect
+      onItemAdd={addItemToShop}
+      products={products}
+      productIdsToExclude={productIdsToExclude}
+    />
   );
 }

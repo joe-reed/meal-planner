@@ -16,6 +16,7 @@ export function ItemSelect({
   onItemAdd,
   products,
   productIdsToExclude,
+  className,
 }: {
   onItemAdd: (body: {
     productId: string;
@@ -23,6 +24,7 @@ export function ItemSelect({
   }) => void;
   products: Product[];
   productIdsToExclude: string[];
+  className?: string;
 }) {
   const [pendingItem, setPendingItem] = useState<PendingItem | null>(null);
 
@@ -64,7 +66,7 @@ export function ItemSelect({
   const ingredientSearchInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="w-full md:w-2/3">
+    <div className={className}>
       {pendingItem && (
         <div className="mb-10 flex items-center justify-between space-x-3">
           <div className="whitespace-nowrap">

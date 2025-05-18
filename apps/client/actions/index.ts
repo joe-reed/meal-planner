@@ -28,6 +28,14 @@ export async function addMealToCurrentShop(body: string) {
   return response.json();
 }
 
+export async function addItemToCurrentShop(body: string) {
+  const response = await fetch(
+    `${process.env.API_BASE_URL}/shops/current/items`,
+    { method: "POST", headers, body },
+  );
+  return response.json();
+}
+
 export async function fetchBasket(shopId: string | undefined) {
   const response = await fetch(`${process.env.API_BASE_URL}/baskets/${shopId}`);
   if (!response.ok) {

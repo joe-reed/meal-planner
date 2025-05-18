@@ -79,6 +79,7 @@ export default function MealPage() {
         }}
         products={products}
         productIdsToExclude={meal.ingredients.map(({ id }) => id)}
+        className="w-full md:w-2/3"
       />
     </div>
   );
