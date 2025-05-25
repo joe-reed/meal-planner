@@ -33,7 +33,7 @@ export default function HomePage() {
     return <p>Error: {queryWithError.error.message}</p>;
   }
 
-  const meals = mealsQuery.data as Meal[];
+  const meals = mealsQuery.data;
   const currentShop = currentShopQuery.data as Shop | null;
 
   return (
