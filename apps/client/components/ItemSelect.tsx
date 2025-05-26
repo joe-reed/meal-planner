@@ -68,7 +68,7 @@ export function ItemSelect({
   return (
     <div className={className}>
       {pendingItem && (
-        <div className="mb-10 flex items-center justify-between space-x-3">
+        <div className="mb-4 flex items-center justify-between space-x-3">
           <div className="whitespace-nowrap">
             {
               products.find((product) => product.id === pendingItem.productId)
@@ -134,7 +134,7 @@ export function ItemSelect({
           </div>
         </div>
       )}
-      <div className="flex items-center">
+      <div className="flex flex-col items-center md:flex-row">
         <SearchableSelect<Product>
           options={products.filter(
             (product) => !productIdsToExclude.some((i) => i === product.id),
@@ -142,13 +142,15 @@ export function ItemSelect({
           onSelect={selectProduct}
           onInputChange={(query) => setProductSearchQuery(query)}
           inputRef={ingredientSearchInputRef}
+          additionalContent={
+            <button
+              onClick={() => setIsAddProductModalOpen(true)}
+              className="mt-1 mr-1"
+            >
+              ➕
+            </button>
+          }
         />
-        <button
-          onClick={() => setIsAddProductModalOpen(true)}
-          className="ml-2 whitespace-nowrap underline"
-        >
-          Add new ingredient
-        </button>
         <AddNewProductModal
           text={productSearchQuery}
           isOpen={isAddProductModalOpen}

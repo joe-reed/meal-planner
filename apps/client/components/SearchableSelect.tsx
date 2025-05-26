@@ -14,11 +14,13 @@ export function SearchableSelect<T extends Option>({
   onSelect,
   onInputChange,
   inputRef,
+  additionalContent,
 }: {
   options: T[];
   onSelect: (option: T) => void;
   onInputChange?: (query: string) => void;
   inputRef?: Ref<HTMLInputElement>;
+  additionalContent?: React.ReactNode;
 }) {
   const [query, setQuery] = useState("");
 
@@ -51,6 +53,7 @@ export function SearchableSelect<T extends Option>({
             autoFocus
           />
           <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
+            {additionalContent}
             <span className="h-5 w-5 text-gray-400" aria-hidden="true">
               ↕️
             </span>
