@@ -128,26 +128,31 @@ function CurrentShop({
     <>
       {currentShop ? (
         <>
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="font-bold">Shop #{currentShop.id}</h2>
-            <h3 className="text-xs font-bold">
-              {currentShop.meals.length} meals
-            </h3>
+          <div className="mb-2 flex w-full items-center justify-between sm:mx-auto sm:w-2/3 md:w-full">
+            <h2 className="text-lg font-bold">Shop #{currentShop.id}</h2>
             <NewShopButton className="button" />
           </div>
-          <div className="flex w-full space-x-8">
-            <ul className="flex w-1/2 flex-col space-y-1">
-              {currentShop.meals.map((meal) => (
-                <li key={meal.id} className="flex w-full justify-between">
-                  <MealLink meal={meals.find((m) => m.id == meal.id) as Meal} />
-                  <RemoveMealFromShopButton mealId={meal.id}>
-                    <span className="text-xs">❌</span>
-                  </RemoveMealFromShopButton>
-                </li>
-              ))}
-            </ul>
+          <div className="mb-8 flex w-full flex-col md:flex-row md:space-x-8">
+            <div className="mx-auto mb-8 w-full sm:w-2/3 md:mb-0 md:w-1/2">
+              <h3 className="font-bold">{currentShop.meals.length} meals</h3>
+              <ul className="flex flex-col space-y-1">
+                {currentShop.meals.map((meal) => (
+                  <li key={meal.id} className="flex w-full justify-between">
+                    <MealLink
+                      meal={meals.find((m) => m.id == meal.id) as Meal}
+                    />
+                    <RemoveMealFromShopButton mealId={meal.id}>
+                      <span className="text-xs">❌</span>
+                    </RemoveMealFromShopButton>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            <div className="w-full">
+            <div className="w-full sm:mx-auto sm:w-2/3">
+              <h3 className="font-bold">
+                {currentShop.items.length} extra items
+              </h3>
               <ul className="mb-3 flex flex-col">
                 {currentShop.items.map((item) => (
                   <li
