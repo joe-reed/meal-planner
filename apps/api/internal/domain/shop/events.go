@@ -19,3 +19,7 @@ type MealsSet struct {
 type ItemAdded struct {
 	Item *Item
 }
+
+type ItemRemoved struct {
+	ProductId string
+}

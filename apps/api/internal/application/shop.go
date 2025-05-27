@@ -110,3 +110,24 @@ func (a *ShopApplication) AddItemToCurrentShop(item *shop.Item) (*shop.Shop, err
 
 	return s, nil
 }
+
+func (a *ShopApplication) RemoveItemFromCurrentShop(productId string) (*shop.Shop, error) {
+	s, err := a.r.Current()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if s == nil {
+		return nil, fmt.Errorf("no current shop")
+	}
+
+	slog.Debug("Removing item from shop", "shopId", s.Id, "productId", productId)
+	s.RemoveItem(productId)
+
+	if err := a.r.Save(s); err != nil {
+		return nil, err
+	}
+
+	return s, nil
+}

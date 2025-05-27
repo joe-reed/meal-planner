@@ -47,11 +47,19 @@ func (s *Shop) Transition(event eventsourcing.Event) {
 		s.Meals = meals
 	case *ItemAdded:
 		s.Items = append(s.Items, e.Item)
+	case *ItemRemoved:
+		items := []*Item{}
+		for _, item := range s.Items {
+			if item.ProductId != e.ProductId {
+				items = append(items, item)
+			}
+		}
+		s.Items = items
 	}
 }
 
 func (s *Shop) Register(r aggregate.RegisterFunc) {
-	r(&Created{}, &MealAdded{}, &MealRemoved{}, &MealsSet{}, &ItemAdded{})
+	r(&Created{}, &MealAdded{}, &MealRemoved{}, &MealsSet{}, &ItemAdded{}, &ItemRemoved{})
 }
 
 func NewShop(id int) (*Shop, error) {
@@ -84,4 +92,8 @@ func (s *Shop) RemoveMeal(id string) {
 
 func (s *Shop) AddItem(item *Item) {
 	aggregate.TrackChange(s, &ItemAdded{Item: item})
+}
+
+func (s *Shop) RemoveItem(productId string) {
+	aggregate.TrackChange(s, &ItemRemoved{ProductId: productId})
 }

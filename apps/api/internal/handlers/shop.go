@@ -70,3 +70,13 @@ func (h *ShopsHandler) AddItemToCurrentShop(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, s)
 }
+
+func (h *ShopsHandler) RemoveItemFromCurrentShop(c echo.Context) error {
+	s, err := h.Application.RemoveItemFromCurrentShop(c.Param("productId"))
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, s)
+}
