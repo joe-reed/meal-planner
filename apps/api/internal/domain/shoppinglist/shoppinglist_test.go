@@ -59,7 +59,7 @@ func (suite *ShoppingListSuite) TestAddingMealToShop() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
@@ -88,7 +88,7 @@ func (suite *ShoppingListSuite) TestAddingTwoMealsWithSameIngredient() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 2, Unit: quantity.Tbsp}}},
 			productB.Id: {Product: *productB, MealCount: 2, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 100, Unit: quantity.Ml}, {Amount: 50, Unit: quantity.Gram}}},
 			productC.Id: {Product: *productC, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Litre}}},
@@ -114,7 +114,7 @@ func (suite *ShoppingListSuite) TestRemovingMeal() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
@@ -138,7 +138,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMealBeforeAddingToShop() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
@@ -162,7 +162,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMealInShop() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
@@ -189,7 +189,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMoreThanOneMealInShop() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 			productC.Id: {Product: *productC, MealCount: 2, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}, {Amount: 1, Unit: quantity.Number}}},
@@ -210,7 +210,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMealNotInShop() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{},
+		map[string]shoppinglist.ShoppingListItem{},
 		*output.ShoppingList,
 	)
 }
@@ -230,7 +230,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToMealRemovedFromShop() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{},
+		map[string]shoppinglist.ShoppingListItem{},
 		*output.ShoppingList,
 	)
 }
@@ -246,7 +246,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 			mealIndex  int
 			ingredient *product.Product
 		}
-		expectedOutput map[string]shoppinglist.ShopItem
+		expectedOutput map[string]shoppinglist.ShoppingListItem
 	}{
 		"removing ingredients from a meal": {
 			initialMeals: [][]meal.Ingredient{
@@ -266,7 +266,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 				{mealIndex: 0, ingredient: productA},
 				{mealIndex: 0, ingredient: productB},
 			},
-			expectedOutput: map[string]shoppinglist.ShopItem{
+			expectedOutput: map[string]shoppinglist.ShoppingListItem{
 				productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 15, Unit: quantity.Bunch}}},
 				productC.Id: {Product: *productC, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Pack}}},
 			},
@@ -286,7 +286,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealInShop() {
 			}{
 				{mealIndex: 0, ingredient: productA},
 			},
-			expectedOutput: map[string]shoppinglist.ShopItem{
+			expectedOutput: map[string]shoppinglist.ShoppingListItem{
 				productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 10, Unit: quantity.Lb}}},
 			},
 		},
@@ -333,7 +333,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealBeforeAddingToShop
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{},
+		map[string]shoppinglist.ShoppingListItem{},
 		*output.ShoppingList,
 	)
 }
@@ -353,7 +353,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromMealNotInShop() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
@@ -378,7 +378,7 @@ func (suite *ShoppingListSuite) TestStartingNewShop() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productB.Id: {Product: *productB, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
@@ -399,7 +399,7 @@ func (suite *ShoppingListSuite) TestAddingIngredientToBasket() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: true, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
@@ -422,7 +422,7 @@ func (suite *ShoppingListSuite) TestRemovingIngredientFromBasket() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
@@ -460,7 +460,7 @@ func (suite *ShoppingListSuite) TestAddingItemToShop() {
 
 	// todo: should items in shop increase meal count?
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: true, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
@@ -488,8 +488,36 @@ func (suite *ShoppingListSuite) TestAddingItemToShopDirectlyAndViaMeal() {
 	output := suite.runProjection()
 
 	assert.EqualExportedValues(suite.T(),
-		map[string]shoppinglist.ShopItem{
+		map[string]shoppinglist.ShoppingListItem{
 			productA.Id: {Product: *productA, MealCount: 2, IsInBasket: true, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}, {Amount: 1, Unit: quantity.Number}}},
+		},
+		*output.ShoppingList,
+	)
+}
+
+func (suite *ShoppingListSuite) TestRemovingItemFromShop() {
+	productA := suite.addProduct("ing-a", "Ing A", category.AlcoholicDrinks)
+
+	m := suite.addMeal([]meal.Ingredient{*meal.NewIngredient(productA.Id)})
+
+	s, _ := suite.addShop()
+
+	suite.addItemToShop(s, &shop.Item{
+		ProductId: productA.Id,
+		Quantity: quantity.Quantity{
+			Amount: 1,
+			Unit:   quantity.Number,
+		},
+	})
+
+	suite.addMealToShop(s, m)
+	suite.removeItemFromShop(s, productA.Id)
+
+	output := suite.runProjection()
+
+	assert.EqualExportedValues(suite.T(),
+		map[string]shoppinglist.ShoppingListItem{
+			productA.Id: {Product: *productA, MealCount: 1, IsInBasket: false, Quantities: []quantity.Quantity{{Amount: 1, Unit: quantity.Number}}},
 		},
 		*output.ShoppingList,
 	)
@@ -550,6 +578,12 @@ func (suite *ShoppingListSuite) removeMealFromShop(shop *shop.Shop, meal *meal.M
 
 func (suite *ShoppingListSuite) addItemToShop(s *shop.Shop, i *shop.Item) {
 	s.AddItem(i)
+	err := suite.shopRepository.Save(s)
+	assert.NoError(suite.T(), err)
+}
+
+func (suite *ShoppingListSuite) removeItemFromShop(s *shop.Shop, productId string) {
+	s.RemoveItem(productId)
 	err := suite.shopRepository.Save(s)
 	assert.NoError(suite.T(), err)
 }
