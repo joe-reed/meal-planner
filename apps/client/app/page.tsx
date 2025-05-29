@@ -16,6 +16,7 @@ import { Modal } from "../components/Modal";
 import clsx from "clsx";
 import { ItemSelect } from "../components/ItemSelect";
 import { Unit } from "../components/Unit";
+import { useRemoveItemFromCurrentShop } from "../queries/useRemoveItemFromCurrentShop";
 
 export default function HomePage() {
   const mealsQuery = useMeals();
@@ -162,9 +163,14 @@ function CurrentShop({
                     <span>
                       {products.find((i) => i.id === item.productId)?.name}
                     </span>
-                    <span>
-                      {item.quantity.amount}
-                      <Unit quantity={item.quantity} />
+                    <span className="flex">
+                      <span className="mr-1">
+                        {item.quantity.amount}
+                        <Unit quantity={item.quantity} />
+                      </span>
+                      <RemoveItemFromShopButton productId={item.productId}>
+                        <span className="text-xs">❌</span>
+                      </RemoveItemFromShopButton>
                     </span>
                   </li>
                 ))}
@@ -288,5 +294,24 @@ function AddItemToShop({
       products={products}
       productIdsToExclude={productIdsToExclude}
     />
+  );
+}
+
+function RemoveItemFromShopButton({
+  productId,
+  children,
+}: PropsWithChildren<{ productId: string }>) {
+  const { mutate } = useRemoveItemFromCurrentShop(productId);
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        mutate();
+      }}
+    >
+      <button type="submit">{children}</button>
+    </form>
   );
 }

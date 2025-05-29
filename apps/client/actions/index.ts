@@ -36,6 +36,14 @@ export async function addItemToCurrentShop(body: string) {
   return response.json();
 }
 
+export async function removeItemFromCurrentShop(productId: string) {
+  const response = await fetch(
+    `${process.env.API_BASE_URL}/shops/current/items/${productId}`,
+    { method: "DELETE", headers },
+  );
+  return response.json();
+}
+
 export async function fetchBasket(shopId: string | undefined) {
   const response = await fetch(`${process.env.API_BASE_URL}/baskets/${shopId}`);
   if (!response.ok) {
