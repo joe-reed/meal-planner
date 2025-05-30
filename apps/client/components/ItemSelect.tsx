@@ -137,10 +137,14 @@ export function ItemSelect({
       <div className="flex flex-col items-center md:flex-row">
         <SearchableSelect<Product>
           options={products.filter(
-            (product) => !productIdsToExclude.some((i) => i === product.id),
+            (product) =>
+              ![...productIdsToExclude, pendingItem?.productId].some(
+                (i) => i === product.id,
+              ),
           )}
           onSelect={selectProduct}
-          onInputChange={(query) => setProductSearchQuery(query)}
+          query={productSearchQuery}
+          onQueryChange={(query) => setProductSearchQuery(query)}
           inputRef={ingredientSearchInputRef}
           additionalContent={
             <button

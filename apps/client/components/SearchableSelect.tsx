@@ -12,18 +12,18 @@ export type Option = { id: string; name: string };
 export function SearchableSelect<T extends Option>({
   options,
   onSelect,
-  onInputChange,
+  query,
+  onQueryChange,
   inputRef,
   additionalContent,
 }: {
   options: T[];
   onSelect: (option: T) => void;
-  onInputChange?: (query: string) => void;
+  query: string;
+  onQueryChange: (query: string) => void;
   inputRef?: Ref<HTMLInputElement>;
   additionalContent?: React.ReactNode;
 }) {
-  const [query, setQuery] = useState("");
-
   const filteredOptions =
     query === ""
       ? options
@@ -36,7 +36,6 @@ export function SearchableSelect<T extends Option>({
       onChange={(option: T) => {
         if (!option) return;
         onSelect(option);
-        setQuery("");
       }}
       immediate
     >
@@ -45,8 +44,7 @@ export function SearchableSelect<T extends Option>({
           <ComboboxInput
             className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
             onChange={(event) => {
-              setQuery(event.target.value);
-              onInputChange && onInputChange(event.target.value);
+              onQueryChange(event.target.value);
             }}
             value={query}
             ref={inputRef}
