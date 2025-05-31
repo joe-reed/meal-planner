@@ -150,7 +150,7 @@ function CurrentShop({
               </ul>
             </div>
 
-            <div className="w-full sm:mx-auto sm:w-2/3">
+            <div className="w-full sm:mx-auto sm:w-2/3 md:w-1/2">
               <h3 className="font-bold">
                 {currentShop.items.length} extra items
               </h3>
