@@ -31,7 +31,7 @@ func (h *ProductHandler) AddProduct(c echo.Context) error {
 			struct {
 				Error string `json:"error"`
 			}{
-				Error: "Invalid request body",
+				Error: "Invalid request body: " + err.Error(),
 			})
 	}
 
