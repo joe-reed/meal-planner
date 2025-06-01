@@ -5,7 +5,6 @@ import { SearchableSelect } from "./SearchableSelect";
 import { useCreateProduct } from "../queries";
 import { useCategories } from "../queries/useCategories";
 import { Modal } from "./Modal";
-import { Select } from "@headlessui/react";
 
 type PendingItem = {
   productId: string;
@@ -146,15 +145,9 @@ export function ItemSelect({
           query={productSearchQuery}
           onQueryChange={(query) => setProductSearchQuery(query)}
           inputRef={ingredientSearchInputRef}
-          additionalContent={
-            <button
-              onClick={() => setIsAddProductModalOpen(true)}
-              className="mt-1 mr-1"
-            >
-              ➕
-            </button>
-          }
+          className="mr-1"
         />
+        <button onClick={() => setIsAddProductModalOpen(true)}>➕</button>
         <AddNewProductModal
           text={productSearchQuery}
           isOpen={isAddProductModalOpen}

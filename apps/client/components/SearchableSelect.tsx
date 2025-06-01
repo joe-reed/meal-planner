@@ -6,6 +6,7 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/react";
+import clsx from "clsx";
 
 export type Option = { id: string; name: string };
 
@@ -15,14 +16,14 @@ export function SearchableSelect<T extends Option>({
   query,
   onQueryChange,
   inputRef,
-  additionalContent,
+  className,
 }: {
   options: T[];
   onSelect: (option: T) => void;
   query: string;
   onQueryChange: (query: string) => void;
   inputRef?: Ref<HTMLInputElement>;
-  additionalContent?: React.ReactNode;
+  className?: string;
 }) {
   const filteredOptions =
     query === ""
@@ -39,7 +40,7 @@ export function SearchableSelect<T extends Option>({
       }}
       immediate
     >
-      <div className="relative w-full">
+      <div className={clsx("relative w-full", className)}>
         <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
           <ComboboxInput
             className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
@@ -51,7 +52,6 @@ export function SearchableSelect<T extends Option>({
             autoFocus
           />
           <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
-            {additionalContent}
             <span className="h-5 w-5 text-gray-400" aria-hidden="true">
               ↕️
             </span>
