@@ -67,7 +67,9 @@ export async function createProduct(body: string) {
     body,
   });
   if (!response.ok) {
-    return { error: await response.text(), product: null };
+    const message = await response.json();
+
+    return { error: message.error, product: null };
   }
   return response.json();
 }

@@ -181,6 +181,8 @@ function AddNewProductModal({
 
   const { data: categories } = useCategories();
 
+  const [error, setError] = useState<string | null>(null);
+
   return (
     <>
       <Modal
@@ -202,6 +204,14 @@ function AddNewProductModal({
                   category,
                 });
 
+                if (response.error) {
+                  setError(response.error);
+
+                  return;
+                }
+
+                setError(null);
+
                 onAdd(response);
 
                 close();
@@ -221,10 +231,11 @@ function AddNewProductModal({
 
               <label className="mb-3 flex flex-col">
                 <span>Category</span>
-                <Select
+                <select
                   name="category"
                   aria-label="Product category"
                   className="rounded-md border bg-white py-1 px-2 leading-none"
+                  required
                 >
                   <option value="">Select a category</option>
                   {categories?.map((category) => (
@@ -232,8 +243,14 @@ function AddNewProductModal({
                       {category.name}
                     </option>
                   ))}
-                </Select>
+                </select>
               </label>
+
+              {error && (
+                <div className="mb-3 rounded-md bg-red-100 p-2 text-red-700">
+                  {error}
+                </div>
+              )}
 
               <div>
                 <button type="submit" className="button mr-3">
