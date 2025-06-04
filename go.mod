@@ -6,7 +6,7 @@ require (
 	github.com/brianvoe/gofakeit/v7 v7.2.1
 	github.com/campoy/jsonenums v0.0.0-20201009151607-0f0230183423
 	github.com/google/uuid v1.6.0
-	github.com/hallgren/eventsourcing v0.8.0
+	github.com/hallgren/eventsourcing v0.8.1
 	github.com/hallgren/eventsourcing/core v0.4.0
 	github.com/hallgren/eventsourcing/eventstore/sql v0.5.0
 	github.com/labstack/echo/v4 v4.13.3
