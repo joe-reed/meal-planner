@@ -37,9 +37,9 @@ func main() {
 	addMealRoutes(e, db)
 	addUploadRoutes(e, db)
 	addShopRoutes(e, db, publisher)
-	addProductRoutes(e, db)
 	addCategoryRoutes(e)
 	addBasketRoutes(e, db, subscribe)
+	addProductRoutes(e, db, es)
 
 	if err != nil {
 		e.Logger.Fatal(err)
@@ -175,14 +175,14 @@ func addShopRoutes(e *echo.Echo, db *sql.DB, publisher EventPublisher) {
 	e.DELETE("/shops/current/items/:productId", handler.RemoveItemFromCurrentShop)
 }
 
-func addProductRoutes(e *echo.Echo, db *sql.DB) {
+func addProductRoutes(e *echo.Echo, db *sql.DB, es *sqlStore.SQL) {
 	r, err := product.NewSqliteProductRepository(db)
 
 	if err != nil {
 		e.Logger.Fatal(e)
 	}
 
-	handler := handlers.ProductHandler{Application: application.NewProductApplication(r)}
+	handler := handlers.ProductHandler{Application: application.NewProductApplication(r), EventStore: es}
 
 	e.GET("/products", handler.GetProducts)
 	e.POST("/products", handler.AddProduct)

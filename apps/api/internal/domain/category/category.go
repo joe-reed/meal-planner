@@ -1,8 +1,18 @@
 package category
 
-import "sort"
+import (
+	"errors"
+	"sort"
+)
 
 type CategoryName int
+
+func (r CategoryName) MarshalText() (text []byte, err error) {
+	if name, ok := _CategoryNameValueToName[r]; ok {
+		return []byte(name), nil
+	}
+	return nil, errors.New("invalid category name")
+}
 
 //go:generate go run github.com/campoy/jsonenums -type=CategoryName
 const (

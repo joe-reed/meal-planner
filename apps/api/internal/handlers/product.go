@@ -1,18 +1,34 @@
 package handlers
 
 import (
+	"context"
 	"errors"
+	sqlStore "github.com/hallgren/eventsourcing/eventstore/sql"
 	"github.com/joe-reed/meal-planner/apps/api/internal/application"
 	"github.com/joe-reed/meal-planner/apps/api/internal/domain/product"
+	"github.com/joe-reed/meal-planner/apps/api/internal/projections"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type ProductHandler struct {
 	Application *application.ProductApplication
+	EventStore  *sqlStore.SQL
 }
 
 func (h *ProductHandler) GetProducts(c echo.Context) error {
+	if c.QueryParam("grouped") == "true" {
+		p, output := projections.CreateProductProjection(h.EventStore)
+
+		result := p.RunToEnd(context.TODO())
+
+		if result.Error != nil {
+			return result.Error
+		}
+
+		return c.JSON(200, output)
+	}
+
 	products, err := h.Application.GetProducts()
 
 	if err != nil {
