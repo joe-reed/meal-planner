@@ -118,6 +118,16 @@ export async function fetchProducts() {
   return response.json();
 }
 
+export async function fetchGroupedProducts() {
+  const response = await fetch(
+    `${process.env.API_BASE_URL}/products?grouped=true`,
+  );
+  if (!response.ok) {
+    throw new Error("Error fetching products");
+  }
+  return response.json();
+}
+
 export async function fetchMeal(mealId: string) {
   const response = await fetch(`${process.env.API_BASE_URL}/meals/${mealId}`);
   if (!response.ok) {

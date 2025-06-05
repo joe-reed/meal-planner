@@ -48,6 +48,10 @@ export default function HomePage() {
           <Link href="/meals/upload" className="button w-1/2 text-center">
             📤 Upload meals
           </Link>
+
+          <Link href="/products" className="button w-1/2 text-center">
+            🛍️ Products
+          </Link>
         </span>
 
         <span>
