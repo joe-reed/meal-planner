@@ -29,7 +29,7 @@ export default function ProductsPage() {
             {Object.entries(groupedProducts).map(([category, products]) => (
               <div key={category} className="mb-6">
                 <h2 className="text-lg font-semibold">{category}</h2>
-                <ul className="list-disc pl-5">
+                <ul>
                   {products.map((product) => (
                     <li key={product.id} className="mb-1">
                       {product.name}
