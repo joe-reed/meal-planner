@@ -133,7 +133,7 @@ export function ItemSelect({
           </div>
         </div>
       )}
-      <div className="flex flex-col items-center md:flex-row">
+      <div className="flex flex-row items-center">
         <SearchableSelect<Product>
           options={products.filter(
             (product) =>
