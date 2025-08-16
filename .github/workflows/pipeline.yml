@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Pipeline
 
 on:
   push:
@@ -11,9 +11,14 @@ permissions:
   packages: write
 
 jobs:
+  checks:
+    name: Run checks
+    uses: ./.github/workflows/checks.yml
+
   build-api:
     name: Build and push API
     runs-on: ubuntu-latest
+    needs: checks
 
     steps:
       - name: Set up QEMU
@@ -42,6 +47,7 @@ jobs:
   build-client:
     name: Build and push Client
     runs-on: ubuntu-latest
+    needs: checks
 
     steps:
       - name: Checkout
