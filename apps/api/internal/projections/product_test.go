@@ -15,7 +15,7 @@ type ShoppingListSuite struct {
 	suite.Suite
 	productRepository *product.EventSourcedProductRepository
 	db                *sql.DB
-	es                *sqlStore.SQL
+	es                *sqlStore.SQLite
 }
 
 func (suite *ShoppingListSuite) SetupTest() {
@@ -23,7 +23,9 @@ func (suite *ShoppingListSuite) SetupTest() {
 	assert.NoError(suite.T(), err)
 
 	suite.db = db
-	suite.es = sqlStore.Open(db)
+	suite.es, err = sqlStore.NewSQLiteSingelWriter(db)
+
+	assert.NoError(suite.T(), err)
 
 	suite.createRepositories(db)
 }

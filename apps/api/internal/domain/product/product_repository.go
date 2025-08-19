@@ -31,7 +31,11 @@ func NewProductRepository(es core.EventStore, all func() (core.Iterator, error))
 }
 
 func NewSqliteProductRepository(db *sql.DB) (*EventSourcedProductRepository, error) {
-	es := sqlStore.Open(db)
+	es, err := sqlStore.NewSQLiteSingelWriter(db)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return NewProductRepository(es, func() (core.Iterator, error) {
 		return es.All(0, 10000)

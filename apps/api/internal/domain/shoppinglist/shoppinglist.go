@@ -24,7 +24,7 @@ type ShoppingListProjectionOutput struct {
 	ShoppingList *map[string]ShoppingListItem `json:"shoppingList"`
 }
 
-func CreateShoppingListProjection(es *sqlStore.SQL) (*eventsourcing.Projection, ShoppingListProjectionOutput) {
+func CreateShoppingListProjection(es *sqlStore.SQLite) (*eventsourcing.Projection, ShoppingListProjectionOutput) {
 	shoppingList := map[string]ShoppingListItem{}
 	s := map[string]string{}
 	prods := map[string]product.Product{}

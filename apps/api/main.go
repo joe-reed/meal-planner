@@ -30,7 +30,11 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	es := sqlStore.Open(db)
+	es, err := sqlStore.NewSQLiteSingelWriter(db)
+
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
 
 	publisher, subscribe := setupEvents()
 
@@ -175,7 +179,7 @@ func addShopRoutes(e *echo.Echo, db *sql.DB, publisher EventPublisher) {
 	e.DELETE("/shops/current/items/:productId", handler.RemoveItemFromCurrentShop)
 }
 
-func addProductRoutes(e *echo.Echo, db *sql.DB, es *sqlStore.SQL) {
+func addProductRoutes(e *echo.Echo, db *sql.DB, es *sqlStore.SQLite) {
 	r, err := product.NewSqliteProductRepository(db)
 
 	if err != nil {

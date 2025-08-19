@@ -31,7 +31,11 @@ func NewMealRepository(es core.EventStore, all func() (core.Iterator, error)) *E
 }
 
 func NewSqliteMealRepository(db *sql.DB) (*EventSourcedMealRepository, error) {
-	es := sqlStore.Open(db)
+	es, err := sqlStore.NewSQLiteSingelWriter(db)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return NewMealRepository(es, func() (core.Iterator, error) {
 		return es.All(0, 10000)

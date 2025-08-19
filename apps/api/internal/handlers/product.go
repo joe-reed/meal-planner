@@ -13,7 +13,7 @@ import (
 
 type ProductHandler struct {
 	Application *application.ProductApplication
-	EventStore  *sqlStore.SQL
+	EventStore  *sqlStore.SQLite
 }
 
 func (h *ProductHandler) GetProducts(c echo.Context) error {

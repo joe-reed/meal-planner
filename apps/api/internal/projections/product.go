@@ -10,7 +10,7 @@ import (
 
 type ProductProjectionOutput map[category.CategoryName][]product.Product
 
-func CreateProductProjection(es *sqlStore.SQL) (*eventsourcing.Projection, ProductProjectionOutput) {
+func CreateProductProjection(es *sqlStore.SQLite) (*eventsourcing.Projection, ProductProjectionOutput) {
 	prods := ProductProjectionOutput{}
 
 	start := core.Version(0)

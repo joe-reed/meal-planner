@@ -24,7 +24,11 @@ func NewShopRepository(es core.EventStore, all func() (core.Iterator, error)) *S
 }
 
 func NewSqliteShopRepository(db *sql.DB) (*ShopRepository, error) {
-	es := sqlStore.Open(db)
+	es, err := sqlStore.NewSQLiteSingelWriter(db)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return NewShopRepository(es, func() (core.Iterator, error) {
 		return es.All(0, 100000)

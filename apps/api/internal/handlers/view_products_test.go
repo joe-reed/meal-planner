@@ -44,7 +44,9 @@ func TestViewingProductsGrouped(t *testing.T) {
 	db, err := database.CreateDatabase(":memory:")
 	assert.NoError(t, err)
 
-	es := sqlStore.Open(db)
+	es, err := sqlStore.NewSQLiteSingelWriter(db)
+
+	assert.NoError(t, err)
 
 	p1 := product.NewProductBuilder().WithName("Chicken").WithCategory(category.Meat).WithId("8a378ac5-e0d5-405a-8cb5-f03cc1d92d8b").Build()
 	p2 := product.NewProductBuilder().WithName("Ice Cream").WithCategory(category.Frozen).WithId("ad11289f-b2b0-4195-ba89-63d92ccc64d7").Build()

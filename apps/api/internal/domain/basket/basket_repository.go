@@ -23,7 +23,11 @@ func NewBasketRepository(es core.EventStore, all func() (core.Iterator, error)) 
 }
 
 func NewSqliteBasketRepository(db *sql.DB) (*BasketRepository, error) {
-	es := sqlStore.Open(db)
+	es, err := sqlStore.NewSQLiteSingelWriter(db)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return NewBasketRepository(es, func() (core.Iterator, error) {
 		return es.All(0, 100000)
