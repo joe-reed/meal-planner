@@ -1,4 +1,4 @@
-FROM node:20-alpine as build
+FROM node:22-alpine as build
 WORKDIR build
 ENV NX_DAEMON=false
 COPY package*.json ./
@@ -7,7 +7,7 @@ COPY apps/client apps/client
 COPY tsconfig.base.json nx.json ./
 RUN npx nx build client
 
-FROM node:20-alpine
+FROM node:22-alpine
 WORKDIR /app
 ENV NX_DAEMON=false
 COPY --from=build build/dist/apps/client/package.json ./
