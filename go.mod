@@ -3,7 +3,7 @@ module github.com/joe-reed/meal-planner
 go 1.24.1
 
 require (
-	github.com/brianvoe/gofakeit/v7 v7.4.0
+	github.com/brianvoe/gofakeit/v7 v7.14.0
 	github.com/campoy/jsonenums v0.0.0-20201009151607-0f0230183423
 	github.com/google/uuid v1.6.0
 	github.com/hallgren/eventsourcing v0.8.1
