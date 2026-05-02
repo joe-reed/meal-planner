@@ -8,14 +8,14 @@
     "build": {
       "executor": "@nx-go/nx-go:build",
       "options": {
-        "outputPath": "dist/apps/api",
-        "main": "apps/api/main.go"
+        "outputPath": "../../dist/apps/api",
+        "main": "."
       }
     },
     "serve": {
       "executor": "@nx-go/nx-go:serve",
       "options": {
-        "main": "apps/api/main.go"
+        "main": "."
       }
     },
     "test": {
