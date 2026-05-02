@@ -1,4 +1,4 @@
-import React, { Ref, useState } from "react";
+import React, { Ref } from "react";
 import {
   Combobox,
   ComboboxButton,
