@@ -58,6 +58,5 @@
   "plugins": ["@nx-go/nx-go"],
   "namedInputs": {
     "sharedGlobals": ["{workspaceRoot}/go.mod"]
-  },
-  "useLegacyCache": true
+  }
 }
