@@ -44,3 +44,6 @@ Thumbs.db
 .next
 
 .nx/cache
+
+# Claude
+.claude/settings.local.json
