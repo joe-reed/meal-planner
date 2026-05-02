@@ -16,7 +16,7 @@ func CreateProductProjection(es *sqlStore.SQLite) (*eventsourcing.Projection, Pr
 	start := core.Version(0)
 
 	p := eventsourcing.NewProjection(func() (core.Iterator, error) {
-		return es.All(start, 10)
+		return es.All(start)()
 	}, func(ev eventsourcing.Event) error {
 		switch event := ev.Data().(type) {
 		case *product.Created:

@@ -29,9 +29,7 @@ func NewSqliteBasketRepository(db *sql.DB) (*BasketRepository, error) {
 		return nil, err
 	}
 
-	return NewBasketRepository(es, func() (core.Iterator, error) {
-		return es.All(0, 100000)
-	}), nil
+	return NewBasketRepository(es, es.All(0)), nil
 }
 
 func NewFakeBasketRepository() *BasketRepository {

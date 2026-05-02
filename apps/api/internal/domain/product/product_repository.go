@@ -37,9 +37,7 @@ func NewSqliteProductRepository(db *sql.DB) (*EventSourcedProductRepository, err
 		return nil, err
 	}
 
-	return NewProductRepository(es, func() (core.Iterator, error) {
-		return es.All(0, 10000)
-	}), nil
+	return NewProductRepository(es, es.All(0)), nil
 }
 
 func NewFakeProductRepository() *EventSourcedProductRepository {
