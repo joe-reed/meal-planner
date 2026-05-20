@@ -37,7 +37,9 @@ func NewSqliteMealRepository(db *sql.DB) (*EventSourcedMealRepository, error) {
 		return nil, err
 	}
 
-	return NewMealRepository(es, es.All(0)), nil
+	return NewMealRepository(es, func() (core.Iterator, error) {
+		return es.All(0)()
+	}), nil
 }
 
 func NewFakeMealRepository() *EventSourcedMealRepository {
