@@ -17,7 +17,7 @@ jobs:
         uses: nrwl/nx-set-shas@v4
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
