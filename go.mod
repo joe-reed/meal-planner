@@ -9,7 +9,7 @@ require (
 	github.com/hallgren/eventsourcing v0.9.1
 	github.com/hallgren/eventsourcing/core v0.5.2
 	github.com/hallgren/eventsourcing/eventstore/sql v0.7.0
-	github.com/labstack/echo/v4 v4.16.1
+	github.com/labstack/echo/v4 v4.16.3
 	github.com/mattn/go-sqlite3 v1.14.52
 	github.com/stretchr/testify v1.12.1
 )
