@@ -30,7 +30,7 @@
     "@typescript-eslint/parser": "8.72.1",
     "autoprefixer": "10.6.2",
     "babel-jest": "30.5.2",
-    "cypress": "15.21.1",
+    "cypress": "16.3.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.5",
     "eslint-config-prettier": "10.1.8",
