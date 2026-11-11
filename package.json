@@ -9,7 +9,7 @@
   },
   "private": true,
   "devDependencies": {
-    "@nx-go/nx-go": "4.1.1",
+    "@nx-go/nx-go": "24.0.0",
     "@nx/cypress": "22.7.12",
     "@nx/eslint": "22.7.12",
     "@nx/eslint-plugin": "22.7.12",
